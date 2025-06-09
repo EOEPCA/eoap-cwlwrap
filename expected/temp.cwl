@@ -2,7 +2,7 @@ cwlVersion: v1.2
 
 $graph: 
 - class: Workflow
-  id: _temp
+  id: main
   label: Temporary workflow for packing 
   doc: This workflow is used to pack the CWL files
 
@@ -25,6 +25,9 @@ $graph:
       doc: bands used for the NDWI
       type: string[]
       default: ["green", "nir08"]
+    
+    # trasformation from pattern-1.cwl 
+    # Directory -> URL
     item:
       doc: Reference to a STAC item
       label: STAC item reference
@@ -50,7 +53,7 @@ $graph:
 
   outputs:
     stac_catalog:
-      type: string
+      type: string # should be type URL
       outputSource: 
       - stage_out/s3_catalog_output
 
