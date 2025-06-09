@@ -16,7 +16,6 @@ It ensures:
 - 📦 Pack the entire workflow and dependencies into one file using `cwltool.pack`
 - 🆔 Automatically assign or customize a workflow ID
 - 💾 Output to any location, with automatic directory creation
-- 🔍 Optional `--dry-run` to skip packing and inspect the raw generated YAML
 
 ---
 
