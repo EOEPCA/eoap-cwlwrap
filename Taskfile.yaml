@@ -7,3 +7,7 @@ tasks:
     - rm -rf build
     - rm -rf cwl_chain_builder.egg-info
     - pip install --force-reinstall --user .
+
+  expected:
+    cmds:
+    - cwltool --pack expected/temp.cwl | yq -P 
