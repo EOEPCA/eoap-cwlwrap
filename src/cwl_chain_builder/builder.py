@@ -18,13 +18,22 @@ from ruamel.yaml import YAML
 from cwl_utils.parser import load_document_by_uri, save
 
 def build_workflow(step_paths: List[str], workflow_id: str):
-    yaml_loader = YAML()
-    tools = []
+    workflow = {
+        "cwlVersion": "v1.2",
+        "class": "Workflow",
+        "id": workflow_id,
+        "inputs": []
+    }
+
+    print(f"initial inputs: {workflow['inputs']}")
 
     for path in step_paths:
-        tool = load_document_by_uri(path=path)
-        tools.append(tool)
+        current = load_document_by_uri(path=path)
 
+        print(f"current inputs: {current.inputs}")
+
+        workflow["inputs"] += current.inputs
+    '''
     for i in range(1, len(tools)):
         prev_outputs = {o.id.split('#')[-1]: getattr(o, 'type', getattr(o, 'type_', None)) for o in tools[i - 1].outputs}
         curr_inputs = {i.id.split('#')[-1]: getattr(i, 'type', getattr(i, 'type_', None)) for i in tools[i].inputs}
@@ -67,7 +76,7 @@ def build_workflow(step_paths: List[str], workflow_id: str):
         "outputs": outputs,
         "steps": steps,
     }
-
+    '''
     return workflow
 
 @click.command()
