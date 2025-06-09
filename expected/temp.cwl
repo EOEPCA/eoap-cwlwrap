@@ -6,7 +6,11 @@ $graph:
   label: Temporary workflow for packing 
   doc: This workflow is used to pack the CWL files
 
+  requirements:
+    SubworkflowFeatureRequirement: {}
+
   inputs: 
+    # from pattern-1.cwl
     aoi:
       label: area of interest
       doc: area of interest as a bounding box
@@ -25,6 +29,10 @@ $graph:
       doc: Reference to a STAC item
       label: STAC item reference
       type: string # should be URL
+
+    # from stage-in.cwl
+    # nothing (this time)
+  
 
     # from stage-out.cwl
     s3_bucket:
