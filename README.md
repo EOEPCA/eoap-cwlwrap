@@ -77,6 +77,5 @@ pytest
 
 - Python ≥ 3.8
 - `cwl-utils`
-- `cwltool`
 - `ruamel.yaml`
 - `click`
