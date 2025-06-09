@@ -1,0 +1,7 @@
+.project
+.pydevproject
+.settings
+.task
+build
+src/cwl_chain_builder.egg-info
+cwl_chain_builder.egg-info

@@ -1,0 +1,9 @@
+version: '3'
+
+tasks:
+
+  default:
+    cmds:
+    - rm -rf build
+    - rm -rf cwl_chain_builder.egg-info
+    - pip install --force-reinstall --user .
