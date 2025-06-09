@@ -8,29 +8,35 @@ You should have received a copy of the license along with this work.
 If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
-from cwl_utils.parser import load_document_by_yaml
-from pathlib import Path
-from ruamel.yaml import YAML
-from typing import List
-import click
 import sys
 import uuid
+import click
+from pathlib import Path
+from typing import List
+
+from ruamel.yaml import YAML
+from cwl_utils.parser import load_document_by_uri, save
 
 def build_workflow(step_paths: List[str], workflow_id: str):
     yaml_loader = YAML()
     tools = []
 
     for path in step_paths:
-        with open(path) as f:
-            cwl_doc = yaml_loader.load(f)
-            tool = load_document_by_yaml(cwl_doc, str(path))
-            tools.append(tool)
+        tool = load_document_by_uri(path=path)
+        tools.append(tool)
 
     for i in range(1, len(tools)):
-        prev_outputs = {o.id for o in tools[i - 1].outputs}
-        curr_inputs = {i.id for i in tools[i].inputs}
-        if not curr_inputs.issubset(prev_outputs):
-            raise ValueError(f"Step {i}: input(s) {curr_inputs - prev_outputs} not satisfied by previous outputs.")
+        prev_outputs = {o.id.split('#')[-1]: getattr(o, 'type', getattr(o, 'type_', None)) for o in tools[i - 1].outputs}
+        curr_inputs = {i.id.split('#')[-1]: getattr(i, 'type', getattr(i, 'type_', None)) for i in tools[i].inputs}
+
+        missing = set(curr_inputs) - set(prev_outputs)
+        if missing:
+            expected = {i.id: getattr(i, "type", getattr(i, "type_", None)) for i in tools[i].inputs if i.id.split('#')[-1] in missing}
+            found = set(prev_outputs)
+            raise ValueError(
+                f"Step {i}: input(s) {missing} not satisfied by previous outputs. "
+                f"Expected types: {expected} but found {found}"
+            )
 
     steps = []
     for i, tool in enumerate(tools):
@@ -47,11 +53,11 @@ def build_workflow(step_paths: List[str], workflow_id: str):
         {
             "id": o.id,
             "outputSource": f"step{len(tools) - 1}/{o.id}",
-            "type": o.type
+            "type": getattr(o, "type", getattr(o, "type_", None))
         } for o in final_outputs
     ]
 
-    inputs = [{"id": i.id, "type": i.type} for i in tools[0].inputs]
+    inputs = [{"id": i.id, "type": getattr(i, "type", getattr(i, "type_", None))} for i in tools[0].inputs]
 
     workflow = {
         "cwlVersion": "v1.2",
@@ -76,7 +82,7 @@ def main(steps, workflow_id, output):
 
     yaml_dumper = YAML()
     with output_path.open("w") as f:
-        yaml_dumper.dump(workflow, f)
+        yaml_dumper.dump(save(workflow), f)
 
     print(f"Raw workflow written to: {output_path}")
 
