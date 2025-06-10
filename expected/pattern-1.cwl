@@ -1,10 +1,14 @@
-cwlVersion: v1.0
+cwlVersion: v1.2
 
 class: Workflow
 id: water-bodies-detection
 label: Water bodies detection based on NDWI and the otsu threshold
 doc: Water bodies detection based on NDWI and otsu threshold applied to a single Sentinel-2 COG STAC item
-requirements: []
+
+requirements:
+  SchemaDefRequirement:
+    types:
+    - $import: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml
 inputs:
   aoi:
     label: area of interest

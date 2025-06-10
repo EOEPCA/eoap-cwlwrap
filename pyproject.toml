@@ -9,6 +9,7 @@ description = "Chain multiple CWL CommandLineTool steps into a single workflow."
 authors = [{ name = "Simone Tripodi", email = "simone.tripodi@terradue.com" }]
 dependencies = [
     "click>=8.0",
+    "loguru",
     "cwl-utils>=0.38",
     "ruamel.yaml>=0.18"
 ]
