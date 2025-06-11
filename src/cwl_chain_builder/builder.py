@@ -8,7 +8,7 @@ You should have received a copy of the license along with this work.
 If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
-from cwl_utils.parser import load_document_by_yaml, load_document_by_uri, save
+from cwl_utils.parser import load_document_by_yaml, load_document_by_uri, save, Directory
 from cwl_utils.parser.cwl_v1_2 import CommandInputRecordSchema, LoadingOptions, SchemaDefRequirement, Workflow, WorkflowInputParameter, WorkflowOutputParameter
 from pathlib import Path
 from ruamel.yaml import YAML
@@ -42,53 +42,26 @@ def build_workflow(cwls: dict) -> Workflow:
                                                  loadingOptions = input.loadingOptions))
 
     # outputs
-    for output in cwls["stage-out"].outputs:
-        outputs.append(WorkflowOutputParameter(id = output.id.split('#')[-1].split('/')[-1],
-                                               outputSource = [ output.id.split('#')[-1] ],
-                                               type_ = output.type_,
-                                               label = output.label,
-                                               secondaryFiles = output.secondaryFiles,
-                                               streamable = output.streamable,
-                                               doc = output.doc,
-                                               format = output.format,
-                                               extension_fields = output.extension_fields,
-                                               loadingOptions = output.loadingOptions))
+    if 1 != len(cwls['stage-out'].outputs):
+        raise ValueError(f"Unexpected 'stage-out' outputs, found {len(cwls['stage-out'].outputs)} items (expected 1) .")
+
+    output = cwls['stage-out'].outputs[0]
+    outputs.append(WorkflowOutputParameter(id = output.id.split('#')[-1].split('/')[-1],
+                                           outputSource = [ output.id.split('#')[-1] ],
+                                           type_ = output.type_,
+                                           label = output.label,
+                                           secondaryFiles = output.secondaryFiles,
+                                           streamable = output.streamable,
+                                           doc = output.doc,
+                                           format = output.format,
+                                           extension_fields = output.extension_fields,
+                                           loadingOptions = output.loadingOptions))
 
     return Workflow(id = 'main',
                     requirements = requirements,
                     inputs = inputs,
                     outputs = outputs,
                     steps = steps)
-
-'''
-def build_workflow(yaml: YAML,
-                   loader: Loader,
-                   step_paths: List[str],
-                   workflow_id: str):
-
-    for i in range(1, len(tools)):
-        prev_outputs = {o.id.split('#')[-1]: getattr(o, 'type', getattr(o, 'type_', None)) for o in tools[i - 1].outputs}
-        curr_inputs = {i.id.split('#')[-1]: getattr(i, 'type', getattr(i, 'type_', None)) for i in tools[i].inputs}
-
-        missing = set(curr_inputs) - set(prev_outputs)
-        if missing:
-            expected = {i.id: getattr(i, "type", getattr(i, "type_", None)) for i in tools[i].inputs if i.id.split('#')[-1] in missing}
-            found = set(prev_outputs)
-            raise ValueError(
-                f"Step {i}: input(s) {missing} not satisfied by previous outputs. "
-                f"Expected types: {expected} but found {found}"
-            )
-
-    steps = []
-    for i, tool in enumerate(tools):
-        tool_id = f"step{i}"
-        steps.append({
-            "id": tool_id,
-            "run": tool.id,
-            "in": [{"id": i.id} for i in tool.inputs],
-            "out": [o.id for o in tool.outputs],
-        })
-'''
 
 @click.command()
 @click.option("--stage-in", type=click.Path(exists=True), help="The CWL stage-in file")
