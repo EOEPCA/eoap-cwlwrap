@@ -25,7 +25,7 @@ def build_workflow(cwls: dict) -> Workflow:
     steps = []
 
     # inputs
-    for cwl_id in ["stage-in", "workflow", "stage-out"]:
+    for cwl_id in ['stage-in', 'workflow', 'stage-out']:
         for input in cwls[cwl_id].inputs:
             inputs.append(WorkflowInputParameter(id = input.id.split('#')[-1].split('/')[-1],
                                                  type_ = input.type_,
@@ -81,9 +81,9 @@ def main(stage_in,
 
     loading_options = LoadingOptions()
     cwls = {
-        "stage-in": load_document_by_uri(path = stage_in, loadingOptions = loading_options),
-        "workflow": load_document_by_yaml(yaml = workflow_dict, uri = workflow, loadingOptions = loading_options, id_ = workflow_id, load_all = False),
-        "stage-out": load_document_by_uri(path = stage_out, loadingOptions = loading_options),
+        'stage-in': load_document_by_uri(path = stage_in, loadingOptions = loading_options),
+        'workflow': load_document_by_yaml(yaml = workflow_dict, uri = workflow, loadingOptions = loading_options, id_ = workflow_id, load_all = False),
+        'stage-out': load_document_by_uri(path = stage_out, loadingOptions = loading_options),
     }
 
     workflow = build_workflow(cwls = cwls)
