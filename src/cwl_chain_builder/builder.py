@@ -8,7 +8,7 @@ You should have received a copy of the license along with this work.
 If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
-from cwl_utils.parser import load_document_by_uri, save
+from cwl_utils.parser import load_document_by_yaml, load_document_by_uri, save
 from cwl_utils.parser.cwl_v1_2 import CommandInputRecordSchema, LoadingOptions, SchemaDefRequirement, Workflow, WorkflowInputParameter, WorkflowOutputParameter
 from pathlib import Path
 from ruamel.yaml import YAML
@@ -101,10 +101,15 @@ def main(stage_in,
          workflow_id,
          stage_out,
          output):
+    yaml = YAML()
+
+    with open(workflow, "r") as f:
+        workflow_dict = yaml.load(f)
+
     loading_options = LoadingOptions()
     cwls = {
         "stage-in": load_document_by_uri(path = stage_in, loadingOptions = loading_options),
-        "workflow": load_document_by_uri(path = workflow, loadingOptions = loading_options),
+        "workflow": load_document_by_yaml(yaml = workflow_dict, uri = workflow, loadingOptions = loading_options, id_ = workflow_id, load_all = False),
         "stage-out": load_document_by_uri(path = stage_out, loadingOptions = loading_options),
     }
 
@@ -113,7 +118,7 @@ def main(stage_in,
     output_path = Path(output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w") as f:
-        YAML().dump(save(workflow), f)
+        yaml.dump(save(workflow), f)
 
     logger.info(f"Raw workflow written to: {output_path}")
 
