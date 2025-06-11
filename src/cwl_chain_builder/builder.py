@@ -17,7 +17,7 @@ import sys
 import uuid
 from loguru import logger
 
-def build_workflow(workflow_id: str, workflows: []) -> Workflow:
+def build_workflow(cwls: dict) -> Workflow:
     requirements = [ SchemaDefRequirement(types=[ { '$import': 'https://raw.githubusercontent.com/eoap/schemas/main/url.yaml' } ]) ]
 
     inputs = []
@@ -25,8 +25,8 @@ def build_workflow(workflow_id: str, workflows: []) -> Workflow:
     steps = []
 
     # inputs
-    for workflow in workflows:
-        for input in workflow.inputs:
+    for cwl_id in ["stage-in", "workflow", "stage-out"]:
+        for input in cwls[cwl_id].inputs:
             inputs.append(WorkflowInputParameter(id = input.id.split('#')[-1].split('/')[-1],
                                                  type_ = input.type_,
                                                  label = input.label,
@@ -42,7 +42,7 @@ def build_workflow(workflow_id: str, workflows: []) -> Workflow:
                                                  loadingOptions = input.loadingOptions))
 
     # outputs
-    for output in workflows[-1].outputs:
+    for output in cwls["stage-out"].outputs:
         outputs.append(WorkflowOutputParameter(id = output.id.split('#')[-1].split('/')[-1],
                                                outputSource = [ output.id.split('#')[-1] ],
                                                type_ = output.type_,
@@ -54,11 +54,11 @@ def build_workflow(workflow_id: str, workflows: []) -> Workflow:
                                                extension_fields = output.extension_fields,
                                                loadingOptions = output.loadingOptions))
 
-    return Workflow(id=workflow_id,
-                    requirements=requirements,
-                    inputs=inputs,
-                    outputs=outputs,
-                    steps=steps)
+    return Workflow(id = 'main',
+                    requirements = requirements,
+                    inputs = inputs,
+                    outputs = outputs,
+                    steps = steps)
 
 '''
 def build_workflow(yaml: YAML,
@@ -91,31 +91,29 @@ def build_workflow(yaml: YAML,
 '''
 
 @click.command()
-@click.argument("cwl_paths", nargs=-1, type=click.Path(exists=True))
-@click.option("--workflow-id", default=lambda: f"workflow_{uuid.uuid4().hex[:8]}", help="ID of the workflow")
+@click.option("--stage-in", type=click.Path(exists=True), help="The CWL stage-in file")
+@click.option("--workflow", type=click.Path(exists=True), help="The CWL workflow file")
+@click.option("--workflow-id", help="ID of the workflow")
+@click.option("--stage-out", type=click.Path(exists=True), help="The CWL stage-out file")
 @click.option("--output", "-o", type=click.Path(), required=True, help="Output file path")
-def main(cwl_paths, workflow_id, output):
+def main(stage_in,
+         workflow,
+         workflow_id,
+         stage_out,
+         output):
+    loading_options = LoadingOptions()
+    cwls = {
+        "stage-in": load_document_by_uri(path = stage_in, loadingOptions = loading_options),
+        "workflow": load_document_by_uri(path = workflow, loadingOptions = loading_options),
+        "stage-out": load_document_by_uri(path = stage_out, loadingOptions = loading_options),
+    }
+
+    workflow = build_workflow(cwls = cwls)
+
     output_path = Path(output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-
-    workflows = []
-
-    loading_options = LoadingOptions()
-
-    for cwl_path in list(cwl_paths):
-        logger.info(f"Parsing {cwl_path} CWL document...")
-
-        current = load_document_by_uri(path = cwl_path, loadingOptions = loading_options)
-
-        logger.info(f"Parsed current CWL: {type(current)}")
-
-        workflows.append(current)
-
-    workflow = build_workflow(workflow_id = workflow_id, workflows = workflows)
-
-    yaml = YAML()
     with output_path.open("w") as f:
-        yaml.dump(save(workflow), f)
+        YAML().dump(save(workflow), f)
 
     logger.info(f"Raw workflow written to: {output_path}")
 

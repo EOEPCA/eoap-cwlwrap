@@ -1,13 +1,39 @@
 version: '3'
 
+vars:
+  PATTERNS:
+    sh: find ./tests/ -mindepth 1 -maxdepth 1 -type d
+
 tasks:
 
-  default:
+  install:
     cmds:
     - rm -rf build
     - rm -rf cwl_chain_builder.egg-info
-    - pip install --force-reinstall --user .
+    - pip install .
 
-  expected:
+  execute:
     cmds:
-    - cwltool --pack expected/temp.cwl | yq -P 
+    - for:
+        var: PATTERNS
+        as: PATTERN
+      cmd: |
+          cwl-chain-builder \
+          --stage-in {{.PATTERN}}/stage-in.cwl \
+          --workflow {{.PATTERN}}/workflow.cwl \
+          --workflow-id water-bodies-detection \
+          --stage-out {{.PATTERN}}/stage-out.cwl \
+          --output {{.PATTERN}}/current.cwl 
+
+  print_expecteds:
+    cmds:
+    - for:
+        var: PATTERNS
+        as: PATTERN
+      task: print_expected
+      vars:
+        PATTERN: "{{.PATTERN}}"
+
+  print_expected:
+    cmds:
+    - cwltool --pack {{.PATTERN}}/expected.cwl | yq -P 
