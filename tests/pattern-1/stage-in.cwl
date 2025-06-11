@@ -1,7 +1,7 @@
 cwlVersion: v1.2
 
 class: CommandLineTool
-id: main
+id: my-asthonishing-stage-in
 inputs:
   reference:
     type: string # should type: URL

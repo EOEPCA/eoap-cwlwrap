@@ -9,13 +9,17 @@ If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
 from cwl_utils.parser import load_document_by_yaml, load_document_by_uri, save, Directory
-from cwl_utils.parser.cwl_v1_2 import CommandInputRecordSchema, LoadingOptions, SchemaDefRequirement, Workflow, WorkflowInputParameter, WorkflowOutputParameter
+from cwl_utils.parser.cwl_v1_2 import CommandInputRecordSchema, LoadingOptions, SchemaDefRequirement, Workflow, WorkflowInputParameter, WorkflowOutputParameter, WorkflowStep
+from loguru import logger
 from pathlib import Path
 from ruamel.yaml import YAML
+from typing import Any
 import click
 import sys
 import uuid
-from loguru import logger
+
+def extract_id_name(var : Any) -> str:
+    return var.id.split('#')[-1].split('/')[-1]
 
 def build_workflow(cwls: dict) -> Workflow:
     requirements = [ SchemaDefRequirement(types=[ { '$import': 'https://raw.githubusercontent.com/eoap/schemas/main/url.yaml' } ]) ]
@@ -24,10 +28,12 @@ def build_workflow(cwls: dict) -> Workflow:
     outputs = []
     steps = []
 
-    # inputs
     for cwl_id in ['stage-in', 'workflow', 'stage-out']:
-        for input in cwls[cwl_id].inputs:
-            inputs.append(WorkflowInputParameter(id = input.id.split('#')[-1].split('/')[-1],
+        cwl = cwls[cwl_id]
+
+        # inputs
+        for input in cwl.inputs:
+            inputs.append(WorkflowInputParameter(id = extract_id_name(input),
                                                  type_ = input.type_,
                                                  label = input.label,
                                                  secondaryFiles = input.secondaryFiles,
@@ -41,12 +47,18 @@ def build_workflow(cwls: dict) -> Workflow:
                                                  extension_fields = input.extension_fields,
                                                  loadingOptions = input.loadingOptions))
 
+        # steps
+        steps.append(WorkflowStep(id = cwl.id.split('#')[-1],
+                                  in_= [],
+                                  out = list(map(lambda out: extract_id_name(out), cwl.outputs)),
+                                  run = cwl.id.split('#')[0]))
+
     # outputs
     if 1 != len(cwls['stage-out'].outputs):
         raise ValueError(f"Unexpected 'stage-out' outputs, found {len(cwls['stage-out'].outputs)} items (expected 1) .")
 
     output = cwls['stage-out'].outputs[0]
-    outputs.append(WorkflowOutputParameter(id = output.id.split('#')[-1].split('/')[-1],
+    outputs.append(WorkflowOutputParameter(id = extract_id_name(output),
                                            outputSource = [ output.id.split('#')[-1] ],
                                            type_ = output.type_,
                                            label = output.label,
@@ -82,7 +94,7 @@ def main(stage_in,
     loading_options = LoadingOptions()
     cwls = {
         'stage-in': load_document_by_uri(path = stage_in, loadingOptions = loading_options),
-        'workflow': load_document_by_yaml(yaml = workflow_dict, uri = workflow, loadingOptions = loading_options, id_ = workflow_id, load_all = False),
+        'workflow': load_document_by_yaml(yaml = workflow_dict, uri = Path(workflow).resolve().as_uri(), loadingOptions = loading_options, id_ = workflow_id, load_all = False),
         'stage-out': load_document_by_uri(path = stage_out, loadingOptions = loading_options),
     }
 

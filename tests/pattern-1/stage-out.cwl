@@ -2,7 +2,7 @@ cwlVersion: v1.2
 
 
 class: CommandLineTool
-id: stage-out
+id: my-super-stage-out
 
 doc: "Stage-out the results to S3"
 inputs:
