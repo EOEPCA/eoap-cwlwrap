@@ -14,16 +14,22 @@ tasks:
 
   execute:
     cmds:
+    - |
+      cwl-chain-builder \
+      --stage-in {{.PATTERN}}/stage-in.cwl \
+      --workflow {{.PATTERN}}/workflow.cwl \
+      --workflow-id water-bodies-detection \
+      --stage-out {{.PATTERN}}/stage-out.cwl \
+      --output {{.PATTERN}}/current.cwl
+
+  execute_all:
+    cmds:
     - for:
         var: PATTERNS
         as: PATTERN
-      cmd: |
-          cwl-chain-builder \
-          --stage-in {{.PATTERN}}/stage-in.cwl \
-          --workflow {{.PATTERN}}/workflow.cwl \
-          --workflow-id water-bodies-detection \
-          --stage-out {{.PATTERN}}/stage-out.cwl \
-          --output {{.PATTERN}}/current.cwl 
+      task: execute
+      vars:
+        PATTERN: "{{.PATTERN}}"
 
   print_expecteds:
     cmds:
