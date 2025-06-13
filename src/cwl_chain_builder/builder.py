@@ -50,20 +50,20 @@ def build_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Workflow:
                                   in_= [],
                                   out = list(map(lambda out: out.id, cwl.outputs)),
                                   run = cwl.id))
-    '''
+
     # outputs
-    output = cwls['workflow'].outputs[0]
-    outputs.append(WorkflowOutputParameter(id = output.id,
-                                           outputSource = [ cwls['stage-out'].outputs[0].id.split('#')[-1] ],
-                                           type_ = output.type_,
-                                           label = output.label,
-                                           secondaryFiles = output.secondaryFiles,
-                                           streamable = output.streamable,
-                                           doc = output.doc,
-                                           format = output.format,
-                                           extension_fields = output.extension_fields,
-                                           loadingOptions = output.loadingOptions))
-    '''
+    for output in stage_out_cwl.outputs:
+        outputs.append(WorkflowOutputParameter(id = output.id,
+                                               outputSource = f"stage_out/{output.id}",
+                                               type_ = output.type_,
+                                               label = output.label,
+                                               secondaryFiles = output.secondaryFiles,
+                                               streamable = output.streamable,
+                                               doc = output.doc,
+                                               format = output.format,
+                                               extension_fields = output.extension_fields,
+                                               loadingOptions = output.loadingOptions))
+
     return Workflow(id = 'main',
                     requirements = [ SchemaDefRequirement(types=[ { '$import': 'https://raw.githubusercontent.com/eoap/schemas/main/url.yaml' } ]) ],
                     inputs = inputs,
