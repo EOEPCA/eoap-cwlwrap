@@ -18,9 +18,6 @@ import click
 import sys
 import uuid
 
-def extract_id_name(id : Any) -> str:
-    return id.split('#')[-1].split('/')[-1]
-
 def build_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Workflow:
     inputs = []
     outputs = []
