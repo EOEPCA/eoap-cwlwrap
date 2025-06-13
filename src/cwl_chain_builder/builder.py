@@ -8,8 +8,16 @@ You should have received a copy of the license along with this work.
 If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
-from cwl_utils.parser import load_document_by_uri, save, Directory
-from cwl_utils.parser.cwl_v1_2 import CommandInputRecordSchema, LoadingOptions, SchemaDefRequirement, Workflow, WorkflowInputParameter, WorkflowOutputParameter, WorkflowStep
+from cwl_utils.parser import load_document_by_uri, save
+from cwl_utils.parser.cwl_v1_2 import ( CommandInputRecordSchema,
+                                        Directory,
+                                        LoadingOptions,
+                                        SchemaDefRequirement,
+                                        Workflow,
+                                        WorkflowInputParameter,
+                                        WorkflowOutputParameter,
+                                        WorkflowStep,
+                                        WorkflowStepInput )
 from loguru import logger
 from pathlib import Path
 from ruamel.yaml import YAML
@@ -17,10 +25,14 @@ from typing import Any
 import click
 import sys
 import uuid
+from builtins import isinstance
 
-def is_type_assignable(type: Any) -> bool:
-    
-    return false
+# TODO improve it
+def is_type_assignable(expected_type: Any, actual_instance: Any) -> bool:
+    if isinstance(actual_instance, str) and actual_instance == expected_type.__name__:
+        return True
+
+    return isinstance(actual_instance, expected_type);
 
 def build_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Workflow:
     inputs = []
@@ -28,8 +40,9 @@ def build_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Workflow:
     steps = []
 
     steps_labels = ['stage_in', 'app', 'stage_out']
+    steps_wfs = [stage_in_cwl, workflow_cwl, stage_out_cwl]
 
-    for i, cwl in enumerate([stage_in_cwl, workflow_cwl, stage_out_cwl]):
+    for i, cwl in enumerate(steps_wfs):
         # steps
         step = WorkflowStep(id = steps_labels[i],
                             in_= [],
@@ -39,6 +52,7 @@ def build_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Workflow:
 
         # inputs
         for input in cwl.inputs:
+            # global inputs
             current_input = WorkflowInputParameter(id = input.id,
                                                    type_ = input.type_,
                                                    label = input.label,
@@ -54,6 +68,15 @@ def build_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Workflow:
                                                    loadingOptions = input.loadingOptions)
 
             inputs.append(current_input)
+
+            # step inputs
+
+            if i > 0 and is_type_assignable(expected_type = Directory, actual_instance = current_input.type_):
+                for previous_output in steps_wfs[i -1].outputs:
+                    if is_type_assignable(expected_type = Directory, actual_instance = previous_output.type_):
+                        step.in_.append(WorkflowStepInput(id = input.id, valueFrom = f"{steps_labels[i - 1]}/{previous_output.id}"))
+            else:
+                step.in_.append(WorkflowStepInput(id = input.id, valueFrom = input.id))
 
     # outputs
     for output in stage_out_cwl.outputs:
