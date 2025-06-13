@@ -34,68 +34,61 @@ def is_type_assignable(expected_type: Any, actual_instance: Any) -> bool:
 
     return isinstance(actual_instance, expected_type);
 
-def build_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Workflow:
-    inputs = []
-    outputs = []
-    steps = []
+def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Workflow:
+    loadingOptions = LoadingOptions()
 
-    steps_labels = ['stage_in', 'app', 'stage_out']
-    steps_wfs = [stage_in_cwl, workflow_cwl, stage_out_cwl]
+    orchestrator = Workflow(id='main',
+                            requirements=[ SchemaDefRequirement(types=[ { '$import': 'https://raw.githubusercontent.com/eoap/schemas/main/url.yaml' } ]) ],
+                            inputs=list(map(lambda input: input, workflow_cwl.inputs)),
+                            outputs=list(
+                                map(
+                                    lambda output: WorkflowOutputParameter(
+                                        id=output.id,
+                                        outputSource=f"stage_out/{output.id}",
+                                        type_=output.type_,
+                                        label=output.label,
+                                        secondaryFiles=output.secondaryFiles,
+                                        streamable=output.streamable,
+                                        doc=output.doc,
+                                        format=output.format,
+                                        extension_fields=output.extension_fields,
+                                        loadingOptions=loadingOptions,
+                                    ),
+                                    stage_out_cwl.outputs
+                                )
+                            ),
+                            steps=[])
 
-    for i, cwl in enumerate(steps_wfs):
-        # steps
-        step = WorkflowStep(id = steps_labels[i],
-                            in_= [],
-                            out = list(map(lambda out: out.id, cwl.outputs)),
-                            run = cwl.id)
-        steps.append(step)
+    # steps
+    prev_step_label, prev_cwl = None, None
+    for step_label, cwl in { 'stage_in': stage_in_cwl, 'app': workflow_cwl, 'stage_out': stage_out_cwl }.items():
+        orchestrator.steps.append(
+            WorkflowStep(
+                id = step_label,
+                in_ = [],
+                out = list(map(lambda out: out.id, cwl.outputs)),
+                run = cwl.id
+            )
+        )
 
         # inputs
         for input in cwl.inputs:
-            # global inputs
-            current_input = WorkflowInputParameter(id = input.id,
-                                                   type_ = input.type_,
-                                                   label = input.label,
-                                                   secondaryFiles = input.secondaryFiles,
-                                                   streamable = input.streamable,
-                                                   doc = input.doc,
-                                                   format = input.format,
-                                                   loadContents = getattr(input, 'loadContents', None),
-                                                   loadListing = getattr(input, 'loadListing', None),
-                                                   default = input.default,
-                                                   inputBinding = input.inputBinding,
-                                                   extension_fields = input.extension_fields,
-                                                   loadingOptions = input.loadingOptions)
-
-            inputs.append(current_input)
-
-            # step inputs
-
-            if i > 0 and is_type_assignable(expected_type = Directory, actual_instance = current_input.type_):
-                for previous_output in steps_wfs[i -1].outputs:
-                    if is_type_assignable(expected_type = Directory, actual_instance = previous_output.type_):
-                        step.in_.append(WorkflowStepInput(id = input.id, valueFrom = f"{steps_labels[i - 1]}/{previous_output.id}"))
+            # linking step inputs from previous step outputs
+            if is_type_assignable(expected_type = Directory, actual_instance = input.type_):
+                if prev_cwl:
+                    for previous_output in prev_cwl.outputs:
+                        if is_type_assignable(expected_type = Directory, actual_instance = previous_output.type_):
+                            orchestrator.steps[-1].in_.append(WorkflowStepInput(id = input.id, valueFrom = f"{prev_step_label}/{previous_output.id}"))
+                else:
+                    for workflow_input in workflow_cwl.inputs:
+                        if is_type_assignable(expected_type = Directory, actual_instance = workflow_input.type_):
+                            orchestrator.steps[-1].in_.append(WorkflowStepInput(id = input.id, valueFrom = workflow_input.id))
             else:
-                step.in_.append(WorkflowStepInput(id = input.id, valueFrom = input.id))
+                orchestrator.steps[-1].in_.append(WorkflowStepInput(id = input.id, valueFrom = input.id))
 
-    # outputs
-    for output in stage_out_cwl.outputs:
-        outputs.append(WorkflowOutputParameter(id = output.id,
-                                               outputSource = f"stage_out/{output.id}",
-                                               type_ = output.type_,
-                                               label = output.label,
-                                               secondaryFiles = output.secondaryFiles,
-                                               streamable = output.streamable,
-                                               doc = output.doc,
-                                               format = output.format,
-                                               extension_fields = output.extension_fields,
-                                               loadingOptions = output.loadingOptions))
+        prev_step_label, prev_cwl = step_label, cwl
 
-    return Workflow(id = 'main',
-                    requirements = [ SchemaDefRequirement(types=[ { '$import': 'https://raw.githubusercontent.com/eoap/schemas/main/url.yaml' } ]) ],
-                    inputs = inputs,
-                    outputs = outputs,
-                    steps = steps)
+    return orchestrator
 
 def clean_workflow(workflow):
     workflow.id = workflow.id.split('#')[-1]
@@ -165,7 +158,7 @@ def main(stage_in,
 
     stage_out_cwl = load_workflow(path = stage_out)
 
-    orchestrator = build_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl)
+    orchestrator = build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl)
 
     main_workflow = [ orchestrator, stage_in_cwl ]
 

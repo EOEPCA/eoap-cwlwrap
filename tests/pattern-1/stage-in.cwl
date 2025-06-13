@@ -4,7 +4,7 @@ class: CommandLineTool
 id: my-asthonishing-stage-in
 inputs:
   reference:
-    type: string # should type: URL
+    type: Directory # should type: URL
     doc: "A STAC Item to stage" 
     label: "STAC Item URL"
 outputs:
