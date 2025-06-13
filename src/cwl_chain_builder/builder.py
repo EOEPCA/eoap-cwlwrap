@@ -39,7 +39,7 @@ def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Wo
 
     orchestrator = Workflow(id='main',
                             requirements=[ SchemaDefRequirement(types=[ { '$import': 'https://raw.githubusercontent.com/eoap/schemas/main/url.yaml' } ]) ],
-                            inputs=list(map(lambda input: input, workflow_cwl.inputs)),
+                            inputs=[],
                             outputs=list(
                                 map(
                                     lambda output: WorkflowOutputParameter(
@@ -75,6 +75,9 @@ def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Wo
         for input in cwl.inputs:
             # linking step inputs from previous step outputs
             if is_type_assignable(expected_type = Directory, actual_instance = input.type_):
+                if 'app' == step_label:
+                    orchestrator.inputs.append(input)
+
                 if prev_cwl:
                     for previous_output in prev_cwl.outputs:
                         if is_type_assignable(expected_type = Directory, actual_instance = previous_output.type_):
@@ -84,6 +87,8 @@ def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Wo
                         if is_type_assignable(expected_type = Directory, actual_instance = workflow_input.type_):
                             orchestrator.steps[-1].in_.append(WorkflowStepInput(id = input.id, valueFrom = workflow_input.id))
             else:
+                orchestrator.inputs.append(input)
+
                 orchestrator.steps[-1].in_.append(WorkflowStepInput(id = input.id, valueFrom = input.id))
 
         prev_step_label, prev_cwl = step_label, cwl
