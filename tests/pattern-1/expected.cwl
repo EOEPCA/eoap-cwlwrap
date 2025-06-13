@@ -67,7 +67,7 @@ $graph:
         - staged
 
     app:
-      run: pattern-1.cwl
+      run: workflow.cwl
       in:
         item: stage_in/staged
         aoi: aoi
