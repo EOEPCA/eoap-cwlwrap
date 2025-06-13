@@ -18,6 +18,10 @@ import click
 import sys
 import uuid
 
+def is_type_assignable(type: Any) -> bool:
+    
+    return false
+
 def build_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Workflow:
     inputs = []
     outputs = []
@@ -25,28 +29,31 @@ def build_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Workflow:
 
     steps_labels = ['stage_in', 'app', 'stage_out']
 
-    # inputs
     for i, cwl in enumerate([stage_in_cwl, workflow_cwl, stage_out_cwl]):
-        for input in cwl.inputs:
-            inputs.append(WorkflowInputParameter(id = input.id,
-                                                 type_ = input.type_,
-                                                 label = input.label,
-                                                 secondaryFiles = input.secondaryFiles,
-                                                 streamable = input.streamable,
-                                                 doc = input.doc,
-                                                 format = input.format,
-                                                 loadContents = getattr(input, 'loadContents', None),
-                                                 loadListing = getattr(input, 'loadListing', None),
-                                                 default = input.default,
-                                                 inputBinding = input.inputBinding,
-                                                 extension_fields = input.extension_fields,
-                                                 loadingOptions = input.loadingOptions))
-
         # steps
-        steps.append(WorkflowStep(id = steps_labels[i],
-                                  in_= [],
-                                  out = list(map(lambda out: out.id, cwl.outputs)),
-                                  run = cwl.id))
+        step = WorkflowStep(id = steps_labels[i],
+                            in_= [],
+                            out = list(map(lambda out: out.id, cwl.outputs)),
+                            run = cwl.id)
+        steps.append(step)
+
+        # inputs
+        for input in cwl.inputs:
+            current_input = WorkflowInputParameter(id = input.id,
+                                                   type_ = input.type_,
+                                                   label = input.label,
+                                                   secondaryFiles = input.secondaryFiles,
+                                                   streamable = input.streamable,
+                                                   doc = input.doc,
+                                                   format = input.format,
+                                                   loadContents = getattr(input, 'loadContents', None),
+                                                   loadListing = getattr(input, 'loadListing', None),
+                                                   default = input.default,
+                                                   inputBinding = input.inputBinding,
+                                                   extension_fields = input.extension_fields,
+                                                   loadingOptions = input.loadingOptions)
+
+            inputs.append(current_input)
 
     # outputs
     for output in stage_out_cwl.outputs:

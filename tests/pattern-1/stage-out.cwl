@@ -26,7 +26,7 @@ outputs:
   s3_catalog_output:
     outputBinding:
       outputEval: ${  return "s3://" + inputs.s3_bucket + "/" + inputs.sub_path + "/catalog.json"; }
-    type: string
+    type: Directory
 baseCommand:
   - python
   - stage.py
