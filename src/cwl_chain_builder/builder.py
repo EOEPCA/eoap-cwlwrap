@@ -18,6 +18,7 @@ from cwl_utils.parser.cwl_v1_2 import ( CommandInputRecordSchema,
                                         WorkflowOutputParameter,
                                         WorkflowStep,
                                         WorkflowStepInput )
+from builtins import isinstance
 from loguru import logger
 from pathlib import Path
 from ruamel.yaml import YAML
@@ -25,7 +26,6 @@ from typing import Any
 import click
 import sys
 import uuid
-from builtins import isinstance
 
 # TODO improve it
 def is_directory_type(actual_instance: Any) -> bool:
