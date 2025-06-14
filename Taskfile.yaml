@@ -21,6 +21,7 @@ tasks:
       --workflow-id water-bodies-detection \
       --stage-out {{.PATTERN}}/stage-out.cwl \
       --output {{.PATTERN}}/current.cwl
+    - cwltool --validate {{.PATTERN}}/current.cwl
 
   execute_all:
     cmds:
