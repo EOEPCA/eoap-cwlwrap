@@ -13,6 +13,7 @@ from cwl_utils.parser.cwl_v1_2 import ( CommandInputRecordSchema,
                                         Directory,
                                         LoadingOptions,
                                         SchemaDefRequirement,
+                                        SubworkflowFeatureRequirement,
                                         Workflow,
                                         WorkflowInputParameter,
                                         WorkflowOutputParameter,
@@ -39,7 +40,10 @@ def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Wo
 
     orchestrator = Workflow(
         id='main',
-        requirements=[ SchemaDefRequirement(types=[ { '$import': 'https://raw.githubusercontent.com/eoap/schemas/main/url.yaml' } ]) ],
+        requirements=[
+            SubworkflowFeatureRequirement(),
+            SchemaDefRequirement(types=[ { '$import': 'https://raw.githubusercontent.com/eoap/schemas/main/url.yaml' } ])
+        ],
         inputs=[],
         outputs=[],
         steps=[]
