@@ -53,7 +53,7 @@ def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Wo
                 id = step_label,
                 in_ = [],
                 out = list(map(lambda out: out.id, cwl.outputs)),
-                run = cwl.id
+                run = f"#{cwl.id}"
             )
         )
 
@@ -140,7 +140,7 @@ def clean_workflow(workflow):
                 step_outs[i] = step_out.split('/')[-1]
 
             if hasattr(step, 'run'):
-                step.run = step.run.split('#')[-1]
+                step.run = f"#{step.run.split('#')[-1]}"
 
 def load_workflow(path: str) -> Any:
     with open(path, 'r') as f:
@@ -202,7 +202,12 @@ def main(stage_in,
     yaml = YAML()
 
     with output_path.open("w") as f:
-        yaml.dump(save(main_workflow), f)
+        yaml.dump(
+            save(
+                val=main_workflow,
+                relative_uris=False
+            ),
+        f)
 
     logger.info(f"Raw workflow written to: {output_path}")
 
