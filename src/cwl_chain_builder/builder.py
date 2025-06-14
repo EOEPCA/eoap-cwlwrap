@@ -28,11 +28,11 @@ import uuid
 from builtins import isinstance
 
 # TODO improve it
-def is_type_assignable(expected_type: Any, actual_instance: Any) -> bool:
-    if isinstance(actual_instance, str) and actual_instance == expected_type.__name__:
+def is_directory_type(actual_instance: Any) -> bool:
+    if isinstance(actual_instance, str) and actual_instance == Directory.__name__:
         return True
 
-    return isinstance(actual_instance, expected_type);
+    return isinstance(actual_instance, Directory);
 
 def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Workflow:
     loadingOptions = LoadingOptions()
@@ -40,23 +40,7 @@ def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Wo
     orchestrator = Workflow(id='main',
                             requirements=[ SchemaDefRequirement(types=[ { '$import': 'https://raw.githubusercontent.com/eoap/schemas/main/url.yaml' } ]) ],
                             inputs=[],
-                            outputs=list(
-                                map(
-                                    lambda output: WorkflowOutputParameter(
-                                        id=output.id,
-                                        outputSource=f"stage_out/{output.id}",
-                                        type_=output.type_,
-                                        label=output.label,
-                                        secondaryFiles=output.secondaryFiles,
-                                        streamable=output.streamable,
-                                        doc=output.doc,
-                                        format=output.format,
-                                        extension_fields=output.extension_fields,
-                                        loadingOptions=loadingOptions,
-                                    ),
-                                    stage_out_cwl.outputs
-                                )
-                            ),
+                            outputs=[],
                             steps=[])
 
     # steps
@@ -74,17 +58,17 @@ def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Wo
         # inputs
         for input in cwl.inputs:
             # linking step inputs from previous step outputs
-            if is_type_assignable(expected_type = Directory, actual_instance = input.type_):
+            if is_directory_type(actual_instance = input.type_):
                 if 'app' == step_label:
                     orchestrator.inputs.append(input)
 
                 if prev_cwl:
                     for previous_output in prev_cwl.outputs:
-                        if is_type_assignable(expected_type = Directory, actual_instance = previous_output.type_):
+                        if is_directory_type(actual_instance = previous_output.type_):
                             orchestrator.steps[-1].in_.append(WorkflowStepInput(id = input.id, valueFrom = f"{prev_step_label}/{previous_output.id}"))
                 else:
                     for workflow_input in workflow_cwl.inputs:
-                        if is_type_assignable(expected_type = Directory, actual_instance = workflow_input.type_):
+                        if is_directory_type(actual_instance = workflow_input.type_):
                             orchestrator.steps[-1].in_.append(WorkflowStepInput(id = input.id, valueFrom = workflow_input.id))
             else:
                 orchestrator.inputs.append(input)
@@ -92,6 +76,26 @@ def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Wo
                 orchestrator.steps[-1].in_.append(WorkflowStepInput(id = input.id, valueFrom = input.id))
 
         prev_step_label, prev_cwl = step_label, cwl
+
+    # outputs
+    for app_output in workflow_cwl.outputs:
+        if is_directory_type(app_output.type_):
+            for stage_out_output in stage_out_cwl.outputs:
+                if is_directory_type(stage_out_output.type_):
+                    orchestrator.outputs.append(
+                        WorkflowOutputParameter(
+                            id=app_output.id,
+                            type_=app_output.type_,
+                            outputSource=[f"stage_out/{stage_out_output.id}"],
+                            label=app_output.label,
+                            secondaryFiles=app_output.secondaryFiles,
+                            streamable=app_output.streamable,
+                            doc=app_output.doc,
+                            format=app_output.format,
+                            extension_fields=app_output.extension_fields,
+                            loadingOptions=loadingOptions
+                        )
+                    )
 
     return orchestrator
 
