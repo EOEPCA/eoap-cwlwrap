@@ -177,12 +177,12 @@ def main(stage_in,
          workflow_id,
          stage_out,
          output):
-    stage_in_cwl = load_workflow(path = stage_in)
+    stage_in_cwl = load_workflow(path=stage_in)
 
-    workflows_cwl = load_workflow(path = workflow)
-    workflow_cwl = search_workflow(workflow_id = workflow_id, workflow = workflows_cwl)
+    workflows_cwl = load_workflow(path=workflow)
+    workflow_cwl = search_workflow(workflow_id=workflow_id, workflow=workflows_cwl)
 
-    stage_out_cwl = load_workflow(path = stage_out)
+    stage_out_cwl = load_workflow(path=stage_out)
 
     orchestrator = build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl)
 
