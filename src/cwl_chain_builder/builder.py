@@ -36,6 +36,8 @@ def is_directory_type(actual_instance: Any) -> bool:
     return isinstance(actual_instance, Directory);
 
 def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Workflow:
+    logger.info(f"Building the CWL Orchestrator Workflow where stage_in: {stage_in_cwl.id}, app: {workflow_cwl.id}, stage_out: {stage_out_cwl.id}...")
+
     loadingOptions = LoadingOptions()
 
     orchestrator = Workflow(
@@ -118,6 +120,8 @@ def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Wo
                         )
                     )
 
+    logger.info(f"CWL Orchestrator Workflow successfully built!")
+
     return orchestrator
 
 def clean_workflow(workflow):
@@ -147,16 +151,20 @@ def clean_workflow(workflow):
                 step.run = f"#{step.run.split('#')[-1]}"
 
 def load_workflow(path: str) -> Any:
-    with open(path, 'r') as f:
-        content = f.read()
+    logger.info(f"Loading CWL document from {path}...")
     workflow = load_document_by_uri(path = path,
                                     loadingOptions = LoadingOptions(),
                                     load_all = True)
+
+    logger.info(f"CWL document successfully loaded from {path}! Now dereferencing the FQNs...")
+
     if isinstance(workflow, list):
         for wf in workflow:
             clean_workflow(wf)
     else:
         clean_workflow(workflow)
+
+    logger.info(f"CWL document successfully dereferenced!")
 
     return workflow
 
