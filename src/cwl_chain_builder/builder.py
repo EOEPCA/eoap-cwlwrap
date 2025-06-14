@@ -37,11 +37,13 @@ def is_directory_type(actual_instance: Any) -> bool:
 def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Workflow:
     loadingOptions = LoadingOptions()
 
-    orchestrator = Workflow(id='main',
-                            requirements=[ SchemaDefRequirement(types=[ { '$import': 'https://raw.githubusercontent.com/eoap/schemas/main/url.yaml' } ]) ],
-                            inputs=[],
-                            outputs=[],
-                            steps=[])
+    orchestrator = Workflow(
+        id='main',
+        requirements=[ SchemaDefRequirement(types=[ { '$import': 'https://raw.githubusercontent.com/eoap/schemas/main/url.yaml' } ]) ],
+        inputs=[],
+        outputs=[],
+        steps=[]
+    )
 
     # steps
     prev_step_label, prev_cwl = None, None
@@ -65,15 +67,30 @@ def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Wo
                 if prev_cwl:
                     for previous_output in prev_cwl.outputs:
                         if is_directory_type(actual_instance = previous_output.type_):
-                            orchestrator.steps[-1].in_.append(WorkflowStepInput(id = input.id, valueFrom = f"{prev_step_label}/{previous_output.id}"))
+                            orchestrator.steps[-1].in_.append(
+                                WorkflowStepInput(
+                                    id=input.id,
+                                    valueFrom=f"{prev_step_label}/{previous_output.id}"
+                                )
+                            )
                 else:
                     for workflow_input in workflow_cwl.inputs:
                         if is_directory_type(actual_instance = workflow_input.type_):
-                            orchestrator.steps[-1].in_.append(WorkflowStepInput(id = input.id, valueFrom = workflow_input.id))
+                            orchestrator.steps[-1].in_.append(
+                                WorkflowStepInput(
+                                    id=input.id,
+                                    valueFrom=workflow_input.id
+                                )
+                            )
             else:
                 orchestrator.inputs.append(input)
 
-                orchestrator.steps[-1].in_.append(WorkflowStepInput(id = input.id, valueFrom = input.id))
+                orchestrator.steps[-1].in_.append(
+                    WorkflowStepInput(
+                        id=input.id,
+                        valueFrom=input.id
+                    )
+                )
 
         prev_step_label, prev_cwl = step_label, cwl
 
