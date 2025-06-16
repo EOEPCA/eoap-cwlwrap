@@ -8,7 +8,9 @@ You should have received a copy of the license along with this work.
 If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
-from cwl_utils.parser import load_document_by_uri, save
+from cwltool.load_tool import default_loader
+from cwltool.update import update
+from cwl_utils.parser import load_document_by_yaml, save
 from cwl_utils.parser.cwl_v1_2 import ( CommandInputRecordSchema,
                                         Directory,
                                         LoadingOptions,
@@ -26,6 +28,8 @@ from typing import Any
 import click
 import sys
 import uuid
+
+TARGET_CWL_VERSION = 'v1.2'
 
 # TODO improve it
 def is_directory_type(actual_instance: Any) -> bool:
@@ -168,13 +172,32 @@ def clean_workflow(workflow):
             if hasattr(step, 'run'):
                 step.run = f"#{step.run.split('#')[-1]}"
 
-def load_workflow(path: str) -> Any:
+def load_workflow(path: str, yaml) -> Any:
     print(f"Loading CWL document from {path}...")
-    workflow = load_document_by_uri(path = path,
-                                    loadingOptions = LoadingOptions(),
-                                    load_all = True)
 
-    print(f"CWL document successfully loaded from {path}! Now dereferencing the FQNs...")
+    with open(path, 'r') as workflow_stream:
+        raw_workflow = yaml.load(workflow_stream)
+
+    print(f"Raw CWL document successfully loaded from {path}! Now updating the model to v1.2...")
+
+    updated_workflow = update(
+        doc=raw_workflow,
+        loader=default_loader(),
+        baseuri=path,
+        enable_dev=False,
+        metadata={'cwlVersion': TARGET_CWL_VERSION},
+        update_to=TARGET_CWL_VERSION
+    )
+
+    print('Raw CWL document successfully updated! Now converting to the CWL model...')
+
+    workflow = load_document_by_yaml(
+        yaml=updated_workflow,
+        uri=path,
+        load_all=True
+    )
+
+    print('aw CWL document successfully updated! Now dereferencing the FQNs...')
 
     if isinstance(workflow, list):
         for wf in workflow:
@@ -208,12 +231,14 @@ def main(stage_in,
          workflow_id,
          stage_out,
          output):
-    stage_in_cwl = load_workflow(path=stage_in)
+    yaml = YAML()
 
-    workflows_cwl = load_workflow(path=workflow)
+    stage_in_cwl = load_workflow(path=stage_in, yaml=yaml)
+
+    workflows_cwl = load_workflow(path=workflow, yaml=yaml)
     workflow_cwl = search_workflow(workflow_id=workflow_id, workflow=workflows_cwl)
 
-    stage_out_cwl = load_workflow(path=stage_out)
+    stage_out_cwl = load_workflow(path=stage_out, yaml=yaml)
 
     orchestrator = build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl)
 
@@ -229,8 +254,6 @@ def main(stage_in,
 
     output_path = Path(output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-
-    yaml = YAML()
 
     with output_path.open("w") as f:
         yaml.dump(

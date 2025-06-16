@@ -10,7 +10,8 @@ authors = [{ name = "Simone Tripodi", email = "simone.tripodi@terradue.com" }]
 dependencies = [
     "click>=8.0",
     "cwl-utils>=0.38",
-    "ruamel.yaml>=0.18"
+    "ruamel.yaml>=0.18",
+    "cwltool>=3.1.20250110105449"
 ]
 
 [project.scripts]
