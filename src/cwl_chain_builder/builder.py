@@ -11,7 +11,8 @@ If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 from cwltool.load_tool import default_loader
 from cwltool.update import update
 from cwl_utils.parser import load_document_by_yaml, save
-from cwl_utils.parser.cwl_v1_2 import ( CommandInputRecordSchema,
+from cwl_utils.parser.cwl_v1_2 import ( CommandInputArraySchema,
+                                        CommandOutputArraySchema,
                                         Directory,
                                         LoadingOptions,
                                         SchemaDefRequirement,
@@ -29,6 +30,51 @@ import sys
 import uuid
 
 TARGET_CWL_VERSION = 'v1.2'
+
+def are_cwl_types_identical(expected: Any, actual: Any) -> bool:
+    """
+    Recursively checks if two CWL types from cwl_utils.parser are identical in structure.
+    
+    Handles:
+    - Named types (e.g., Directory, File)
+    - Array schemas (multi-dimensional)
+    - Unions (lists of types)
+
+    :param expected: First CWL type
+    :param actual: Second CWL type
+    :return: True if structurally and semantically identical, else False
+    """
+
+    # Direct object identity
+    if expected is actual:
+        return True
+
+    # Both are lists (i.e., union types)
+    if isinstance(expected, list) and isinstance(actual, list):
+        # Must match in length and all types
+        return (
+            len(expected) == len(actual)
+            and all(any(are_cwl_types_identical(a, b) for b in actual) for a in expected)
+        )
+
+    # One is list, one is not: can't be identical
+    if isinstance(expected, list) != isinstance(actual, list):
+        return False
+
+    # Array types (CommandInputArraySchema or CommandOutputArraySchema)
+    array_types = (CommandInputArraySchema, CommandOutputArraySchema)
+    if isinstance(expected, array_types) and isinstance(actual, array_types):
+        return are_cwl_types_identical(expected.items, actual.items)
+
+    # Class or base types (e.g., Directory, File)
+    if isinstance(expected, type) and isinstance(actual, type):
+        return expected == actual
+
+    # If one is class, the other is instance of that class
+    if isinstance(expected, actual.__class__) and isinstance(actual, expected.__class__):
+        return type(expected) == type(actual)
+
+    return False
 
 def is_directory_type(actual_instance: Any) -> bool:
     """
@@ -147,7 +193,7 @@ def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Wo
     for app_output in workflow_cwl.outputs:
         if is_directory_type(app_output.type_):
             for stage_out_output in stage_out_cwl.outputs:
-                if is_directory_type(stage_out_output.type_):
+                if are_cwl_types_identical(app_output.type_, stage_out_output.type_):
                     orchestrator.outputs.append(
                         WorkflowOutputParameter(
                             id=app_output.id,
@@ -163,7 +209,7 @@ def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Wo
                         )
                     )
 
-                    print(f"  Output '{app_output.id}' linked to 'stage_out/{stage_out_output.id}'")
+                    print(f"* Output '{app_output.id}' linked to 'stage_out/{stage_out_output.id}'")
 
     print('------------------------------------------------------------------------')
 
