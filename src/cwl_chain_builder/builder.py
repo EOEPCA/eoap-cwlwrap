@@ -20,7 +20,6 @@ from cwl_utils.parser.cwl_v1_2 import ( CommandInputRecordSchema,
                                         WorkflowStep,
                                         WorkflowStepInput )
 from builtins import isinstance
-from loguru import logger
 from pathlib import Path
 from ruamel.yaml import YAML
 from typing import Any
@@ -36,7 +35,7 @@ def is_directory_type(actual_instance: Any) -> bool:
     return isinstance(actual_instance, Directory);
 
 def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Workflow:
-    logger.info(f"Building the CWL Orchestrator Workflow where stage_in: {stage_in_cwl.id}, app: {workflow_cwl.id}, stage_out: {stage_out_cwl.id}...")
+    print(f"Building the CWL Orchestrator Workflow...")
 
     loadingOptions = LoadingOptions()
 
@@ -54,6 +53,8 @@ def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Wo
     # steps
     prev_step_label, prev_cwl = None, None
     for step_label, cwl in { 'stage_in': stage_in_cwl, 'app': workflow_cwl, 'stage_out': stage_out_cwl }.items():
+        print(f"New step '{cwl.id}' as '{step_label}' identified")
+
         orchestrator.steps.append(
             WorkflowStep(
                 id = step_label,
@@ -63,11 +64,16 @@ def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Wo
             )
         )
 
+        print('Analyzing related inputs:')
+
         # inputs
         for input in cwl.inputs:
+            print(f"* {cwl.id}/{input.id}: {input.type_}")
+
             # linking step inputs from previous step outputs
             if is_directory_type(actual_instance = input.type_):
                 if 'app' == step_label:
+                    print('  Recognized as part of the main Workflow inputs list')
                     orchestrator.inputs.append(input)
 
                 if prev_cwl:
@@ -79,6 +85,8 @@ def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Wo
                                     valueFrom=f"{prev_step_label}/{previous_output.id}"
                                 )
                             )
+
+                            print(f"  Linked to the output of the previous step: {prev_step_label}/{previous_output.id}")
                 else:
                     for workflow_input in workflow_cwl.inputs:
                         if is_directory_type(actual_instance = workflow_input.type_):
@@ -88,6 +96,8 @@ def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Wo
                                     valueFrom=workflow_input.id
                                 )
                             )
+
+                            print(f"  Linked to the {orchestrator.steps[-1].id}/{workflow_input.id} input")
             else:
                 orchestrator.inputs.append(input)
 
@@ -98,7 +108,13 @@ def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Wo
                     )
                 )
 
+                print(f"  Linked to the {orchestrator.steps[-1].id}/{input.id} input")
+
         prev_step_label, prev_cwl = step_label, cwl
+
+    print('------------------------------------------------------------------------')
+
+    print('Building main Wokflow outputs:')
 
     # outputs
     for app_output in workflow_cwl.outputs:
@@ -120,7 +136,9 @@ def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Wo
                         )
                     )
 
-    logger.info(f"CWL Orchestrator Workflow successfully built!")
+                    print(f"  Output '{app_output.id}' linked to 'stage_out/{stage_out_output.id}'")
+
+    print('------------------------------------------------------------------------')
 
     return orchestrator
 
@@ -151,12 +169,12 @@ def clean_workflow(workflow):
                 step.run = f"#{step.run.split('#')[-1]}"
 
 def load_workflow(path: str) -> Any:
-    logger.info(f"Loading CWL document from {path}...")
+    print(f"Loading CWL document from {path}...")
     workflow = load_document_by_uri(path = path,
                                     loadingOptions = LoadingOptions(),
                                     load_all = True)
 
-    logger.info(f"CWL document successfully loaded from {path}! Now dereferencing the FQNs...")
+    print(f"CWL document successfully loaded from {path}! Now dereferencing the FQNs...")
 
     if isinstance(workflow, list):
         for wf in workflow:
@@ -164,7 +182,8 @@ def load_workflow(path: str) -> Any:
     else:
         clean_workflow(workflow)
 
-    logger.info(f"CWL document successfully dereferenced!")
+    print(f"CWL document successfully dereferenced!")
+    print('------------------------------------------------------------------------')
 
     return workflow
 
@@ -221,7 +240,9 @@ def main(stage_in,
             ),
         f)
 
-    logger.info(f"Raw workflow written to: {output_path}")
+    print('BUILD SUCCESS')
+    print(f"Workflow written to: {output_path}")
+    print('------------------------------------------------------------------------')
 
 if __name__ == "__main__":
     main()
