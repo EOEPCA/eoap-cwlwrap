@@ -13,6 +13,7 @@ from cwltool.update import update
 from cwl_utils.parser import load_document_by_yaml, save
 from cwl_utils.parser.cwl_v1_2 import ( CommandInputRecordSchema,
                                         Directory,
+                                        InputArraySchema,
                                         LoadingOptions,
                                         SchemaDefRequirement,
                                         SubworkflowFeatureRequirement,
@@ -21,7 +22,6 @@ from cwl_utils.parser.cwl_v1_2 import ( CommandInputRecordSchema,
                                         WorkflowOutputParameter,
                                         WorkflowStep,
                                         WorkflowStepInput )
-from builtins import isinstance
 from pathlib import Path
 from ruamel.yaml import YAML
 from typing import Any
@@ -33,10 +33,11 @@ TARGET_CWL_VERSION = 'v1.2'
 
 # TODO improve it
 def is_directory_type(actual_instance: Any) -> bool:
-    if isinstance(actual_instance, str) and actual_instance == Directory.__name__:
-        return True
+    if isinstance(actual_instance, InputArraySchema):
+        return is_directory_type(actual_instance.items)
 
-    return isinstance(actual_instance, Directory);
+    return isinstance(actual_instance, Directory) or isinstance(actual_instance, str) and actual_instance == Directory.__name__
+
 
 def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Workflow:
     print(f"Building the CWL Orchestrator Workflow...")
