@@ -31,13 +31,32 @@ import uuid
 
 TARGET_CWL_VERSION = 'v1.2'
 
-# TODO improve it
 def is_directory_type(actual_instance: Any) -> bool:
-    if isinstance(actual_instance, InputArraySchema):
+    """
+    Recursively check if a CWL v1.2 type is or contains a Directory,
+    including unions and multi-dimensional arrays.
+    
+    :param typ: A CWLType (or nested list of types) from cwl_utils.parser
+    :return: True if the type (even deeply nested) is a Directory, else False
+    """
+
+    # Case 1: Direct match with Directory class
+    if actual_instance == Directory or isinstance(actual_instance, Directory):
+        return True
+
+    # Case 2: Union type (list of types)
+    if isinstance(actual_instance, list):
+        return any(is_directory_type(t) for t in actual_instance)
+
+    # Case 3: Array type (recursive item type check)
+    if hasattr(actual_instance, "items"):
         return is_directory_type(actual_instance.items)
 
-    return isinstance(actual_instance, Directory) or isinstance(actual_instance, str) and actual_instance == Directory.__name__
+    # Case 4: Possibly a CWLType or raw class — extract and test
+    if isinstance(actual_instance, type):
+        return issubclass(actual_instance, Directory)
 
+    return False
 
 def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Workflow:
     print(f"Building the CWL Orchestrator Workflow...")
