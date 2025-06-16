@@ -13,7 +13,6 @@ from cwltool.update import update
 from cwl_utils.parser import load_document_by_yaml, save
 from cwl_utils.parser.cwl_v1_2 import ( CommandInputRecordSchema,
                                         Directory,
-                                        InputArraySchema,
                                         LoadingOptions,
                                         SchemaDefRequirement,
                                         SubworkflowFeatureRequirement,
@@ -39,6 +38,10 @@ def is_directory_type(actual_instance: Any) -> bool:
     :param typ: A CWLType (or nested list of types) from cwl_utils.parser
     :return: True if the type (even deeply nested) is a Directory, else False
     """
+
+    # case 0: Direct match with Directory class name
+    if isinstance(actual_instance, str) and actual_instance == Directory.__name__:
+        return True
 
     # Case 1: Direct match with Directory class
     if actual_instance == Directory or isinstance(actual_instance, Directory):
