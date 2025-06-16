@@ -202,7 +202,7 @@ def search_workflow(workflow_id: str, workflow: Any):
 @click.option("--workflow", type=click.Path(exists=True), help="The CWL workflow file")
 @click.option("--workflow-id", help="ID of the workflow")
 @click.option("--stage-out", type=click.Path(exists=True), help="The CWL stage-out file")
-@click.option("--output", "-o", type=click.Path(), required=True, help="Output file path")
+@click.option("--output", type=click.Path(), required=True, help="Output file path")
 def main(stage_in,
          workflow,
          workflow_id,
