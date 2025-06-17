@@ -10,7 +10,7 @@ tasks:
     cmds:
     - rm -rf build
     - rm -rf cwl_chain_builder.egg-info
-    - pip install .
+    - pip install -e .
 
   execute:
     cmds:

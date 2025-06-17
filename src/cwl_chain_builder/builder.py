@@ -8,13 +8,10 @@ You should have received a copy of the license along with this work.
 If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
-from cwltool.load_tool import default_loader
-from cwltool.update import update
-from cwl_utils.parser import load_document_by_yaml, save
-from cwl_utils.parser.cwl_v1_2 import ( CommandInputArraySchema,
-                                        CommandOutputArraySchema,
-                                        Directory,
-                                        LoadingOptions,
+from .loader import load_workflow
+from .types import are_cwl_types_identical, is_directory_type
+from cwl_utils.parser import save
+from cwl_utils.parser.cwl_v1_2 import ( LoadingOptions,
                                         SchemaDefRequirement,
                                         SubworkflowFeatureRequirement,
                                         Workflow,
@@ -22,92 +19,17 @@ from cwl_utils.parser.cwl_v1_2 import ( CommandInputArraySchema,
                                         WorkflowOutputParameter,
                                         WorkflowStep,
                                         WorkflowStepInput )
+
 from pathlib import Path
 from ruamel.yaml import YAML
 from typing import Any
 import click
 import sys
-import uuid
 
-TARGET_CWL_VERSION = 'v1.2'
-
-def are_cwl_types_identical(expected: Any, actual: Any) -> bool:
-    """
-    Recursively checks if two CWL types from cwl_utils.parser are identical in structure.
-    
-    Handles:
-    - Named types (e.g., Directory, File)
-    - Array schemas (multi-dimensional)
-    - Unions (lists of types)
-
-    :param expected: First CWL type
-    :param actual: Second CWL type
-    :return: True if structurally and semantically identical, else False
-    """
-
-    # Direct object identity
-    if expected is actual:
-        return True
-
-    # Both are lists (i.e., union types)
-    if isinstance(expected, list) and isinstance(actual, list):
-        # Must match in length and all types
-        return (
-            len(expected) == len(actual)
-            and all(any(are_cwl_types_identical(a, b) for b in actual) for a in expected)
-        )
-
-    # One is list, one is not: can't be identical
-    if isinstance(expected, list) != isinstance(actual, list):
-        return False
-
-    # Array types (CommandInputArraySchema or CommandOutputArraySchema)
-    array_types = (CommandInputArraySchema, CommandOutputArraySchema)
-    if isinstance(expected, array_types) and isinstance(actual, array_types):
-        return are_cwl_types_identical(expected.items, actual.items)
-
-    # Class or base types (e.g., Directory, File)
-    if isinstance(expected, type) and isinstance(actual, type):
-        return expected == actual
-
-    # If one is class, the other is instance of that class
-    if isinstance(expected, actual.__class__) and isinstance(actual, expected.__class__):
-        return type(expected) == type(actual)
-
-    return False
-
-def is_directory_type(actual_instance: Any) -> bool:
-    """
-    Recursively check if a CWL v1.2 type is or contains a Directory,
-    including unions and multi-dimensional arrays.
-    
-    :param typ: A CWLType (or nested list of types) from cwl_utils.parser
-    :return: True if the type (even deeply nested) is a Directory, else False
-    """
-
-    # case 0: Direct match with Directory class name
-    if isinstance(actual_instance, str) and actual_instance == Directory.__name__:
-        return True
-
-    # Case 1: Direct match with Directory class
-    if actual_instance == Directory or isinstance(actual_instance, Directory):
-        return True
-
-    # Case 2: Union type (list of types)
-    if isinstance(actual_instance, list):
-        return any(is_directory_type(t) for t in actual_instance)
-
-    # Case 3: Array type (recursive item type check)
-    if hasattr(actual_instance, "items"):
-        return is_directory_type(actual_instance.items)
-
-    # Case 4: Possibly a CWLType or raw class — extract and test
-    if isinstance(actual_instance, type):
-        return issubclass(actual_instance, Directory)
-
-    return False
-
-def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Workflow:
+def build_orchestrator_workflow(
+        stage_in_cwl: Any,
+        workflow_cwl: Any,
+        stage_out_cwl: Any) -> Any:
     print(f"Building the CWL Orchestrator Workflow...")
 
     loadingOptions = LoadingOptions()
@@ -214,70 +136,6 @@ def build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl) -> Wo
     print('------------------------------------------------------------------------')
 
     return orchestrator
-
-def clean_workflow(workflow):
-    workflow.id = workflow.id.split('#')[-1]
-
-    for parameters in [ workflow.inputs, workflow.outputs ]:
-        for parameter in parameters:
-            parameter.id = parameter.id.split('/')[-1]
-
-            if hasattr(parameter, 'outputSource'):
-                for i, output_source in enumerate(parameter.outputSource):
-                    parameter.outputSource[i] = output_source.split(f"{workflow.id}/")[-1]
-
-    if hasattr(workflow, 'steps'):
-        for step in workflow.steps:
-            step.id = step.id.split(f"{workflow.id}/")[-1]
-
-            for step_in in getattr(step, 'in_', []):
-                step_in.id = step_in.id.split('/')[-1]
-                step_in.source = step_in.source.split('/')[-1]
-
-            step_outs = getattr(step, 'out', [])
-            for i, step_out in enumerate(step_outs):
-                step_outs[i] = step_out.split('/')[-1]
-
-            if hasattr(step, 'run'):
-                step.run = f"#{step.run.split('#')[-1]}"
-
-def load_workflow(path: str, yaml) -> Any:
-    print(f"Loading CWL document from {path}...")
-
-    with open(path, 'r') as workflow_stream:
-        raw_workflow = yaml.load(workflow_stream)
-
-    print(f"Raw CWL document successfully loaded from {path}! Now updating the model to v1.2...")
-
-    updated_workflow = update(
-        doc=raw_workflow,
-        loader=default_loader(),
-        baseuri=path,
-        enable_dev=False,
-        metadata={'cwlVersion': TARGET_CWL_VERSION},
-        update_to=TARGET_CWL_VERSION
-    )
-
-    print('Raw CWL document successfully updated! Now converting to the CWL model...')
-
-    workflow = load_document_by_yaml(
-        yaml=updated_workflow,
-        uri=path,
-        load_all=True
-    )
-
-    print('aw CWL document successfully updated! Now dereferencing the FQNs...')
-
-    if isinstance(workflow, list):
-        for wf in workflow:
-            clean_workflow(wf)
-    else:
-        clean_workflow(workflow)
-
-    print(f"CWL document successfully dereferenced!")
-    print('------------------------------------------------------------------------')
-
-    return workflow
 
 def search_workflow(workflow_id: str, workflow: Any):
     if isinstance(workflow, list):
