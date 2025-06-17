@@ -8,14 +8,14 @@ You should have received a copy of the license along with this work.
 If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
-TARGET_CWL_VERSION = 'v1.2'
-
 from cwl_utils.parser import load_document_by_yaml, save
 from cwltool.load_tool import default_loader
 from cwltool.update import update
 from ruamel.yaml import YAML
 from pathlib import Path
 from typing import Any
+
+TARGET_CWL_VERSION = 'v1.2'
 
 yaml = YAML()
 
