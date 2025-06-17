@@ -10,11 +10,14 @@ If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 
 TARGET_CWL_VERSION = 'v1.2'
 
-from cwl_utils.parser import load_document_by_yaml
+from cwl_utils.parser import load_document_by_yaml, save
 from cwltool.load_tool import default_loader
 from cwltool.update import update
 from ruamel.yaml import YAML
+from pathlib import Path
 from typing import Any
+
+yaml = YAML()
 
 def clean_workflow(workflow: Any):
     workflow.id = workflow.id.split('#')[-1]
@@ -42,7 +45,7 @@ def clean_workflow(workflow: Any):
             if hasattr(step, 'run'):
                 step.run = f"#{step.run.split('#')[-1]}"
 
-def load_workflow(path: str, yaml: YAML) -> Any:
+def load_workflow(path: str) -> Any:
     print(f"Loading CWL document from {path}...")
 
     with open(path, 'r') as workflow_stream:
@@ -79,3 +82,19 @@ def load_workflow(path: str, yaml: YAML) -> Any:
     print('------------------------------------------------------------------------')
 
     return workflow
+
+def dump_workflow(workflow: Any, output: str):
+    print(f"Saving the new Workflow to {output}...")
+
+    output_path = Path(output)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    with output_path.open("w") as f:
+        yaml.dump(
+            save(
+                val=workflow,
+                relative_uris=False
+            ),
+        f)
+
+    print(f"New Workflow successfully saved to {output}!")

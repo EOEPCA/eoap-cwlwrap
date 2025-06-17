@@ -8,9 +8,8 @@ You should have received a copy of the license along with this work.
 If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
-from .loader import load_workflow
+from .loader import load_workflow, dump_workflow
 from .types import are_cwl_types_identical, is_directory_type
-from cwl_utils.parser import save
 from cwl_utils.parser.cwl_v1_2 import ( LoadingOptions,
                                         SchemaDefRequirement,
                                         SubworkflowFeatureRequirement,
@@ -19,12 +18,8 @@ from cwl_utils.parser.cwl_v1_2 import ( LoadingOptions,
                                         WorkflowOutputParameter,
                                         WorkflowStep,
                                         WorkflowStepInput )
-
-from pathlib import Path
-from ruamel.yaml import YAML
 from typing import Any
 import click
-import sys
 
 def build_orchestrator_workflow(
         stage_in_cwl: Any,
@@ -158,14 +153,12 @@ def main(stage_in,
          workflow_id,
          stage_out,
          output):
-    yaml = YAML()
+    stage_in_cwl = load_workflow(path=stage_in)
 
-    stage_in_cwl = load_workflow(path=stage_in, yaml=yaml)
-
-    workflows_cwl = load_workflow(path=workflow, yaml=yaml)
+    workflows_cwl = load_workflow(path=workflow)
     workflow_cwl = search_workflow(workflow_id=workflow_id, workflow=workflows_cwl)
 
-    stage_out_cwl = load_workflow(path=stage_out, yaml=yaml)
+    stage_out_cwl = load_workflow(path=stage_out)
 
     orchestrator = build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl)
 
@@ -179,19 +172,9 @@ def main(stage_in,
 
     main_workflow.append(stage_out_cwl)
 
-    output_path = Path(output)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-
-    with output_path.open("w") as f:
-        yaml.dump(
-            save(
-                val=main_workflow,
-                relative_uris=False
-            ),
-        f)
+    dump_workflow(main_workflow, output)
 
     print('BUILD SUCCESS')
-    print(f"Workflow written to: {output_path}")
     print('------------------------------------------------------------------------')
 
 if __name__ == "__main__":
