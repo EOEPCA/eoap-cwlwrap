@@ -70,7 +70,7 @@ def load_workflow(path: str) -> Any:
         load_all=True
     )
 
-    print('aw CWL document successfully updated! Now dereferencing the FQNs...')
+    print('Raw CWL document successfully updated! Now dereferencing the FQNs...')
 
     if isinstance(workflow, list):
         for wf in workflow:
