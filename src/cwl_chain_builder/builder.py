@@ -9,15 +9,19 @@ If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
 from .loader import load_workflow, dump_workflow
-from .types import are_cwl_types_identical, is_directory_type
+from .types import ( append_url_schema_def_requirement,
+                     are_cwl_types_identical,
+                     is_directory_type,
+                     is_url_type,
+                     URL_TYPE )
 from cwl_utils.parser.cwl_v1_2 import ( LoadingOptions,
-                                        SchemaDefRequirement,
                                         SubworkflowFeatureRequirement,
                                         Workflow,
                                         WorkflowInputParameter,
                                         WorkflowOutputParameter,
                                         WorkflowStep,
-                                        WorkflowStepInput )
+                                        WorkflowStepInput,
+                                        WorkflowStepOutput )
 from typing import Any
 import click
 
@@ -32,14 +36,75 @@ def build_orchestrator_workflow(
     orchestrator = Workflow(
         id='main',
         requirements=[
-            SubworkflowFeatureRequirement(),
-            SchemaDefRequirement(types=[ { '$import': 'https://raw.githubusercontent.com/eoap/schemas/main/url.yaml' } ])
+            SubworkflowFeatureRequirement()
         ],
         inputs=[],
         outputs=[],
         steps=[]
     )
 
+    append_url_schema_def_requirement(orchestrator)
+    append_url_schema_def_requirement(workflow_cwl)
+
+    # inputs
+    directories = 0
+    for input in workflow_cwl.inputs:
+        print(f"Analyzing {workflow_cwl.id}/{input.id} input")
+
+        if is_directory_type(input.type_):
+            orchestrator.steps.append(
+                WorkflowStep(
+                    id = f"stage_in_{directories}",
+                    in_ = [],
+                    out = [],
+                    run = f"#{stage_in_cwl.id}"
+                )
+            )
+
+            # Transform the original input Directory type to URL
+            input.type_ = URL_TYPE
+            directories += 1
+
+        orchestrator.inputs.append(input)
+
+    # outputs
+    directories = 0
+    for output in workflow_cwl.outputs:
+        print(f"Analyzing {workflow_cwl.id}/{output.id} output")
+
+        if is_directory_type(output.type_):
+            orchestrator.steps.append(
+                WorkflowStep(
+                    id = f"stage_out_{directories}",
+                    in_ = [],
+                    out = [],
+                    run = f"#{stage_out_cwl.id}"
+                )
+            )
+
+            # Transform the original input Directory type to URL
+            output.type_ = URL_TYPE
+
+            for stage_out_cwl_output in stage_out_cwl.outputs:
+                if are_cwl_types_identical(output.type_, stage_out_cwl_output.type_):
+                    orchestrator.outputs.append(
+                        WorkflowOutputParameter(
+                            id=output.id,
+                            type_=output.type_,
+                            outputSource=[f"stage_out_{directories}/{stage_out_cwl_output.id}"],
+                            label=output.label,
+                            secondaryFiles=output.secondaryFiles,
+                            streamable=output.streamable,
+                            doc=output.doc,
+                            format=output.format,
+                            extension_fields=output.extension_fields,
+                            loadingOptions=loadingOptions
+                        )
+                    )
+
+            directories += 1
+
+    '''
     # steps
     prev_step_label, prev_cwl = None, None
     for step_label, cwl in { 'stage_in': stage_in_cwl, 'app': workflow_cwl, 'stage_out': stage_out_cwl }.items():
@@ -129,7 +194,7 @@ def build_orchestrator_workflow(
                     print(f"* Output '{app_output.id}' linked to 'stage_out/{stage_out_output.id}'")
 
     print('------------------------------------------------------------------------')
-
+    '''
     return orchestrator
 
 def search_workflow(workflow_id: str, workflow: Any):

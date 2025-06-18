@@ -2,9 +2,10 @@ cwlVersion: v1.0
 
 class: CommandLineTool
 id: my-asthonishing-stage-in
+
 inputs:
   reference:
-    type: Directory # should type: URL
+    type: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
     doc: "A STAC Item to stage" 
     label: "STAC Item URL"
   another_input:
@@ -26,6 +27,9 @@ requirements:
   DockerRequirement:
     dockerPull: ghcr.io/eoap/mastering-app-package/stage:1.0.0
   InlineJavascriptRequirement: {}
+  SchemaDefRequirement:
+    types:
+    - $import: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml
   InitialWorkDirRequirement:
     listing:
       - entryname: stage.py

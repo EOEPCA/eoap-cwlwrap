@@ -26,7 +26,7 @@ outputs:
   s3_catalog_output:
     outputBinding:
       outputEval: ${  return "s3://" + inputs.s3_bucket + "/" + inputs.sub_path + "/catalog.json"; }
-    type: Directory
+    type: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
 baseCommand:
   - python
   - stage.py
@@ -34,6 +34,7 @@ arguments:
   - $( inputs.stac_catalog.path )
   - $( inputs.s3_bucket )
   - $( inputs.sub_path )
+  
 requirements:
   DockerRequirement:
     dockerPull: ghcr.io/eoap/mastering-app-package/stage:1.0.0
@@ -45,6 +46,9 @@ requirements:
       aws_region_name: $( inputs.region_name )
       aws_endpoint_url: $( inputs.endpoint_url )
   ResourceRequirement: {}
+  SchemaDefRequirement:
+    types:
+    - $import: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml
   InitialWorkDirRequirement:
     listing:
       - entryname: stage.py

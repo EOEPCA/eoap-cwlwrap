@@ -10,8 +10,28 @@ If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 
 from cwl_utils.parser.cwl_v1_2 import ( Directory,
                                         CommandInputArraySchema,
-                                        CommandOutputArraySchema )
+                                        CommandOutputArraySchema,
+                                        SchemaDefRequirement,
+                                        Workflow )
 from typing import Any
+
+URL_SCHEMA = 'https://raw.githubusercontent.com/eoap/schemas/main/url.yaml'
+URL_TYPE = f"{URL_SCHEMA}#URL"
+URL_SCHEMA_REQUIREMENT = SchemaDefRequirement(types=[ { '$import': URL_SCHEMA } ])
+
+def append_url_schema_def_requirement(workflow_cwl: Workflow):
+    if workflow_cwl.requirements:
+        for requirement in workflow_cwl.requirements:
+            if requirement.class_ == SchemaDefRequirement.__name__:
+                if requirement.types:
+                    requirement.types.append(URL_SCHEMA_REQUIREMENT.types[0])
+                else:
+                    requirement.types = URL_SCHEMA_REQUIREMENT.types
+                return
+
+        workflow_cwl.requirements.append(URL_SCHEMA_REQUIREMENT)
+    else:
+        workflow_cwl.requirements = [ URL_SCHEMA_REQUIREMENT ]
 
 def are_cwl_types_identical(expected: Any, actual: Any) -> bool:
     """
@@ -55,6 +75,29 @@ def are_cwl_types_identical(expected: Any, actual: Any) -> bool:
     # If one is class, the other is instance of that class
     if isinstance(expected, actual.__class__) and isinstance(actual, expected.__class__):
         return type(expected) == type(actual)
+
+    return False
+
+def is_url_type(actual_instance: Any) -> bool:
+    """
+    Recursively check if a CWL v1.2 type is or contains a https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL,
+    including unions and multi-dimensional arrays.
+    
+    :param typ: A CWLType (or nested list of types) from cwl_utils.parser
+    :return: True if the type (even deeply nested) is a https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL, else False
+    """
+
+    # Case 1: Union type (list of types)
+    if isinstance(actual_instance, str) and actual_instance == URL_TYPE:
+        return True
+
+    # Case 2: Union type (list of types)
+    if isinstance(actual_instance, list):
+        return any(is_url_type(t) for t in actual_instance)
+
+    # Case 3: Array type (recursive item type check)
+    if hasattr(actual_instance, "items"):
+        return is_url_type(actual_instance.items)
 
     return False
 
