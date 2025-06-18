@@ -7,6 +7,10 @@ inputs:
     type: Directory # should type: URL
     doc: "A STAC Item to stage" 
     label: "STAC Item URL"
+  another_input:
+    type: string
+    doc: "An additional input for demonstration purposes"
+    label: "Another Input"
 outputs:
   staged:
     type: Directory
@@ -17,6 +21,7 @@ baseCommand:
 - stage.py
 arguments:
 - $( inputs.reference )
+- $( inputs.another_input ) # This is an additional input to demonstrate the use of multiple inputs
 requirements:
   DockerRequirement:
     dockerPull: ghcr.io/eoap/mastering-app-package/stage:1.0.0
