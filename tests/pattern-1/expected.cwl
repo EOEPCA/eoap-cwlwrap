@@ -35,7 +35,10 @@ $graph:
 
     # from stage-in.cwl
     # nothing (this time)
-  
+    another_input: 
+      type: string
+      doc: An additional input for demonstration purposes
+      label: Another Input  
 
     # from stage-out.cwl
     s3_bucket:
@@ -63,6 +66,7 @@ $graph:
       run: stage-in.cwl
       in:
         reference: item
+        another_input: another_input
       out:
         - staged
 
