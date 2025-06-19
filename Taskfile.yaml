@@ -23,7 +23,9 @@ tasks:
       --output {{.PATTERN}}/current.cwl
     - cwltool --validate {{.PATTERN}}/current.cwl
 
-  execute_all:
+  default:
+    deps:
+    - install
     cmds:
     - for:
         var: PATTERNS
@@ -31,16 +33,3 @@ tasks:
       task: execute
       vars:
         PATTERN: "{{.PATTERN}}"
-
-  print_expecteds:
-    cmds:
-    - for:
-        var: PATTERNS
-        as: PATTERN
-      task: print_expected
-      vars:
-        PATTERN: "{{.PATTERN}}"
-
-  print_expected:
-    cmds:
-    - cwltool --pack {{.PATTERN}}/expected.cwl | yq -P 
