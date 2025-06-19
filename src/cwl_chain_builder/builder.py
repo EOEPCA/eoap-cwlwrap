@@ -161,6 +161,8 @@ def build_orchestrator_workflow(
                 )
             )
 
+            print(f"  Connecting 'app/{output.id}' to 'stage_out_{directories}' output...")
+
             orchestrator.outputs.append(
                 next(
                     map(
