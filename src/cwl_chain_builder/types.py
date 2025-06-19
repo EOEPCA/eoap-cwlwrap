@@ -14,6 +14,7 @@ from cwl_utils.parser.cwl_v1_2 import ( Directory,
                                         SchemaDefRequirement,
                                         Workflow )
 from typing import Any
+from builtins import isinstance
 
 URL_SCHEMA = 'https://raw.githubusercontent.com/eoap/schemas/main/url.yaml'
 URL_TYPE = f"{URL_SCHEMA}#URL"
@@ -69,7 +70,7 @@ def are_cwl_types_identical(expected: Any, actual: Any) -> bool:
         return are_cwl_types_identical(expected.items, actual.items)
 
     # Class or base types (e.g., Directory, File)
-    if isinstance(expected, type) and isinstance(actual, type):
+    if isinstance(actual, type(expected)):
         return expected == actual
 
     # If one is class, the other is instance of that class
@@ -78,7 +79,7 @@ def are_cwl_types_identical(expected: Any, actual: Any) -> bool:
 
     return False
 
-def is_url_type(actual_instance: Any) -> bool:
+def is_url_type(typ: Any) -> bool:
     """
     Recursively check if a CWL v1.2 type is or contains a https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL,
     including unions and multi-dimensional arrays.
@@ -88,46 +89,60 @@ def is_url_type(actual_instance: Any) -> bool:
     """
 
     # Case 1: Union type (list of types)
-    if isinstance(actual_instance, str) and actual_instance == URL_TYPE:
+    if isinstance(typ, str) and typ == URL_TYPE:
         return True
 
     # Case 2: Union type (list of types)
-    if isinstance(actual_instance, list):
-        return any(is_url_type(t) for t in actual_instance)
+    if isinstance(typ, list):
+        return any(is_url_type(t) for t in typ)
 
     # Case 3: Array type (recursive item type check)
-    if hasattr(actual_instance, "items"):
-        return is_url_type(actual_instance.items)
+    if hasattr(typ, "items"):
+        return is_url_type(typ.items)
 
     return False
 
-def is_directory_type(actual_instance: Any) -> bool:
+def replace_directory_with_url(typ: Any) -> Any:
     """
-    Recursively check if a CWL v1.2 type is or contains a Directory,
-    including unions and multi-dimensional arrays.
+    Recursively traverses the CWL type (from cwl_utils.parser.cwl_v1_2) and replaces
+    every occurrence of `Directory` with the external schema reference:
     
-    :param typ: A CWLType (or nested list of types) from cwl_utils.parser
-    :return: True if the type (even deeply nested) is a Directory, else False
+        "https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL"
+
+    :param typ: CWL type (can be primitive, list, or schema object)
+    :return: Modified type with Directory replaced
     """
+
+    # Base case: direct Directory type
 
     # case 0: Direct match with Directory class name
-    if isinstance(actual_instance, str) and actual_instance == Directory.__name__:
-        return True
+    if isinstance(typ, str) and typ == Directory.__name__:
+        return URL_TYPE
 
     # Case 1: Direct match with Directory class
-    if actual_instance == Directory or isinstance(actual_instance, Directory):
-        return True
+    if typ == Directory or isinstance(typ, Directory):
+        return URL_TYPE
 
-    # Case 2: Union type (list of types)
-    if isinstance(actual_instance, list):
-        return any(is_directory_type(t) for t in actual_instance)
+    # Union: list of types
+    if isinstance(typ, list):
+        return [replace_directory_with_url(t) for t in typ]
 
-    # Case 3: Array type (recursive item type check)
-    if hasattr(actual_instance, "items"):
-        return is_directory_type(actual_instance.items)
+    # Array types
+    if isinstance(typ, CommandInputArraySchema):
+        return CommandInputArraySchema(
+            extension_fields=typ.extension_fields,
+            items=replace_directory_with_url(typ.items),
+            type_=typ.type_,
+            label=typ.label
+        )
 
-    # Case 4: Possibly a CWLType or raw class — extract and test
-    if isinstance(actual_instance, type):
-        return issubclass(actual_instance, Directory)
+    if isinstance(typ, CommandOutputArraySchema):
+        return CommandOutputArraySchema(
+            extension_fields=typ.extension_fields,
+            items=replace_directory_with_url(typ.items),
+            type_=typ.type_,
+            label=typ.label
+        )
 
-    return False
+    # Return original type if no match
+    return typ

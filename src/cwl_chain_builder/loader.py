@@ -8,6 +8,7 @@ You should have received a copy of the license along with this work.
 If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
+from .types import ( append_url_schema_def_requirement, replace_directory_with_url )
 from cwl_utils.parser import load_document_by_yaml, save
 from cwltool.load_tool import default_loader
 from cwltool.update import update
@@ -25,6 +26,7 @@ def clean_workflow(workflow: Any):
     for parameters in [ workflow.inputs, workflow.outputs ]:
         for parameter in parameters:
             parameter.id = parameter.id.split('/')[-1]
+            parameter.type_ = replace_directory_with_url(parameter.type_)
 
             if hasattr(parameter, 'outputSource'):
                 for i, output_source in enumerate(parameter.outputSource):
