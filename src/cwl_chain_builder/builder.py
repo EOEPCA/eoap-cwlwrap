@@ -139,13 +139,23 @@ def build_orchestrator_workflow(
     for output in workflow.outputs:
         print(f"* {workflow.id}/{output.id}: {output.type_}")
 
+        app.out.append(output.id)
+
         if is_url_type(output.type_):
             print(f"  URL type detected, creating a related 'stage_out_{directories}'...")
 
             orchestrator.steps.append(
                 WorkflowStep(
                     id=f"stage_out_{directories}",
-                    in_=[],
+                    in_=list(
+                            map(
+                                lambda in_: WorkflowStepInput(
+                                    id=in_.id,
+                                    valueFrom=f"app/{output.id}" if are_cwl_types_identical(output.type_, in_.type_) else in_.id
+                                ),
+                                stage_out.inputs
+                            )
+                        ),
                     out=list(map(lambda out: out.id, stage_out.outputs)),
                     run=f"#{stage_out.id}"
                 )
