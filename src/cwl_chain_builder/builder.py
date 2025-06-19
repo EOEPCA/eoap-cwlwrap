@@ -76,12 +76,21 @@ def build_orchestrator_workflow(
     append_url_schema_def_requirement(orchestrator)
     append_url_schema_def_requirement(workflow)
 
+    app = WorkflowStep(
+        id='app',
+        in_=[],
+        out=[],
+        run=f"#{workflow.id}"
+    )
+
     # inputs
     directories = 0
     for input in workflow.inputs:
         print(f"Analyzing {workflow.id}/{input.id} input")
 
         if is_directory_type(input.type_):
+            print(f"  URL type detected, creating a related 'stage_in_{directories}'...")
+
             orchestrator.steps.append(
                 WorkflowStep(
                     id=f"stage_in_{directories}",
@@ -99,13 +108,32 @@ def build_orchestrator_workflow(
                 )
             )
 
+            print(f"  Connecting 'app/{input.id}' to 'stage_in_{directories}' output...")
+
+            app.in_.append(
+                WorkflowStepInput(
+                    id=input.id,
+                    valueFrom=f"stage_in_{directories}/{next(filter(lambda out: is_url_type(out.type_), stage_in.outputs), None).id}"
+                )
+            )
+
             # Transform the original input Directory type to URL
             input.type_ = URL_TYPE
             directories += 1
+        else:
+            app.in_.append(
+                WorkflowStepInput(
+                    id=input.id,
+                    valueFrom=input.id
+                )
+            )
 
         orchestrator.inputs.append(to_workflow_input_parameter(workflow.id, input))
 
     orchestrator.inputs += filter_workflow_input(stage_out)
+
+    # once all 'stage_in_{index}' are defined, we can now append the 'app' step
+    orchestrator.steps.append(app)
 
     # outputs
     directories = 0

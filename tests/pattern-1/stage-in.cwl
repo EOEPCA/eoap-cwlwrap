@@ -14,7 +14,7 @@ inputs:
     label: "Another Input"
 outputs:
   staged:
-    type: Directory
+    type: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
     outputBinding:
       glob: .
 baseCommand: 
