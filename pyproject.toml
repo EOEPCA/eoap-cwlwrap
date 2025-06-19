@@ -17,5 +17,8 @@ dependencies = [
 [project.scripts]
 cwl-chain-builder = "cwl_chain_builder.builder:main"
 
+[tool.hatch.version]
+path = "src/cwl_chain_builder/__about__.py"
+
 [tool.setuptools.packages.find]
 where = ["src"]
