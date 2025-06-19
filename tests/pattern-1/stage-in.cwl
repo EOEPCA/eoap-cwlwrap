@@ -5,7 +5,7 @@ id: my-asthonishing-stage-in
 
 inputs:
   reference:
-    type: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
+    type: Directory
     doc: "A STAC Item to stage" 
     label: "STAC Item URL"
   another_input:
@@ -14,7 +14,7 @@ inputs:
     label: "Another Input"
 outputs:
   staged:
-    type: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
+    type: Directory
     outputBinding:
       glob: .
 baseCommand: 
@@ -27,9 +27,6 @@ requirements:
   DockerRequirement:
     dockerPull: ghcr.io/eoap/mastering-app-package/stage:1.0.0
   InlineJavascriptRequirement: {}
-  SchemaDefRequirement:
-    types:
-    - $import: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml
   InitialWorkDirRequirement:
     listing:
       - entryname: stage.py

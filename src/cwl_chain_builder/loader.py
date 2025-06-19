@@ -23,6 +23,8 @@ yaml = YAML()
 def clean_workflow(workflow: Any):
     workflow.id = workflow.id.split('#')[-1]
 
+    append_url_schema_def_requirement(workflow)
+
     for parameters in [ workflow.inputs, workflow.outputs ]:
         for parameter in parameters:
             parameter.id = parameter.id.split('/')[-1]

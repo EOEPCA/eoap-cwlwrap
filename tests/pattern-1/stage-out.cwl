@@ -21,12 +21,12 @@ inputs:
   stac_catalog:
     doc: "The folder containing the STAC catalog to stage out"
     label: "STAC Catalog folder"
-    type: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
+    type: Directory
 outputs:
   s3_catalog_output:
     outputBinding:
       outputEval: ${  return "s3://" + inputs.s3_bucket + "/" + inputs.sub_path + "/catalog.json"; }
-    type: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
+    type: Directory
 baseCommand:
   - python
   - stage.py
@@ -46,9 +46,6 @@ requirements:
       aws_region_name: $( inputs.region_name )
       aws_endpoint_url: $( inputs.endpoint_url )
   ResourceRequirement: {}
-  SchemaDefRequirement:
-    types:
-    - $import: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml
   InitialWorkDirRequirement:
     listing:
       - entryname: stage.py
