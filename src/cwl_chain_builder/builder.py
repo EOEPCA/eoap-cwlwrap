@@ -25,11 +25,33 @@ from cwl_utils.parser.cwl_v1_2 import ( LoadingOptions,
 from typing import Any
 import click
 
+def to_workflow_input_parameter(source: str, parameter: Any) -> WorkflowInputParameter:
+    return WorkflowInputParameter(
+        type_=parameter.type_,
+        label=f"{parameter.label} - {source}/{parameter.id}" if parameter.label else f"{source}/{parameter.id}",
+        secondaryFiles=parameter.secondaryFiles,
+        streamable=parameter.streamable,
+        doc=f"{parameter.doc} - This parameter is derived from {source}/{parameter.id}" if parameter.label else f"This parameter is derived from: {source}/{parameter.id}",
+        id=parameter.id,
+        format=parameter.format,
+        loadContents=parameter.loadContents,
+        loadListing=parameter.loadListing,
+        default=parameter.default,
+        inputBinding=parameter.inputBinding,
+        extension_fields=parameter.extension_fields,
+        loadingOptions=parameter.loadingOptions,
+    )
+
 def filter_workflow_input(workflow: Workflow) -> list:
     return list(
-        filter(
-            lambda workflow_input: not is_url_type(workflow_input.type_),
-            workflow.inputs
+        map(
+            lambda parameter: to_workflow_input_parameter(workflow.id, parameter),
+            list(
+                filter(
+                    lambda workflow_input: not is_url_type(workflow_input.type_),
+                    workflow.inputs
+                )
+            )
         )
     )
 
@@ -73,7 +95,7 @@ def build_orchestrator_workflow(
             input.type_ = URL_TYPE
             directories += 1
 
-        orchestrator.inputs.append(input)
+        orchestrator.inputs.append(to_workflow_input_parameter(workflow.id, input))
 
     orchestrator.inputs += filter_workflow_input(stage_out)
 
