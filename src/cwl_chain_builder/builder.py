@@ -85,8 +85,16 @@ def build_orchestrator_workflow(
             orchestrator.steps.append(
                 WorkflowStep(
                     id=f"stage_in_{directories}",
-                    in_=[],
-                    out=[],
+                    in_=list(
+                            map(
+                                lambda in_: WorkflowStepInput(
+                                    id=in_.id,
+                                    valueFrom=input.id if is_url_type(in_.type_) else in_.id
+                                ),
+                                stage_in.inputs
+                            )
+                        ),
+                    out=list(map(lambda out: out.id, stage_in.outputs)),
                     run=f"#{stage_in.id}"
                 )
             )
