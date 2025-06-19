@@ -25,10 +25,18 @@ from cwl_utils.parser.cwl_v1_2 import ( LoadingOptions,
 from typing import Any
 import click
 
+def filter_workflow_input(workflow: Workflow) -> list:
+    return list(
+        filter(
+            lambda workflow_input: not is_url_type(workflow_input.type_),
+            workflow.inputs
+        )
+    )
+
 def build_orchestrator_workflow(
-        stage_in_cwl: Any,
-        workflow_cwl: Any,
-        stage_out_cwl: Any) -> Any:
+        stage_in: Workflow,
+        workflow: Workflow,
+        stage_out: Workflow) -> Workflow:
     print(f"Building the CWL Orchestrator Workflow...")
 
     loadingOptions = LoadingOptions()
@@ -38,26 +46,26 @@ def build_orchestrator_workflow(
         requirements=[
             SubworkflowFeatureRequirement()
         ],
-        inputs=[],
+        inputs=filter_workflow_input(stage_in),
         outputs=[],
         steps=[]
     )
 
     append_url_schema_def_requirement(orchestrator)
-    append_url_schema_def_requirement(workflow_cwl)
+    append_url_schema_def_requirement(workflow)
 
     # inputs
     directories = 0
-    for input in workflow_cwl.inputs:
-        print(f"Analyzing {workflow_cwl.id}/{input.id} input")
+    for input in workflow.inputs:
+        print(f"Analyzing {workflow.id}/{input.id} input")
 
         if is_directory_type(input.type_):
             orchestrator.steps.append(
                 WorkflowStep(
-                    id = f"stage_in_{directories}",
-                    in_ = [],
-                    out = [],
-                    run = f"#{stage_in_cwl.id}"
+                    id=f"stage_in_{directories}",
+                    in_=[],
+                    out=[],
+                    run=f"#{stage_in.id}"
                 )
             )
 
@@ -67,25 +75,27 @@ def build_orchestrator_workflow(
 
         orchestrator.inputs.append(input)
 
+    orchestrator.inputs += filter_workflow_input(stage_out)
+
     # outputs
     directories = 0
-    for output in workflow_cwl.outputs:
-        print(f"Analyzing {workflow_cwl.id}/{output.id} output")
+    for output in workflow.outputs:
+        print(f"Analyzing {workflow.id}/{output.id} output")
 
         if is_directory_type(output.type_):
             orchestrator.steps.append(
                 WorkflowStep(
-                    id = f"stage_out_{directories}",
-                    in_ = [],
-                    out = [],
-                    run = f"#{stage_out_cwl.id}"
+                    id=f"stage_out_{directories}",
+                    in_=[],
+                    out=[],
+                    run=f"#{stage_out.id}"
                 )
             )
 
             # Transform the original input Directory type to URL
             output.type_ = URL_TYPE
 
-            for stage_out_cwl_output in stage_out_cwl.outputs:
+            for stage_out_cwl_output in stage_out.outputs:
                 if are_cwl_types_identical(output.type_, stage_out_cwl_output.type_):
                     orchestrator.outputs.append(
                         WorkflowOutputParameter(
@@ -107,7 +117,7 @@ def build_orchestrator_workflow(
     '''
     # steps
     prev_step_label, prev_cwl = None, None
-    for step_label, cwl in { 'stage_in': stage_in_cwl, 'app': workflow_cwl, 'stage_out': stage_out_cwl }.items():
+    for step_label, cwl in { 'stage_in': stage_in, 'app': workflow, 'stage_out': stage_out }.items():
         print(f"New step '{cwl.id}' as '{step_label}' identified")
 
         orchestrator.steps.append(
@@ -143,7 +153,7 @@ def build_orchestrator_workflow(
 
                             print(f"  Linked to the output of the previous step: {prev_step_label}/{previous_output.id}")
                 else:
-                    for workflow_input in workflow_cwl.inputs:
+                    for workflow_input in workflow.inputs:
                         if is_directory_type(actual_instance = workflow_input.type_):
                             orchestrator.steps[-1].in_.append(
                                 WorkflowStepInput(
@@ -172,9 +182,9 @@ def build_orchestrator_workflow(
     print('Building main Wokflow outputs:')
 
     # outputs
-    for app_output in workflow_cwl.outputs:
+    for app_output in workflow.outputs:
         if is_directory_type(app_output.type_):
-            for stage_out_output in stage_out_cwl.outputs:
+            for stage_out_output in stage_out.outputs:
                 if are_cwl_types_identical(app_output.type_, stage_out_output.type_):
                     orchestrator.outputs.append(
                         WorkflowOutputParameter(

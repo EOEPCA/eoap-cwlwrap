@@ -21,7 +21,7 @@ inputs:
   stac_catalog:
     doc: "The folder containing the STAC catalog to stage out"
     label: "STAC Catalog folder"
-    type: Directory
+    type: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
 outputs:
   s3_catalog_output:
     outputBinding:
