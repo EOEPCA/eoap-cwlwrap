@@ -1,6 +1,6 @@
-# CWL Chain Builder
+# EOAP CWL wrap
 
-`cwl-chain-builder` is a command-line utility that composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps and **packs** it into a single self-contained CWL document.
+`eoap-cwlwrap` is a command-line utility that composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps and **packs** it into a single self-contained CWL document.
 
 It ensures:
 - **Type-safe chaining** of step outputs to the next step's inputs.
@@ -29,7 +29,7 @@ pip install -e .
 ## 🧑‍💻 Usage
 
 ```bash
-cwl-chain-builder \
+eoap-cwlwrap \
 --stage-in ./stage-in.cwl \
 --workflow ./workflow.cwl \
 --workflow-id water-bodies-detection \

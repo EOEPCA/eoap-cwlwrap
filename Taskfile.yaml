@@ -9,13 +9,13 @@ tasks:
   install:
     cmds:
     - rm -rf build
-    - rm -rf cwl_chain_builder.egg-info
+    - rm -rf eoap-cwlwrap.egg-info
     - pip install -e .
 
   execute:
     cmds:
     - |
-      cwl-chain-builder \
+      eoap-cwlwrap \
       --stage-in {{.PATTERN}}/stage-in.cwl \
       --workflow {{.PATTERN}}/workflow.cwl \
       --workflow-id water-bodies-detection \

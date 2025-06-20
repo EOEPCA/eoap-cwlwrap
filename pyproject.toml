@@ -3,9 +3,9 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "cwl_chain_builder"
+name = "eoap_cwlwrap"
 version = "1.0.0"
-description = "Chain multiple CWL CommandLineTool steps into a single workflow."
+description = "Add stage-in/stage-out steps to EOAP CWL workflows"
 authors = [{ name = "Simone Tripodi", email = "simone.tripodi@terradue.com" }]
 dependencies = [
     "click>=8.0",
@@ -16,10 +16,10 @@ dependencies = [
 ]
 
 [project.scripts]
-cwl-chain-builder = "cwl_chain_builder.builder:main"
+eoap-cwlwrap = "eoap_cwlwrap.builder:main"
 
 [tool.hatch.version]
-path = "src/cwl_chain_builder/__about__.py"
+path = "src/eoap_cwlwrap/__about__.py"
 
 [tool.setuptools.packages.find]
 where = ["src"]

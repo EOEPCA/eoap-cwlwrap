@@ -3,7 +3,6 @@
 .settings
 .task
 build
-src/cwl_chain_builder.egg-info
-src/cwl_chain_builder/__pycache__
-cwl_chain_builder.egg-info
+*.egg-info
+__pycache__
 tests/*/current.cwl*
