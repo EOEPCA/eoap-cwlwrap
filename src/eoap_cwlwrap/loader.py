@@ -10,17 +10,20 @@ If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 
 from .types import ( append_url_schema_def_requirement, replace_directory_with_url )
 from cwl_utils.parser import load_document_by_yaml, save
+from cwl_utils.parser.cwl_v1_2 import Workflow
 from cwltool.load_tool import default_loader
 from cwltool.update import update
 from ruamel.yaml import YAML
 from pathlib import Path
-from typing import Any
+from typing import Any, Union
+
+Workflows = Union[Workflow, list[Workflow]]
 
 TARGET_CWL_VERSION = 'v1.2'
 
 yaml = YAML()
 
-def clean_workflow(workflow: Any):
+def clean_workflow(workflow: Workflow):
     workflow.id = workflow.id.split('#')[-1]
 
     append_url_schema_def_requirement(workflow)
@@ -49,7 +52,7 @@ def clean_workflow(workflow: Any):
             if hasattr(step, 'run'):
                 step.run = f"#{step.run.split('#')[-1]}"
 
-def load_workflow(path: str) -> Any:
+def load_workflow(path: str) -> Workflows:
     print(f"Loading CWL document from {path}...")
 
     with open(path, 'r') as workflow_stream:
@@ -87,7 +90,7 @@ def load_workflow(path: str) -> Any:
 
     return workflow
 
-def dump_workflow(workflow: Any, output: str):
+def dump_workflow(workflow: Workflows, output: str):
     print(f"Saving the new Workflow to {output}...")
 
     output_path = Path(output)
