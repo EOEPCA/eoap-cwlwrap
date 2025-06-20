@@ -29,6 +29,7 @@ from cwl_utils.parser.cwl_v1_2 import ( LoadingOptions,
                                         WorkflowStepOutput )
 from typing import ( Any, Optional )
 import click
+import sys
 
 def to_workflow_input_parameter(source: str,
                                 parameter: Any,
@@ -226,7 +227,7 @@ def search_workflow(workflow_id: str, workflow: Any):
     elif workflow_id in workflow.id:
         return wf
 
-    raise Exception(f"Sorry, {workflow_id} not found, please check the input file.")
+    sys.exit(f"Sorry, '{workflow_id}' not found in the workflow input file, only {list(map(lambda wf: wf.id, workflow)) if isinstance(workflow, list) else [workflow.id]} available.")
 
 @click.command()
 @click.option("--stage-in", type=click.Path(exists=True), help="The CWL stage-in file")
