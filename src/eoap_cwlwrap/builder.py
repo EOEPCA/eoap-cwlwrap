@@ -15,7 +15,9 @@ from .types import ( are_cwl_types_identical,
                      is_directory_compatible_type,
                      is_url_compatible_type,
                      replace_directory_with_url,
-                     URL_SCHEMA )
+                     URL_SCHEMA,
+                     validate_stage_in,
+                     validate_stage_out )
 from cwl_utils.parser.cwl_v1_2 import ( LoadingOptions,
                                         SchemaDefRequirement,
                                         SubworkflowFeatureRequirement,
@@ -224,7 +226,7 @@ def search_workflow(workflow_id: str, workflow: Any):
     elif workflow_id in workflow.id:
         return wf
 
-    raise Exception("Sorry, {workflow_id} not found, please check the input file.")
+    raise Exception(f"Sorry, {workflow_id} not found, please check the input file.")
 
 @click.command()
 @click.option("--stage-in", type=click.Path(exists=True), help="The CWL stage-in file")
@@ -240,11 +242,19 @@ def main(stage_in: str,
          output: str,
          puml: bool):
     stage_in_cwl = load_workflow(path=stage_in)
+    validate_stage_in(stage_in=stage_in_cwl)
+
+    print('------------------------------------------------------------------------')
 
     workflows_cwl = load_workflow(path=workflow)
     workflow_cwl = search_workflow(workflow_id=workflow_id, workflow=workflows_cwl)
 
+    print('------------------------------------------------------------------------')
+
     stage_out_cwl = load_workflow(path=stage_out)
+    validate_stage_out(stage_out=stage_out_cwl)
+
+    print('------------------------------------------------------------------------')
 
     orchestrator = build_orchestrator_workflow(stage_in_cwl, workflow_cwl, stage_out_cwl)
 

@@ -15,6 +15,7 @@ from cwl_utils.parser.cwl_v1_2 import ( Directory,
                                         Workflow )
 from typing import Any
 from builtins import isinstance
+import sys
 
 URL_SCHEMA = 'https://raw.githubusercontent.com/eoap/schemas/main/url.yaml'
 __URL_TYPE__ = f"{URL_SCHEMA}#URL"
@@ -162,3 +163,56 @@ def replace_directory_with_url(typ: Any) -> Any:
 
     # Return original type if no match
     return typ
+
+def _create_error_message(parameters: list[Any]) -> str:
+    return 'no' if 0 == len(parameters) else str(list(map(lambda parameter: parameter.id, parameters)))
+
+def validate_stage_in(stage_in: Workflow):
+    print(f"Validating stage-in '{stage_in.id}'...")
+
+    url_inputs = list(
+        filter(
+            lambda input: is_url_compatible_type(input.type_),
+            stage_in.inputs
+        )
+    )
+
+    if len(url_inputs) != 1:
+        sys.exit(f"stage-in '{stage_in.id}' not valid, {_create_error_message(url_inputs)} URL-compatible input found, please specify one.")
+
+    directory_outputs = list(
+        filter(
+            lambda output: is_directory_compatible_type(output.type_),
+            stage_in.outputs
+        )
+    )
+
+    if len(directory_outputs) != 1:
+        sys.exit(f"stage-in '{stage_in.id}' not valid, {_create_error_message(directory_outputs)} Directory-compatible output found, please specify one.")
+
+    print(f"stage-in '{stage_in.id}' is valid")
+
+def validate_stage_out(stage_out: Workflow):
+    print(f"Validating stage-out '{stage_out.id}'...")
+
+    directory_inputs = list(
+        filter(
+            lambda input: is_directory_compatible_type(input.type_),
+            stage_out.inputs
+        )
+    )
+
+    if len(directory_inputs) != 1:
+        sys.exit(f"stage-out '{stage_out.id}' not valid, {_create_error_message(directory_inputs)} Directory-compatible input found, please specify one.")
+
+    url_outputs = list(
+        filter(
+            lambda output: is_url_compatible_type(output.type_),
+            stage_out.outputs
+        )
+    )
+
+    if len(url_outputs) != 1:
+        sys.exit(f"stage-out '{stage_out.id}' not valid, {_create_error_message(url_outputs)} URL-compatible output found, please specify one.")
+
+    print(f"stage-out '{stage_out.id}' is valid")

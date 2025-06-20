@@ -82,7 +82,6 @@ def load_workflow(path: str) -> Workflows:
         _clean_workflow(workflow)
 
     print(f"CWL document successfully dereferenced!")
-    print('------------------------------------------------------------------------')
 
     return workflow
 
