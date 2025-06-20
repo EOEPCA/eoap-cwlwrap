@@ -8,15 +8,14 @@ You should have received a copy of the license along with this work.
 If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
+from .types import Workflows
 from cwl_utils.parser import load_document_by_yaml, save
 from cwl_utils.parser.cwl_v1_2 import Workflow
 from cwltool.load_tool import default_loader
 from cwltool.update import update
 from ruamel.yaml import YAML
 from pathlib import Path
-from typing import Any, Union
-
-Workflows = Union[Workflow, list[Workflow]]
+from typing import Any
 
 __TARGET_CWL_VERSION__ = 'v1.2'
 

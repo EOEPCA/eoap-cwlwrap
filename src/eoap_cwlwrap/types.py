@@ -13,9 +13,11 @@ from cwl_utils.parser.cwl_v1_2 import ( Directory,
                                         CommandOutputArraySchema,
                                         SchemaDefRequirement,
                                         Workflow )
-from typing import Any
+from typing import Any, Union
 from builtins import isinstance
 import sys
+
+Workflows = Union[Workflow, list[Workflow]]
 
 URL_SCHEMA = 'https://raw.githubusercontent.com/eoap/schemas/main/url.yaml'
 __URL_TYPE__ = f"{URL_SCHEMA}#URL"

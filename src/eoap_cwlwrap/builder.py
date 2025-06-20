@@ -17,7 +17,8 @@ from .types import ( are_cwl_types_identical,
                      replace_directory_with_url,
                      URL_SCHEMA,
                      validate_stage_in,
-                     validate_stage_out )
+                     validate_stage_out,
+                     Workflows )
 from cwl_utils.parser.cwl_v1_2 import ( LoadingOptions,
                                         SchemaDefRequirement,
                                         SubworkflowFeatureRequirement,
@@ -219,7 +220,7 @@ def build_orchestrator_workflow(
 
     return orchestrator
 
-def search_workflow(workflow_id: str, workflow: Any):
+def search_workflow(workflow_id: str, workflow: Workflows) -> Workflows:
     if isinstance(workflow, list):
         for wf in workflow:
             if workflow_id in wf.id:
