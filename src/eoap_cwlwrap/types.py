@@ -17,22 +17,7 @@ from typing import Any
 from builtins import isinstance
 
 URL_SCHEMA = 'https://raw.githubusercontent.com/eoap/schemas/main/url.yaml'
-URL_TYPE = f"{URL_SCHEMA}#URL"
-URL_SCHEMA_REQUIREMENT = SchemaDefRequirement(types=[ { '$import': URL_SCHEMA } ])
-
-def append_url_schema_def_requirement(workflow_cwl: Workflow):
-    if workflow_cwl.requirements:
-        for requirement in workflow_cwl.requirements:
-            if requirement.class_ == SchemaDefRequirement.__name__:
-                if requirement.types:
-                    requirement.types.append(URL_SCHEMA_REQUIREMENT.types[0])
-                else:
-                    requirement.types = URL_SCHEMA_REQUIREMENT.types
-                return
-
-        workflow_cwl.requirements.append(URL_SCHEMA_REQUIREMENT)
-    else:
-        workflow_cwl.requirements = [ URL_SCHEMA_REQUIREMENT ]
+__URL_TYPE__ = f"{URL_SCHEMA}#URL"
 
 def are_cwl_types_identical(expected: Any, actual: Any) -> bool:
     """
@@ -79,7 +64,38 @@ def are_cwl_types_identical(expected: Any, actual: Any) -> bool:
 
     return False
 
-def is_url_type(typ: Any) -> bool:
+def is_directory_compatible_type(typ: Any) -> bool:
+    """
+    Recursively check if a CWL v1.2 type is or contains a Directory,
+    including unions and multi-dimensional arrays.
+    
+    :param typ: A CWLType (or nested list of types) from cwl_utils.parser
+    :return: True if the type (even deeply nested) is a Directory, else False
+    """
+
+    # Case 0: Direct string reference
+    if isinstance(typ, str) and typ == Directory.__name__:
+        return True
+
+    # Case 1: Direct match with Directory class
+    if typ == Directory or isinstance(typ, Directory):
+        return True
+
+    # Case 2: Union type (list of types)
+    if isinstance(typ, list):
+        return any(is_directory_compatible_type(t) for t in typ)
+
+    # Case 3: Array type (recursive item type check)
+    if hasattr(typ, "items"):
+        return is_directory_compatible_type(typ.items)
+
+    # Case 4: Possibly a CWLType or raw class — extract and test
+    if isinstance(typ, type):
+        return issubclass(typ, Directory)
+
+    return False
+
+def is_url_compatible_type(typ: Any) -> bool:
     """
     Recursively check if a CWL v1.2 type is or contains a https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL,
     including unions and multi-dimensional arrays.
@@ -88,17 +104,17 @@ def is_url_type(typ: Any) -> bool:
     :return: True if the type (even deeply nested) is a https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL, else False
     """
 
-    # Case 1: Union type (list of types)
-    if isinstance(typ, str) and typ == URL_TYPE:
+    # Case 1: Direct string reference
+    if isinstance(typ, str) and typ == __URL_TYPE__:
         return True
 
     # Case 2: Union type (list of types)
     if isinstance(typ, list):
-        return any(is_url_type(t) for t in typ)
+        return any(is_url_compatible_type(t) for t in typ)
 
     # Case 3: Array type (recursive item type check)
     if hasattr(typ, "items"):
-        return is_url_type(typ.items)
+        return is_url_compatible_type(typ.items)
 
     return False
 
@@ -117,11 +133,11 @@ def replace_directory_with_url(typ: Any) -> Any:
 
     # case 0: Direct match with Directory class name
     if isinstance(typ, str) and typ == Directory.__name__:
-        return URL_TYPE
+        return __URL_TYPE__
 
     # Case 1: Direct match with Directory class
     if typ == Directory or isinstance(typ, Directory):
-        return URL_TYPE
+        return __URL_TYPE__
 
     # Union: list of types
     if isinstance(typ, list):

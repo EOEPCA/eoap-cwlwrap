@@ -8,7 +8,6 @@ You should have received a copy of the license along with this work.
 If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
-from .types import ( append_url_schema_def_requirement, replace_directory_with_url )
 from cwl_utils.parser import load_document_by_yaml, save
 from cwl_utils.parser.cwl_v1_2 import Workflow
 from cwltool.load_tool import default_loader
@@ -19,19 +18,16 @@ from typing import Any, Union
 
 Workflows = Union[Workflow, list[Workflow]]
 
-TARGET_CWL_VERSION = 'v1.2'
+__TARGET_CWL_VERSION__ = 'v1.2'
 
 yaml = YAML()
 
-def clean_workflow(workflow: Workflow):
+def _clean_workflow(workflow: Workflow):
     workflow.id = workflow.id.split('#')[-1]
-
-    append_url_schema_def_requirement(workflow)
 
     for parameters in [ workflow.inputs, workflow.outputs ]:
         for parameter in parameters:
             parameter.id = parameter.id.split('/')[-1]
-            parameter.type_ = replace_directory_with_url(parameter.type_)
 
             if hasattr(parameter, 'outputSource'):
                 for i, output_source in enumerate(parameter.outputSource):
@@ -65,8 +61,8 @@ def load_workflow(path: str) -> Workflows:
         loader=default_loader(),
         baseuri=path,
         enable_dev=False,
-        metadata={'cwlVersion': TARGET_CWL_VERSION},
-        update_to=TARGET_CWL_VERSION
+        metadata={'cwlVersion': __TARGET_CWL_VERSION__},
+        update_to=__TARGET_CWL_VERSION__
     )
 
     print('Raw CWL document successfully updated! Now converting to the CWL model...')
@@ -81,9 +77,9 @@ def load_workflow(path: str) -> Workflows:
 
     if isinstance(workflow, list):
         for wf in workflow:
-            clean_workflow(wf)
+            _clean_workflow(wf)
     else:
-        clean_workflow(workflow)
+        _clean_workflow(workflow)
 
     print(f"CWL document successfully dereferenced!")
     print('------------------------------------------------------------------------')

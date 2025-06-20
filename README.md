@@ -1,11 +1,40 @@
 # EOAP CWL wrap
 
-`eoap-cwlwrap` is a command-line utility that composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps and **packs** it into a single self-contained CWL document.
+`eoap-cwlwrap` is a command-line utility that composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps, defined according to [Application package patterns based on data stage-in and stage-out behaviors commonly used in EO workflows](https://github.com/eoap/application-package-patterns), and **packs** it into a single self-contained CWL document.
 
 It ensures:
 - **Type-safe chaining** of step outputs to the next step's inputs.
 - **Reusable, modular design** by keeping each step in its own file.
 - **Packed output** ready for execution or distribution.
+
+---
+
+## 🧠 Prerequisites
+
+### stage-in
+
+- _One_ input parameter of type [URL](https://raw.githubusercontent.com/eoap/schemas/main/url.yaml);
+- _One_ output of type [Directory](https://www.commonwl.org/v1.0/CommandLineTool.html#Directory).
+
+### stage-out 
+
+- _One_ input parameter of type [Directory](https://www.commonwl.org/v1.0/CommandLineTool.html#Directory);
+- _One_ output of type [URL](https://raw.githubusercontent.com/eoap/schemas/main/url.yaml).
+
+### app
+
+Inputs:
+
+- has one or more parameter of type [Directory](https://www.commonwl.org/v1.0/CommandLineTool.html#Directory)
+
+Outputs:
+
+- has one or more parameter of type [Directory](https://www.commonwl.org/v1.0/CommandLineTool.html#Directory)
+
+### main
+
+- inputs coming from `app` of type [Directory](https://www.commonwl.org/v1.0/CommandLineTool.html#Directory) are inputs of type [URL](https://raw.githubusercontent.com/eoap/schemas/main/url.yaml) in `main`
+- outpus coming from `app` of type [Directory](https://www.commonwl.org/v1.0/CommandLineTool.html#Directory) are outputs of type [URL](https://raw.githubusercontent.com/eoap/schemas/main/url.yaml) in `main`
 
 ---
 

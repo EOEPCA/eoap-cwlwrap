@@ -8,12 +8,16 @@ You should have received a copy of the license along with this work.
 If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
-from .loader import load_workflow, dump_workflow
+from .loader import ( load_workflow,
+                      dump_workflow )
 from .pumler import to_puml
-from .types import ( append_url_schema_def_requirement,
-                     are_cwl_types_identical,
-                     is_url_type )
+from .types import ( are_cwl_types_identical,
+                     is_directory_compatible_type,
+                     is_url_compatible_type,
+                     replace_directory_with_url,
+                     URL_SCHEMA )
 from cwl_utils.parser.cwl_v1_2 import ( LoadingOptions,
+                                        SchemaDefRequirement,
                                         SubworkflowFeatureRequirement,
                                         Workflow,
                                         WorkflowInputParameter,
@@ -21,12 +25,14 @@ from cwl_utils.parser.cwl_v1_2 import ( LoadingOptions,
                                         WorkflowStep,
                                         WorkflowStepInput,
                                         WorkflowStepOutput )
-from typing import Any
+from typing import ( Any, Optional )
 import click
 
-def to_workflow_input_parameter(source: str, parameter: Any) -> WorkflowInputParameter:
+def to_workflow_input_parameter(source: str,
+                                parameter: Any,
+                                target_type: Optional[Any] = None) -> WorkflowInputParameter:
     return WorkflowInputParameter(
-        type_=parameter.type_,
+        type_=target_type if target_type else parameter.type_,
         label=f"{parameter.label} - {source}/{parameter.id}" if parameter.label else f"{source}/{parameter.id}",
         secondaryFiles=parameter.secondaryFiles,
         streamable=parameter.streamable,
@@ -41,19 +47,6 @@ def to_workflow_input_parameter(source: str, parameter: Any) -> WorkflowInputPar
         loadingOptions=parameter.loadingOptions,
     )
 
-def filter_workflow_input(workflow: Workflow) -> list:
-    return list(
-        map(
-            lambda parameter: to_workflow_input_parameter(workflow.id, parameter),
-            list(
-                filter(
-                    lambda workflow_input: not is_url_type(workflow_input.type_),
-                    workflow.inputs
-                )
-            )
-        )
-    )
-
 def build_orchestrator_workflow(
         stage_in: Workflow,
         workflow: Workflow,
@@ -63,14 +56,23 @@ def build_orchestrator_workflow(
     orchestrator = Workflow(
         id='main',
         requirements=[
-            SubworkflowFeatureRequirement()
+            SubworkflowFeatureRequirement(),
+            SchemaDefRequirement(types=[ { '$import': URL_SCHEMA } ])
         ],
-        inputs=filter_workflow_input(stage_in),
+        inputs=list(
+            map(
+                lambda parameter: to_workflow_input_parameter(stage_in.id, parameter),
+                list(
+                    filter(
+                        lambda workflow_input: not is_url_compatible_type(workflow_input.type_),
+                        stage_in.inputs
+                    )
+                )
+            )
+        ),
         outputs=[],
         steps=[]
     )
-
-    append_url_schema_def_requirement(orchestrator)
 
     app = WorkflowStep(
         id='app',
@@ -87,8 +89,12 @@ def build_orchestrator_workflow(
     for input in workflow.inputs:
         print(f"* {workflow.id}/{input.id}: {input.type_}")
 
-        if is_url_type(input.type_):
-            print(f"  URL type detected, creating a related 'stage_in_{directories}'...")
+        target_type = input.type_
+
+        if is_directory_compatible_type(target_type):
+            print(f"  Directory type detected, creating a related 'stage_in_{directories}'...")
+
+            target_type = replace_directory_with_url(target_type)
 
             orchestrator.steps.append(
                 WorkflowStep(
@@ -97,7 +103,7 @@ def build_orchestrator_workflow(
                             map(
                                 lambda in_: WorkflowStepInput(
                                     id=in_.id,
-                                    source=input.id if are_cwl_types_identical(input.type_, in_.type_) else in_.id
+                                    source=input.id if are_cwl_types_identical(target_type, in_.type_) else in_.id
                                 ),
                                 stage_in.inputs
                             )
@@ -112,7 +118,7 @@ def build_orchestrator_workflow(
             app.in_.append(
                 WorkflowStepInput(
                     id=input.id,
-                    source=f"stage_in_{directories}/{next(filter(lambda out: is_url_type(out.type_), stage_in.outputs), None).id}"
+                    source=f"stage_in_{directories}/{next(filter(lambda out: is_directory_compatible_type(out.type_), stage_in.outputs), None).id}"
                 )
             )
 
@@ -125,9 +131,25 @@ def build_orchestrator_workflow(
                 )
             )
 
-        orchestrator.inputs.append(to_workflow_input_parameter(workflow.id, input))
+        orchestrator.inputs.append(
+            to_workflow_input_parameter(
+                source=workflow.id,
+                parameter=input,
+                target_type=target_type
+            )
+        )
 
-    orchestrator.inputs += filter_workflow_input(stage_out)
+    orchestrator.inputs += list(
+                                map(
+                                    lambda parameter: to_workflow_input_parameter(stage_out.id, parameter),
+                                    list(
+                                        filter(
+                                            lambda workflow_input: not is_directory_compatible_type(workflow_input.type_),
+                                            stage_out.inputs
+                                        )
+                                    )
+                                )
+                            )
 
     # once all 'stage_in_{index}' are defined, we can now append the 'app' step
     orchestrator.steps.append(app)
@@ -142,8 +164,8 @@ def build_orchestrator_workflow(
 
         app.out.append(output.id)
 
-        if is_url_type(output.type_):
-            print(f"  URL type detected, creating a related 'stage_out_{directories}'...")
+        if is_directory_compatible_type(output.type_):
+            print(f"  Directory type detected, creating a related 'stage_out_{directories}'...")
 
             orchestrator.steps.append(
                 WorkflowStep(
@@ -164,12 +186,14 @@ def build_orchestrator_workflow(
 
             print(f"  Connecting 'app/{output.id}' to 'stage_out_{directories}' output...")
 
+            url_type = replace_directory_with_url(output.type_)
+
             orchestrator.outputs.append(
                 next(
                     map(
                         lambda mapping_output: WorkflowOutputParameter(
                             id=output.id,
-                            type_=output.type_,
+                            type_=url_type,
                             outputSource=[f"stage_out_{directories}/{mapping_output.id}"],
                             label=output.label,
                             secondaryFiles=output.secondaryFiles,
@@ -180,7 +204,7 @@ def build_orchestrator_workflow(
                             loadingOptions=output.loadingOptions
                         ),
                         filter(
-                            lambda stage_out_cwl_output: are_cwl_types_identical(output.type_, stage_out_cwl_output.type_),
+                            lambda stage_out_cwl_output: are_cwl_types_identical(url_type, stage_out_cwl_output.type_),
                             stage_out.outputs
                         )
                     ),
