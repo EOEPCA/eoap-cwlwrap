@@ -20,7 +20,8 @@ tasks:
       --workflow {{.PATTERN}}/workflow.cwl \
       --workflow-id water-bodies-detection \
       --stage-out {{.PATTERN}}/stage-out.cwl \
-      --output {{.PATTERN}}/current.cwl
+      --output {{.PATTERN}}/current.cwl \
+      --puml
     - cwltool --validate {{.PATTERN}}/current.cwl
 
   default:

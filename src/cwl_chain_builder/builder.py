@@ -9,6 +9,7 @@ If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
 from .loader import load_workflow, dump_workflow
+from .pumler import to_puml
 from .types import ( append_url_schema_def_requirement,
                      are_cwl_types_identical,
                      is_url_type )
@@ -96,7 +97,7 @@ def build_orchestrator_workflow(
                             map(
                                 lambda in_: WorkflowStepInput(
                                     id=in_.id,
-                                    valueFrom=input.id if are_cwl_types_identical(input.type_, in_.type_) else in_.id
+                                    source=input.id if are_cwl_types_identical(input.type_, in_.type_) else in_.id
                                 ),
                                 stage_in.inputs
                             )
@@ -111,7 +112,7 @@ def build_orchestrator_workflow(
             app.in_.append(
                 WorkflowStepInput(
                     id=input.id,
-                    valueFrom=f"stage_in_{directories}/{next(filter(lambda out: is_url_type(out.type_), stage_in.outputs), None).id}"
+                    source=f"stage_in_{directories}/{next(filter(lambda out: is_url_type(out.type_), stage_in.outputs), None).id}"
                 )
             )
 
@@ -120,7 +121,7 @@ def build_orchestrator_workflow(
             app.in_.append(
                 WorkflowStepInput(
                     id=input.id,
-                    valueFrom=input.id
+                    source=input.id
                 )
             )
 
@@ -151,7 +152,7 @@ def build_orchestrator_workflow(
                             map(
                                 lambda in_: WorkflowStepInput(
                                     id=in_.id,
-                                    valueFrom=f"app/{output.id}" if are_cwl_types_identical(output.type_, in_.type_) else in_.id
+                                    source=f"app/{output.id}" if are_cwl_types_identical(output.type_, in_.type_) else in_.id
                                 ),
                                 stage_out.inputs
                             )
@@ -207,11 +208,13 @@ def search_workflow(workflow_id: str, workflow: Any):
 @click.option("--workflow-id", help="ID of the workflow")
 @click.option("--stage-out", type=click.Path(exists=True), help="The CWL stage-out file")
 @click.option("--output", type=click.Path(), required=True, help="Output file path")
-def main(stage_in,
-         workflow,
-         workflow_id,
-         stage_out,
-         output):
+@click.option('--puml', is_flag=True, help="Serializes the workflow as PlantUML diagram.")
+def main(stage_in: str,
+         workflow: str,
+         workflow_id: str,
+         stage_out: str,
+         output: str,
+         puml: bool):
     stage_in_cwl = load_workflow(path=stage_in)
 
     workflows_cwl = load_workflow(path=workflow)
@@ -232,10 +235,19 @@ def main(stage_in,
     main_workflow.append(stage_out_cwl)
 
     print('------------------------------------------------------------------------')
+    print('BUILD SUCCESS')
+    print('------------------------------------------------------------------------')
 
     dump_workflow(main_workflow, output)
 
-    print('BUILD SUCCESS')
+    print('------------------------------------------------------------------------')
+
+    if puml:
+        to_puml(
+            workflows=main_workflow,
+            output=f"{output}.puml"
+        )
+
     print('------------------------------------------------------------------------')
 
 if __name__ == "__main__":

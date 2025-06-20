@@ -21,7 +21,7 @@ It ensures:
 ## 🛠 Installation
 
 ```bash
-pip install .
+pip install -e .
 ```
 
 ---
@@ -39,19 +39,27 @@ cwl-chain-builder \
 
 ### 🔧 Options
 
-| Option          | Description                                                                            |
-|-----------------|----------------------------------------------------------------------------------------|
-| `--stage-in`    | The CWL `stage-in` file path.                                                          |
-| `--workflow`    | The CWL `app` file path.                                                               |
-| `--workflow-id` | The ID of the `Workflow` chained as `app`                                              |
-| `--stage_out`   | The CWL `stage-out` file path.                                                         |
-| `--output`      | The target CWL output file path. Intermediate directories are created if not existing. |
+| Option          | Description                                                                                      |
+|-----------------|--------------------------------------------------------------------------------------------------|
+| `--stage-in`    | The CWL `stage-in` file path.                                                                    |
+| `--workflow`    | The CWL `app` file path.                                                                         |
+| `--workflow-id` | The ID of the `Workflow` chained as `app`                                                        |
+| `--stage_out`   | The CWL `stage-out` file path.                                                                   |
+| `--output`      | The target CWL output file path. Intermediate directories are created if not existing.           |
+| `--puml`        | Enable the generation of the [PlantUML](https://plantuml.com/) diagram of the generated Workflow |
 
 ---
 
 ## 🧠 Requirements
 
 - Python ≥ 3.8
-- `cwl-utils`
-- `ruamel.yaml`
-- `click`
+
+### Depenendies
+
+Package installation will automatically install the following dependencies:
+
+- [cwltool](https://cwltool.readthedocs.io/en/latest/)
+- [cwl-utils](https://cwl-utils.readthedocs.io/en/latest/)
+- [ruamel.yaml](https://yaml.dev/doc/ruamel.yaml/)
+- [Jinja2](https://jinja.palletsprojects.com/en/stable/)
+- [click](https://click.palletsprojects.com/en/stable/)

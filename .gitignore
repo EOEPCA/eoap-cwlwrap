@@ -6,4 +6,4 @@ build
 src/cwl_chain_builder.egg-info
 src/cwl_chain_builder/__pycache__
 cwl_chain_builder.egg-info
-tests/*/current.cwl
+tests/*/current.cwl*
