@@ -21,12 +21,12 @@ baseCommand:
 - python
 - stage.py
 arguments:
-- $( inputs.reference )
+- $( inputs.reference.href )
 - $( inputs.another_input ) # This is an additional input to demonstrate the use of multiple inputs
 requirements:
   SchemaDefRequirement:
     types:
-    - $import: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml
+      - $import: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml
   DockerRequirement:
     dockerPull: ghcr.io/eoap/mastering-app-package/stage:1.0.0
   InlineJavascriptRequirement: {}
