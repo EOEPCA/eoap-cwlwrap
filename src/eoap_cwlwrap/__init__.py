@@ -1,7 +1,7 @@
 '''
-CWL Chain Builder (c) 2025
+EOAP CWLWrap (c) 2025
 
-CWL Chain Builder is licensed under
+EOAP CWLWrap is licensed under
 Creative Commons Attribution-ShareAlike 4.0 International.
 
 You should have received a copy of the license along with this work.
