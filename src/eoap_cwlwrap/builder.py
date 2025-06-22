@@ -28,9 +28,11 @@ from cwl_utils.parser.cwl_v1_2 import ( LoadingOptions,
                                         WorkflowStep,
                                         WorkflowStepInput,
                                         WorkflowStepOutput )
+from datetime import datetime
 from typing import ( Any, Optional )
 import click
 import sys
+import time
 
 def to_workflow_input_parameter(source: str,
                                 parameter: Any,
@@ -243,6 +245,8 @@ def main(stage_in: str,
          stage_out: str,
          output: str,
          puml: bool):
+    start_time = time.time()
+
     stage_in_cwl = load_workflow(path=stage_in)
     validate_stage_in(stage_in=stage_in_cwl)
 
@@ -275,6 +279,11 @@ def main(stage_in: str,
     print('------------------------------------------------------------------------')
 
     dump_workflow(main_workflow, output)
+
+    end_time = time.time()
+
+    print(f"Total time: {end_time - start_time:.4f} seconds")
+    print(f"Finished at: {datetime.fromtimestamp(end_time).isoformat(timespec='milliseconds')}")
 
     print('------------------------------------------------------------------------')
 
