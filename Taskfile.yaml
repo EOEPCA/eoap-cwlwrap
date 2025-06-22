@@ -23,6 +23,7 @@ tasks:
       --output {{.PATTERN}}/current.cwl \
       --puml
     - cwltool --validate {{.PATTERN}}/current.cwl
+    - cwltool --print-dot {{.PATTERN}}/current.cwl | dot -Tpng -o {{.PATTERN}}/current.png
 
   default:
     deps:
