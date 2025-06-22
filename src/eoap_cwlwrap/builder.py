@@ -280,11 +280,6 @@ def main(stage_in: str,
 
     dump_workflow(main_workflow, output)
 
-    end_time = time.time()
-
-    print(f"Total time: {end_time - start_time:.4f} seconds")
-    print(f"Finished at: {datetime.fromtimestamp(end_time).isoformat(timespec='milliseconds')}")
-
     print('------------------------------------------------------------------------')
 
     if puml:
@@ -293,7 +288,12 @@ def main(stage_in: str,
             output=f"{output}.puml"
         )
 
-    print('------------------------------------------------------------------------')
+        print('------------------------------------------------------------------------')
+
+    end_time = time.time()
+
+    print(f"Total time: {end_time - start_time:.4f} seconds")
+    print(f"Finished at: {datetime.fromtimestamp(end_time).isoformat(timespec='milliseconds')}")
 
 if __name__ == "__main__":
     main()
