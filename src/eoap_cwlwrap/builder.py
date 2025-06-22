@@ -57,6 +57,7 @@ def build_orchestrator_workflow(
         stage_in: Workflow,
         workflow: Workflow,
         stage_out: Workflow) -> Workflow:
+    start_time = time.time()
     print(f"Building the CWL Orchestrator Workflow...")
 
     orchestrator = Workflow(
@@ -219,6 +220,9 @@ def build_orchestrator_workflow(
             )
 
             directories += 1
+
+    end_time = time.time()
+    print(f"Orchestrator Workflow built in {end_time - start_time:.4f} seconds")
 
     return orchestrator
 
