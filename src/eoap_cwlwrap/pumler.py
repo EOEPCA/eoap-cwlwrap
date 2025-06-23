@@ -26,6 +26,7 @@ You should have received a copy of the license along with this work.
 If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 '/
 @startuml
+skinparam linetype ortho
 
 {% for workflow in workflows %}
 package "Workflow '{{ workflow.id }}'" {
