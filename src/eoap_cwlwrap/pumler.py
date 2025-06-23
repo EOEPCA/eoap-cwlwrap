@@ -29,7 +29,7 @@ If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 skinparam linetype ortho
 
 {% for workflow in workflows %}
-package "Workflow '{{ workflow.id }}'" {
+node "{{ workflow.class_ }} '{{ workflow.id }}'" {
     component "{{ workflow.id }}" as {{ to_puml_name(workflow.id) }} {
     {% for input in workflow.inputs %}
         portin "{{ input.id }}" as {{ to_puml_name(workflow.id) }}_{{ to_puml_name(input.id) }}
@@ -46,7 +46,8 @@ package "Workflow '{{ workflow.id }}'" {
         {{ to_puml_name(workflow.id) }}_{{ input.source | replace('/', '_') | replace('-', '_') }} -down-> {{ to_puml_name(workflow.id) }}_{{ to_puml_name(step.id) }}_{{ to_puml_name(input.id) }}
     {% endfor %}
 
-    {% for output in step.out %}portout "{{ output }}" as {{ to_puml_name(workflow.id) }}_{{ to_puml_name(step.id) }}_{{ to_puml_name(output) }}
+    {% for output in step.out %}
+        portout "{{ output }}" as {{ to_puml_name(workflow.id) }}_{{ to_puml_name(step.id) }}_{{ to_puml_name(output) }}
     {% endfor %}
     }
 {% endfor %}
@@ -56,7 +57,7 @@ package "Workflow '{{ workflow.id }}'" {
 {% for workflow in workflows %}
     {% for output in workflow.outputs %}
         {% for outputSource in output.outputSource %}
-            {{ to_puml_name(workflow.id) }}_{{ outputSource | replace('/', '_') | replace('-', '_') }} -up-> {{ to_puml_name(workflow.id) }}_{{ to_puml_name(output.id) }}
+{{ to_puml_name(workflow.id) }}_{{ outputSource | replace('/', '_') | replace('-', '_') }} -up-> {{ to_puml_name(workflow.id) }}_{{ to_puml_name(output.id) }}
         {% endfor %}
     {% endfor %}
 
