@@ -166,6 +166,18 @@ def replace_directory_with_url(typ: Any) -> Any:
     # Return original type if no match
     return typ
 
+def type_to_string(typ: Any) -> str:
+    if isinstance(typ, list):
+        return ', '.join([type_to_string(t) for t in typ])
+
+    if hasattr(typ, "items"):
+        return f"{type_to_string(typ.items)}[]"
+
+    if isinstance(typ, str):
+        return typ
+
+    return typ.__name__
+
 def _create_error_message(parameters: list[Any]) -> str:
     return 'no' if 0 == len(parameters) else str(list(map(lambda parameter: parameter.id, parameters)))
 

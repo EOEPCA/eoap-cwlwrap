@@ -8,6 +8,7 @@ You should have received a copy of the license along with this work.
 If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
+from .types import type_to_string
 from cwl_utils.parser.cwl_v1_2 import Workflow
 from jinja2 import Environment
 from pathlib import Path
@@ -61,12 +62,12 @@ _CLASS_TEMPLATE = '''@startuml
 class "{{ workflow.id }}" as {{ workflow.id | to_puml_name }} extends {{ workflow.class_ }} {
     __ Inputs __
     {% for input in workflow.inputs %}
-    + {{ input.id }}: {{ input.type_ }}
+    + {{ input.id }}: {{ input.type_ | type_to_string }}{% if input.default %} = {{ input.default }}{% endif %}
     {% endfor %}
 
     __ Outputs __
     {% for output in workflow.outputs %}
-    + {{ output.id }}: {{ output.type_ }}
+    + {{ output.id }}: {{ output.type_ | type_to_string }}
     {% endfor %}
 
     {% if workflow.steps is defined %}
@@ -106,6 +107,7 @@ def to_puml_name(identifier: str) -> str:
 def to_puml(workflows: list[Workflow], output: str):
     env = Environment()
     env.filters['to_puml_name'] = to_puml_name
+    env.filters['type_to_string'] = type_to_string
 
     for diagram_type, sring_template in { 'components': _COMPONENTS_TEMPLATE, 'class': _CLASS_TEMPLATE }.items():
         output_path = Path(f"{output}_{diagram_type}.puml")
