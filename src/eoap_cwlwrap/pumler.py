@@ -90,9 +90,9 @@ class "{{ workflow.id }}" as {{ workflow.id | to_puml_name }} extends {{ workflo
     {% endfor %}
 
     {% for input in workflow.inputs %}
-        {% if input.doc is defined %}
+        {% if input.doc or input.label %}
 note left of {{ workflow.id | to_puml_name }}::{{ input.id }}
-    {{ input.doc }}
+    {% if input.doc %}{{ input.doc }}{% else %}{{ input.label }}{% endif %}
 end note
         {% endif %}
     {% endfor %}
