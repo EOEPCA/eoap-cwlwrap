@@ -12,19 +12,7 @@ from cwl_utils.parser.cwl_v1_2 import Workflow
 from jinja2 import Template
 from pathlib import Path
 
-def to_puml(workflows: list[Workflow], output: str):
-    print(f"Saving the new PlantUML Workflow diagram to {output}...")
-
-    template = Template("""{% macro to_puml_name(identifier) %}{{ identifier | replace('-', '_') }}{% endmacro %}
-/'
-EOAP CWLWrap (c) 2025
-
-EOAP CWLWrap is licensed under
-Creative Commons Attribution-ShareAlike 4.0 International.
-
-You should have received a copy of the license along with this work.
-If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
-'/
+_COMPONENTS_TEMPLATE = """{% macro to_puml_name(identifier) %}{{ identifier | replace('-', '_') }}{% endmacro %}
 @startuml
 skinparam linetype ortho
 
@@ -66,12 +54,63 @@ node "{{ workflow.class_ }} '{{ workflow.id }}'" {
     {% endfor %}
 {% endfor %}
 @enduml
+"""
 
-""")
+_CLASS_TEMPLATE = '''{% macro to_puml_name(identifier) %}{{ identifier | replace('-', '_') }}{% endmacro %}
+@startuml
 
-    output_path = Path(output)
+{% for workflow in workflows %}
+class "{{ workflow.id }}" as {{ to_puml_name(workflow.id) }} extends {{ workflow.class_ }} {
+    __ Inputs __
+    {% for input in workflow.inputs %}
+    + {{ input.type_ }} {{ input.id }}
+    {% endfor %}
 
-    with output_path.open("w") as f:
-        f.write(template.render(workflows=workflows))
+    __ Outputs __
+    {% for output in workflow.outputs %}
+    + {{ output.type_ }} {{ output.id }}
+    {% endfor %}
 
-    print(f"PlantUML Workflow diagram successfully saved to {output}!")
+    {% if workflow.steps is defined %}
+    __ Steps __
+        {% for step in workflow.steps %}
+    - {{ to_puml_name(step.run[1:]) }} {{ step.id }}
+        {% endfor %}
+    {% endif %}
+}
+
+    {% for requirement in workflow.requirements %}
+        {% if requirement.class_ %}
+{{ to_puml_name(workflow.id) }} --> {{ requirement.class_ }}
+        {% endif %}
+    {% endfor %}
+{% endfor %}
+
+{% for workflow in workflows %}
+    {% for step in workflow.steps %}
+{{ to_puml_name(workflow.id) }} --> {{ to_puml_name(step.run[1:]) }}
+    {% endfor %}
+
+    {% for input in workflow.inputs %}
+        {% if input.doc is defined %}
+note left of {{ to_puml_name(workflow.id) }}::{{ input.id }}
+    {{ input.doc }}
+end note
+        {% endif %}
+    {% endfor %}
+{% endfor %}
+@enduml
+'''
+
+def to_puml(workflows: list[Workflow], output: str):
+    for diagram_type, sring_template in { 'components': _COMPONENTS_TEMPLATE, 'class': _CLASS_TEMPLATE }.items():
+        output_path = Path(f"{output}_{diagram_type}.puml")
+
+        print(f"Saving the new PlantUML Workflow diagram to {output_path}...")
+
+        template = Template(sring_template)
+
+        with output_path.open("w") as f:
+            f.write(template.render(workflows=workflows))
+
+        print(f"PlantUML Workflow diagram successfully saved to {output_path}!")

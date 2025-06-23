@@ -289,7 +289,7 @@ def main(stage_in: str,
     if puml:
         to_puml(
             workflows=main_workflow,
-            output=f"{output}.puml"
+            output=output
         )
 
         print('------------------------------------------------------------------------')
