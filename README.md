@@ -83,7 +83,7 @@ eoap-cwlwrap \
 
 - Python ≥ 3.8
 
-### Depenendies
+### Dependendies
 
 Package installation will automatically install the following dependencies:
 
