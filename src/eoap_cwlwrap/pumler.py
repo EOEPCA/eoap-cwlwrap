@@ -63,18 +63,18 @@ _CLASS_TEMPLATE = '''{% macro to_puml_name(identifier) %}{{ identifier | replace
 class "{{ workflow.id }}" as {{ to_puml_name(workflow.id) }} extends {{ workflow.class_ }} {
     __ Inputs __
     {% for input in workflow.inputs %}
-    + {{ input.type_ }} {{ input.id }}
+    + {{ input.id }}: {{ input.type_ }}
     {% endfor %}
 
     __ Outputs __
     {% for output in workflow.outputs %}
-    + {{ output.type_ }} {{ output.id }}
+    + {{ output.id }}: {{ output.type_ }}
     {% endfor %}
 
     {% if workflow.steps is defined %}
     __ Steps __
         {% for step in workflow.steps %}
-    - {{ to_puml_name(step.run[1:]) }} {{ step.id }}
+    - {{ step.id }}: {{ to_puml_name(step.run[1:]) }}
         {% endfor %}
     {% endif %}
 }
