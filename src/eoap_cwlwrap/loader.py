@@ -44,8 +44,11 @@ def _clean_workflow(workflow: Workflow):
             for i, step_out in enumerate(step_outs):
                 step_outs[i] = step_out.split('/')[-1]
 
-            if hasattr(step, 'run'):
+            if step.run:
                 step.run = f"#{step.run.split('#')[-1]}"
+
+            if step.scatter:
+                step.scatter = step.scatter.split('/')[-1]
 
 def load_workflow(path: str) -> Workflows:
     print(f"Loading CWL document from {path}...")
