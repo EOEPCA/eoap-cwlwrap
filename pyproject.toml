@@ -4,9 +4,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "eoap_cwlwrap"
-version = "1.0.0"
-description = "Add stage-in/stage-out steps to EOAP CWL workflows"
-authors = [{ name = "Simone Tripodi", email = "simone.tripodi@terradue.com" }]
+dynamic = ["version"]
+description = "Add stage-in/stage-out steps to EOAP CWL Workflows"
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+authors = [
+  { name = "Fabrice Brito", email = "fabrice.brito@terradue.com" },
+  { name = "Simone Tripodi", email = "simone.tripodi@terradue.com" }
+]
 dependencies = [
     "click>=8.0",
     "cwl-utils>=0.38",
@@ -14,6 +20,11 @@ dependencies = [
     "cwltool>=3.1.20250110105449",
     "Jinja2>=3.1.6"
 ]
+
+[project.urls]
+Documentation = "https://github.com/EOEPCA/eoap-cwlwrap#readme"
+Issues = "https://github.com/EOEPCA/eoap-cwlwrap/issues"
+Source = "https://github.com/EOEPCA/eoap-cwlwrap"
 
 [project.scripts]
 eoap-cwlwrap = "eoap_cwlwrap.builder:main"
