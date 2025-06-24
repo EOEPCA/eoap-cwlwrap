@@ -12,14 +12,18 @@ from .loader import ( load_workflow,
                       dump_workflow )
 from .pumler import to_puml
 from .types import ( are_cwl_types_identical,
+                     is_array_type,
                      is_directory_compatible_type,
                      is_url_compatible_type,
                      replace_directory_with_url,
+                     type_to_string,
                      URL_SCHEMA,
+                     URL_TYPE,
                      validate_stage_in,
                      validate_stage_out,
                      Workflows )
 from cwl_utils.parser.cwl_v1_2 import ( LoadingOptions,
+                                        ScatterFeatureRequirement,
                                         SchemaDefRequirement,
                                         SubworkflowFeatureRequirement,
                                         Workflow,
@@ -94,31 +98,43 @@ def build_orchestrator_workflow(
 
     directories = 0
     for input in workflow.inputs:
-        print(f"* {workflow.id}/{input.id}: {input.type_}")
+        print(f"* {workflow.id}/{input.id}: {type_to_string(input.type_)}")
 
         target_type = input.type_
 
         if is_directory_compatible_type(target_type):
             print(f"  Directory type detected, creating a related 'stage_in_{directories}'...")
 
-            target_type = replace_directory_with_url(target_type)
+            print(f"  Converting {type_to_string(input.type_)} to URL-compatible type...")
 
-            orchestrator.steps.append(
-                WorkflowStep(
-                    id=f"stage_in_{directories}",
-                    in_=list(
-                            map(
-                                lambda in_: WorkflowStepInput(
-                                    id=in_.id,
-                                    source=input.id if are_cwl_types_identical(target_type, in_.type_) else in_.id
-                                ),
-                                stage_in.inputs
-                            )
-                        ),
-                    out=list(map(lambda out: out.id, stage_in.outputs)),
-                    run=f"#{stage_in.id}"
-                )
+            target_type = replace_directory_with_url(input.type_)
+
+            print(f"  {type_to_string(input.type_)} converted to {type_to_string(target_type)}")
+
+            workflow_step = WorkflowStep(
+                id=f"stage_in_{directories}",
+                in_=[],
+                out=list(map(lambda out: out.id, stage_in.outputs)),
+                run=f"#{stage_in.id}"
             )
+
+            orchestrator.steps.append(workflow_step)
+
+            for stage_in_input in stage_in.inputs:
+                workflow_step.in_.append(
+                    WorkflowStepInput(
+                        id=stage_in_input.id,
+                        source=input.id if is_url_compatible_type(stage_in_input.type_) else stage_in_input.id
+                    )
+                )
+
+                if is_array_type(input.type_) and is_url_compatible_type(stage_in_input.type_):
+                    print(f"  Array detected, scatter required for {stage_in_input.id}:{input.id}")
+
+                    workflow_step.scatter = stage_in_input.id
+                    workflow_step.scatterMethod = 'dotproduct'
+
+                    orchestrator.requirements.append(ScatterFeatureRequirement())
 
             print(f"  Connecting 'app/{input.id}' to 'stage_in_{directories}' output...")
 
@@ -147,16 +163,16 @@ def build_orchestrator_workflow(
         )
 
     orchestrator.inputs += list(
-                                map(
-                                    lambda parameter: to_workflow_input_parameter(stage_out.id, parameter),
-                                    list(
-                                        filter(
-                                            lambda workflow_input: not is_directory_compatible_type(workflow_input.type_),
-                                            stage_out.inputs
-                                        )
-                                    )
-                                )
-                            )
+        map(
+            lambda parameter: to_workflow_input_parameter(stage_out.id, parameter),
+            list(
+                filter(
+                    lambda workflow_input: not is_directory_compatible_type(workflow_input.type_),
+                    stage_out.inputs
+                )
+            )
+        )
+    )
 
     # once all 'stage_in_{index}' are defined, we can now append the 'app' step
     orchestrator.steps.append(app)
@@ -167,7 +183,7 @@ def build_orchestrator_workflow(
 
     directories = 0
     for output in workflow.outputs:
-        print(f"* {workflow.id}/{output.id}: {output.type_}")
+        print(f"* {workflow.id}/{output.id}: {type_to_string(output.type_)}")
 
         app.out.append(output.id)
 
