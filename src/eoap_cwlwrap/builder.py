@@ -197,7 +197,7 @@ def build_orchestrator_workflow(
                             map(
                                 lambda in_: WorkflowStepInput(
                                     id=in_.id,
-                                    source=f"app/{output.id}" if are_cwl_types_identical(output.type_, in_.type_) else in_.id
+                                    source=f"app/{output.id}" if is_directory_compatible_type(in_.type_) else in_.id
                                 ),
                                 stage_out.inputs
                             )
