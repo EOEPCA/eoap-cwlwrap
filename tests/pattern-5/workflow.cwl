@@ -1,3 +1,14 @@
+# ## 5. one input/scatter on outputs
+
+# The CWL includes: 
+# - one input parameter of type `Directory`
+# - scatter on an output parameter of type `Directory[]`
+
+# This scenario takes as input an acquisition, applies an algorithm and generates several outputs
+
+# Implementation: process the NDVI and NDWI taking as input a Landsat-9 acquisition and generating a stack of STAC Catalogs
+
+
 cwlVersion: v1.0
 $namespaces:
   s: https://schema.org/
@@ -6,10 +17,11 @@ schemas:
   - http://schema.org/version/9.0/schemaorg-current-http.rdf
 $graph:
   - class: Workflow
-    id: pattern-1
-    label: Water bodies detection based on NDWI and the otsu threshold
-    doc: Water bodies detection based on NDWI and otsu threshold applied to a single Sentinel-2 COG STAC item
-    requirements: []
+    id: pattern-5
+    label: NDVI and NDWI vegetation indexes
+    doc: NDVI and NDWI vegetation indexes
+    requirements:
+      ScatterFeatureRequirement: {}
     inputs:
       aoi:
         label: area of interest
@@ -20,20 +32,22 @@ $graph:
         doc: EPSG code
         type: string
         default: "EPSG:4326"
-      bands:
-        label: bands used for the NDWI
-        doc: bands used for the NDWI
+      indexes:
+        label: indexes
+        doc: indexes to compute
         type: string[]
-        default: ["green", "nir08"]
+        default: ["ndvi", "ndwi"]
       item:
         doc: Reference to a STAC item
         label: STAC item reference
         type: Directory
     outputs:
-      - id: stac_catalog
+      - id: vegetation_indexes
+        doc: Vegetation indexes
+        label: Vegetation indexes
         outputSource:
-          - step/stac-catalog
-        type: Directory
+          - step/vegetation_index
+        type: Directory[]
     steps:
       step:
         run: "#clt"
@@ -41,9 +55,12 @@ $graph:
           item: item
           aoi: aoi
           epsg: epsg
-          band: bands
+          index: indexes
         out:
-          - stac-catalog
+          - vegetation_index
+        scatter: index
+        scatterMethod: dotproduct
+
   - class: CommandLineTool
     id: clt
     requirements:
@@ -60,7 +77,7 @@ $graph:
     baseCommand: 
     - vegetation-index
     arguments:
-    - pattern-1
+    - pattern-5
     inputs:
       item:
         type: Directory
@@ -74,15 +91,16 @@ $graph:
         type: string
         inputBinding:
             prefix: --epsg
-      band:
-        type:
-          - type: array
-            items: string
-            inputBinding:
-              prefix: '--band'
+
+      index:
+        type: string
+        inputBinding:
+            prefix: --vegetation-index
 
     outputs:
-      stac-catalog:
+      vegetation_index:
         outputBinding:
-            glob: .
+            glob: . 
         type: Directory
+
+

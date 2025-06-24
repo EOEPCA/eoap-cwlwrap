@@ -15,11 +15,12 @@ tasks:
   execute:
     cmds:
     - |
+      set
       eoap-cwlwrap \
-      --stage-in {{.PATTERN}}/stage-in.cwl \
+      --stage-in tests/templates/stage-in.cwl \
       --workflow {{.PATTERN}}/workflow.cwl \
-      --workflow-id water-bodies-detection \
-      --stage-out {{.PATTERN}}/stage-out.cwl \
+      --workflow-id $( basename {{.PATTERN}} ) \
+      --stage-out tests/templates/stage-out.cwl \
       --output {{.PATTERN}}/current.cwl \
       --puml
     - cwltool --validate {{.PATTERN}}/current.cwl
