@@ -11,6 +11,8 @@ If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 from cwl_utils.parser.cwl_v1_2 import ( Directory,
                                         CommandInputArraySchema,
                                         CommandOutputArraySchema,
+                                        InputArraySchema,
+                                        OutputArraySchema,
                                         SchemaDefRequirement,
                                         Workflow )
 from typing import Any, Union
@@ -20,7 +22,7 @@ import sys
 Workflows = Union[Workflow, list[Workflow]]
 
 URL_SCHEMA = 'https://raw.githubusercontent.com/eoap/schemas/main/url.yaml'
-__URL_TYPE__ = f"{URL_SCHEMA}#URL"
+URL_TYPE = f"{URL_SCHEMA}#URL"
 
 def are_cwl_types_identical(expected: Any, actual: Any) -> bool:
     """
@@ -108,7 +110,7 @@ def is_url_compatible_type(typ: Any) -> bool:
     """
 
     # Case 1: Direct string reference
-    if isinstance(typ, str) and typ == __URL_TYPE__:
+    if isinstance(typ, str) and typ == URL_TYPE:
         return True
 
     # Case 2: Union type (list of types)
@@ -120,6 +122,14 @@ def is_url_compatible_type(typ: Any) -> bool:
         return is_url_compatible_type(typ.items)
 
     return False
+
+def is_array_type(typ: Any) -> bool:
+    if isinstance(typ, list):
+        for type_item in list(type):
+            if is_array_type(type_item):
+                return True
+
+    return hasattr(typ, "items")
 
 def replace_directory_with_url(typ: Any) -> Any:
     """
@@ -136,31 +146,33 @@ def replace_directory_with_url(typ: Any) -> Any:
 
     # case 0: Direct match with Directory class name
     if isinstance(typ, str) and typ == Directory.__name__:
-        return __URL_TYPE__
+        return URL_TYPE
 
     # Case 1: Direct match with Directory class
     if typ == Directory or isinstance(typ, Directory):
-        return __URL_TYPE__
+        return URL_TYPE
 
     # Union: list of types
     if isinstance(typ, list):
         return [replace_directory_with_url(t) for t in typ]
 
     # Array types
-    if isinstance(typ, CommandInputArraySchema):
-        return CommandInputArraySchema(
+    if isinstance(typ, InputArraySchema) or isinstance(typ, CommandInputArraySchema):
+        return InputArraySchema(
             extension_fields=typ.extension_fields,
             items=replace_directory_with_url(typ.items),
             type_=typ.type_,
-            label=typ.label
+            label=typ.label,
+            doc=typ.doc
         )
 
-    if isinstance(typ, CommandOutputArraySchema):
-        return CommandOutputArraySchema(
+    if isinstance(typ, OutputArraySchema) or isinstance(typ, CommandOutputArraySchema):
+        return OutputArraySchema(
             extension_fields=typ.extension_fields,
             items=replace_directory_with_url(typ.items),
             type_=typ.type_,
-            label=typ.label
+            label=typ.label,
+            doc=typ.doc
         )
 
     # Return original type if no match
