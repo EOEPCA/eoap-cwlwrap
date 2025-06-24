@@ -57,6 +57,13 @@ def to_workflow_input_parameter(source: str,
         loadingOptions=parameter.loadingOptions,
     )
 
+def _add_scatter_feature_requirement(workflow: Workflow):
+    for requirement in workflow.requirements:
+        if ScatterFeatureRequirement.__name__ == requirement.class_:
+            return;
+
+    workflow.requirements.append(ScatterFeatureRequirement())
+
 def build_orchestrator_workflow(
         stage_in: Workflow,
         workflow: Workflow,
@@ -134,7 +141,7 @@ def build_orchestrator_workflow(
                     workflow_step.scatter = stage_in_input.id
                     workflow_step.scatterMethod = 'dotproduct'
 
-                    orchestrator.requirements.append(ScatterFeatureRequirement())
+                    _add_scatter_feature_requirement(orchestrator)
 
             print(f"  Connecting 'app/{input.id}' to 'stage_in_{directories}' output...")
 
@@ -190,22 +197,30 @@ def build_orchestrator_workflow(
         if is_directory_compatible_type(output.type_):
             print(f"  Directory type detected, creating a related 'stage_out_{directories}'...")
 
-            orchestrator.steps.append(
-                WorkflowStep(
-                    id=f"stage_out_{directories}",
-                    in_=list(
-                            map(
-                                lambda in_: WorkflowStepInput(
-                                    id=in_.id,
-                                    source=f"app/{output.id}" if is_directory_compatible_type(in_.type_) else in_.id
-                                ),
-                                stage_out.inputs
-                            )
-                        ),
-                    out=list(map(lambda out: out.id, stage_out.outputs)),
-                    run=f"#{stage_out.id}"
-                )
+            workflow_step = WorkflowStep(
+                id=f"stage_out_{directories}",
+                in_=[],
+                out=list(map(lambda out: out.id, stage_out.outputs)),
+                run=f"#{stage_out.id}"
             )
+
+            orchestrator.steps.append(workflow_step)
+
+            for stage_out_input in stage_out.inputs:
+                workflow_step.in_.append(
+                    WorkflowStepInput(
+                        id=stage_out_input.id,
+                        source=f"app/{output.id}" if is_directory_compatible_type(stage_out_input.type_) else stage_out_input.id,
+                    )
+                )
+
+                if is_array_type(output.type_) and is_directory_compatible_type(stage_out_input.type_):
+                    print(f"  Array detected, scatter required for {stage_out_input.id}:app/{output.id}")
+
+                    workflow_step.scatter = stage_out_input.id
+                    workflow_step.scatterMethod = 'dotproduct'
+
+                    _add_scatter_feature_requirement(orchestrator)
 
             print(f"  Connecting 'app/{output.id}' to 'stage_out_{directories}' output...")
 
@@ -227,7 +242,7 @@ def build_orchestrator_workflow(
                             loadingOptions=output.loadingOptions
                         ),
                         filter(
-                            lambda stage_out_cwl_output: are_cwl_types_identical(url_type, stage_out_cwl_output.type_),
+                            lambda stage_out_cwl_output: is_url_compatible_type(stage_out_cwl_output.type_),
                             stage_out.outputs
                         )
                     ),
