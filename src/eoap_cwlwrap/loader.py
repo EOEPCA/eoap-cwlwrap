@@ -32,23 +32,22 @@ def _clean_workflow(workflow: Workflow):
                 for i, output_source in enumerate(parameter.outputSource):
                     parameter.outputSource[i] = output_source.split(f"{workflow.id}/")[-1]
 
-    if hasattr(workflow, 'steps'):
-        for step in workflow.steps:
-            step.id = step.id.split(f"{workflow.id}/")[-1]
+    for step in getattr(workflow, 'steps', []):
+        step.id = step.id.split(f"{workflow.id}/")[-1]
 
-            for step_in in getattr(step, 'in_', []):
-                step_in.id = step_in.id.split('/')[-1]
-                step_in.source = step_in.source.split('/')[-1]
+        for step_in in getattr(step, 'in_', []):
+            step_in.id = step_in.id.split('/')[-1]
+            step_in.source = step_in.source.split('/')[-1]
 
-            step_outs = getattr(step, 'out', [])
-            for i, step_out in enumerate(step_outs):
-                step_outs[i] = step_out.split('/')[-1]
+        step_outs = getattr(step, 'out', [])
+        for i, step_out in enumerate(step_outs):
+            step_outs[i] = step_out.split('/')[-1]
 
-            if step.run:
-                step.run = f"#{step.run.split('#')[-1]}"
+        if step.run:
+            step.run = f"#{step.run.split('#')[-1]}"
 
-            if step.scatter:
-                step.scatter = step.scatter.split('/')[-1]
+        if step.scatter:
+            step.scatter = step.scatter.split('/')[-1]
 
 def load_workflow(path: str) -> Workflows:
     print(f"Loading CWL document from {path}...")
