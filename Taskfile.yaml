@@ -2,7 +2,7 @@ version: '3'
 
 vars:
   PATTERNS:
-    sh: find ./tests/ -mindepth 1 -maxdepth 1 -type d
+    sh: find ./tests/ -mindepth 1 -maxdepth 1 -type d -name pattern-*
 
 tasks:
 
@@ -17,10 +17,10 @@ tasks:
     - |
       set
       eoap-cwlwrap \
-      --stage-in tests/templates/stage-in.cwl \
+      --stage-in ./tests/templates/stage-in.cwl \
       --workflow {{.PATTERN}}/workflow.cwl \
       --workflow-id $( basename {{.PATTERN}} ) \
-      --stage-out tests/templates/stage-out.cwl \
+      --stage-out ./tests/templates/stage-out.cwl \
       --output {{.PATTERN}}/current.cwl \
       --puml
     - cwltool --validate {{.PATTERN}}/current.cwl
