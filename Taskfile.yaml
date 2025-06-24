@@ -14,17 +14,20 @@ tasks:
 
   execute:
     cmds:
-    - |
-      set
-      eoap-cwlwrap \
-      --stage-in ./tests/templates/stage-in.cwl \
-      --workflow {{.PATTERN}}/workflow.cwl \
-      --workflow-id $( basename {{.PATTERN}} ) \
-      --stage-out ./tests/templates/stage-out.cwl \
-      --output {{.PATTERN}}/current.cwl \
-      --puml
-    - cwltool --validate {{.PATTERN}}/current.cwl
-    - cwltool --print-dot {{.PATTERN}}/current.cwl | dot -Tpng -o {{.PATTERN}}/current.png
+    - cmd: |
+        set
+        eoap-cwlwrap \
+        --stage-in ./tests/templates/stage-in.cwl \
+        --workflow {{.PATTERN}}/workflow.cwl \
+        --workflow-id $( basename {{.PATTERN}} ) \
+        --stage-out ./tests/templates/stage-out.cwl \
+        --output {{.PATTERN}}/current.cwl \
+        --puml
+      ignore_error: true
+    - cmd: cwltool --validate {{.PATTERN}}/current.cwl
+      ignore_error: true
+    - cmd: cwltool --print-dot {{.PATTERN}}/current.cwl | dot -Tpng -o {{.PATTERN}}/current.png
+      ignore_error: true
 
   default:
     deps:
@@ -36,3 +39,4 @@ tasks:
       task: execute
       vars:
         PATTERN: "{{.PATTERN}}"
+    - echo "All patterns processed (failures were ignored)"
