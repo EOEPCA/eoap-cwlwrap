@@ -262,7 +262,10 @@ def build_orchestrator_workflow(
                     workflow_step.scatter = stage_out_input.id
                     workflow_step.scatterMethod = 'dotproduct'
 
-                    _add_scatter_feature_requirement(orchestrator)
+                    _add_feature_requirement(
+                        requirement=ScatterFeatureRequirement(),
+                        workflow=orchestrator
+                    )
 
             print(f"  Connecting 'app/{output.id}' to 'stage_out_{directories}' output...")
 
