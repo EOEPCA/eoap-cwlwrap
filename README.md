@@ -36,8 +36,12 @@ Outputs:
 
 ### main
 
-- inputs coming from `app` of type [Directory](https://www.commonwl.org/v1.0/CommandLineTool.html#Directory) are inputs of type [URL](https://raw.githubusercontent.com/eoap/schemas/main/url.yaml) in `main`
-- outpus coming from `app` of type [Directory](https://www.commonwl.org/v1.0/CommandLineTool.html#Directory) are outputs of type [URL](https://raw.githubusercontent.com/eoap/schemas/main/url.yaml) in `main`
+- `inputs` coming from `app`:
+  * if type is assignable to [Directory](https://www.commonwl.org/v1.0/CommandLineTool.html#Directory) it is converted to [URL](https://raw.githubusercontent.com/eoap/schemas/main/url.yaml) input in `main`;
+  * any other kind of input won't be transformed;
+- `outpus` coming from `app`:
+  * if type is assignable to [Directory](https://www.commonwl.org/v1.0/CommandLineTool.html#Directory) it is converted to [URL](https://raw.githubusercontent.com/eoap/schemas/main/url.yaml) output in `main`;
+  * any other kind of output won't be transformed;
 
 ---
 
