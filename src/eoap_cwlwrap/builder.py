@@ -197,6 +197,12 @@ def build_orchestrator_workflow(
         if is_directory_compatible_type(output.type_):
             print(f"  Directory type detected, creating a related 'stage_out_{directories}'...")
 
+            print(f"  Converting {type_to_string(output.type_)} to URL-compatible type...")
+
+            url_type = replace_directory_with_url(output.type_)
+
+            print(f"  {type_to_string(output.type_)} converted to {type_to_string(url_type)}")
+
             workflow_step = WorkflowStep(
                 id=f"stage_out_{directories}",
                 in_=[],
@@ -214,7 +220,7 @@ def build_orchestrator_workflow(
                     )
                 )
 
-                if is_array_type(output.type_) and is_directory_compatible_type(stage_out_input.type_):
+                if is_array_type(url_type) and is_directory_compatible_type(stage_out_input.type_):
                     print(f"  Array detected, scatter required for {stage_out_input.id}:app/{output.id}")
 
                     workflow_step.scatter = stage_out_input.id
@@ -223,8 +229,6 @@ def build_orchestrator_workflow(
                     _add_scatter_feature_requirement(orchestrator)
 
             print(f"  Connecting 'app/{output.id}' to 'stage_out_{directories}' output...")
-
-            url_type = replace_directory_with_url(output.type_)
 
             orchestrator.outputs.append(
                 next(

@@ -125,9 +125,7 @@ def is_url_compatible_type(typ: Any) -> bool:
 
 def is_array_type(typ: Any) -> bool:
     if isinstance(typ, list):
-        for type_item in list(type):
-            if is_array_type(type_item):
-                return True
+        return any(is_array_type(type_item) for type_item in list(typ))
 
     return hasattr(typ, "items")
 
@@ -180,7 +178,7 @@ def replace_directory_with_url(typ: Any) -> Any:
 
 def type_to_string(typ: Any) -> str:
     if isinstance(typ, list):
-        return ', '.join([type_to_string(t) for t in typ])
+        return f"[ {', '.join([type_to_string(t) for t in typ])} ]"
 
     if hasattr(typ, "items"):
         return f"{type_to_string(typ.items)}[]"
