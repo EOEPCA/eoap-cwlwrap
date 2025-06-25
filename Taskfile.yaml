@@ -6,6 +6,13 @@ vars:
 
 tasks:
 
+  plantuml_install:
+    internal: true
+    status:
+    - command -v plantuml
+    cmds:
+    - sudo bash -c "curl -L https://raw.githubusercontent.com/riboseinc/plantuml-install/main/ubuntu.sh | bash"
+
   install:
     cmds:
     - rm -rf build
@@ -13,6 +20,8 @@ tasks:
     - pip install -e .
 
   execute:
+    deps:
+    - task: plantuml_install
     cmds:
     - cmd: |
         set
@@ -24,7 +33,8 @@ tasks:
         --output {{.PATTERN}}/current.cwl \
         --puml
     - cmd: cwltool --validate {{.PATTERN}}/current.cwl
-    - cmd: cwltool --print-dot {{.PATTERN}}/current.cwl | dot -Tpng -o {{.PATTERN}}/current.png
+    - plantuml -tsvg -o ../../docs/diagrams/$(basename "{{.PATTERN}}") {{.PATTERN}}
+    - cmd: cwltool --print-dot {{.PATTERN}}/current.cwl | dot -Tsvg -o ./docs/diagrams/$(basename "{{.PATTERN}}")/workflow.svg
 
   default:
     deps:

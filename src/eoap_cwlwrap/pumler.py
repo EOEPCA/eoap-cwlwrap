@@ -110,7 +110,8 @@ def to_puml(workflows: list[Workflow], output: str):
     env.filters['type_to_string'] = type_to_string
 
     for diagram_type, sring_template in { 'components': _COMPONENTS_TEMPLATE, 'class': _CLASS_TEMPLATE }.items():
-        output_path = Path(f"{output}_{diagram_type}.puml")
+        output_path = Path(output)
+        output_path = Path(f"{output_path.parent}/{diagram_type}.puml")
 
         print(f"Saving the new PlantUML Workflow diagram to {output_path}...")
 
