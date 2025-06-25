@@ -16,13 +16,18 @@ from cwl_utils.parser.cwl_v1_2 import ( Directory,
                                         SchemaDefRequirement,
                                         Workflow )
 from typing import Any, Union
-from builtins import isinstance
 import sys
 
 Workflows = Union[Workflow, list[Workflow]]
 
 URL_SCHEMA = 'https://raw.githubusercontent.com/eoap/schemas/main/url.yaml'
 URL_TYPE = f"{URL_SCHEMA}#URL"
+
+def is_nullable(typ: Any) -> bool:
+    if isinstance(typ, list):
+        return any(isinstance(t, str) and 'null' == t for t in typ)
+
+    return False
 
 def is_directory_compatible_type(typ: Any) -> bool:
     """

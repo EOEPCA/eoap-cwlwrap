@@ -14,6 +14,7 @@ from .pumler import to_puml
 from .types import ( is_array_type,
                      is_directory_compatible_type,
                      is_url_compatible_type,
+                     is_nullable,
                      replace_directory_with_url,
                      type_to_string,
                      URL_SCHEMA,
@@ -22,6 +23,8 @@ from .types import ( is_array_type,
                      validate_stage_out,
                      Workflows )
 from cwl_utils.parser.cwl_v1_2 import ( LoadingOptions,
+                                        InlineJavascriptRequirement,
+                                        ProcessRequirement,
                                         ScatterFeatureRequirement,
                                         SchemaDefRequirement,
                                         SubworkflowFeatureRequirement,
@@ -56,11 +59,11 @@ def _to_workflow_input_parameter(source: str,
         loadingOptions=parameter.loadingOptions,
     )
 
-def _add_scatter_feature_requirement(workflow: Workflow):
-    if any(ScatterFeatureRequirement.__name__ == requirement.class_ for requirement in workflow.requirements):
+def _add_feature_requirement(requirement: ProcessRequirement, workflow: Workflow):
+    if any(requirement.class_ == current_requirement.class_ for current_requirement in workflow.requirements):
         return;
 
-    workflow.requirements.append(ScatterFeatureRequirement())
+    workflow.requirements.append(requirement)
 
 def build_orchestrator_workflow(
         stage_in: Workflow,
@@ -154,13 +157,27 @@ def build_orchestrator_workflow(
                     )
                 )
 
-                if is_array_type(input.type_) and is_url_compatible_type(stage_in_input.type_):
-                    print(f"  Array detected, scatter required for {stage_in_input.id}:{input.id}")
+                if is_url_compatible_type(stage_in_input.type_):
+                    if is_array_type(input.type_):
+                        print(f"  Array detected, 'scatter' required for {stage_in_input.id}:{input.id}")
 
-                    workflow_step.scatter = stage_in_input.id
-                    workflow_step.scatterMethod = 'dotproduct'
+                        workflow_step.scatter = stage_in_input.id
+                        workflow_step.scatterMethod = 'dotproduct'
 
-                    _add_scatter_feature_requirement(orchestrator)
+                        _add_feature_requirement(
+                            requirement=ScatterFeatureRequirement(),
+                            workflow=orchestrator
+                        )
+
+                    if is_nullable(input.type_):
+                        print(f"  Nullable detected, 'when' required for {stage_in_input.id}:{input.id}")
+
+                        workflow_step.when = f"$(inputs.{stage_in_input.id} !== null)"
+
+                        _add_feature_requirement(
+                            requirement=InlineJavascriptRequirement(),
+                            workflow=orchestrator
+                        )
 
             print(f"  Connecting 'app/{input.id}' to 'stage_in_{directories}' output...")
 
