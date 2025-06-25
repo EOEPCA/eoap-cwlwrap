@@ -86,7 +86,28 @@ def build_orchestrator_workflow(
                 )
             )
         ),
-        outputs=[],
+        outputs=list(
+            map(
+                lambda parameter: WorkflowOutputParameter(
+                    type_=parameter.type_,
+                    label=f"{parameter.label} - app/{parameter.id}" if parameter.label else f"app/{parameter.id}",
+                    secondaryFiles=parameter.secondaryFiles,
+                    streamable=parameter.streamable,
+                    doc=f"{parameter.doc} - This parameter is derived from app/{parameter.id}" if parameter.label else f"This parameter is derived from: app/{parameter.id}",
+                    id=parameter.id,
+                    format=parameter.format,
+                    outputSource=[ f"app/{parameter.id}" ],
+                    linkMerge=parameter.linkMerge,
+                    pickValue=parameter.pickValue,
+                    extension_fields=parameter.extension_fields,
+                    loadingOptions=parameter.loadingOptions
+                ),
+                filter(
+                    lambda workflow_output: not is_directory_compatible_type(workflow_output.type_),
+                    workflow.outputs
+                )
+            )
+        ),
         steps=[]
     )
 
