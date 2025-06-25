@@ -37,9 +37,9 @@ import click
 import sys
 import time
 
-def to_workflow_input_parameter(source: str,
-                                parameter: Any,
-                                target_type: Optional[Any] = None) -> WorkflowInputParameter:
+def _to_workflow_input_parameter(source: str,
+                                 parameter: Any,
+                                 target_type: Optional[Any] = None) -> WorkflowInputParameter:
     return WorkflowInputParameter(
         type_=target_type if target_type else parameter.type_,
         label=f"{parameter.label} - {source}/{parameter.id}" if parameter.label else f"{source}/{parameter.id}",
@@ -78,7 +78,7 @@ def build_orchestrator_workflow(
         ],
         inputs=list(
             map(
-                lambda parameter: to_workflow_input_parameter(stage_in.id, parameter),
+                lambda parameter: _to_workflow_input_parameter(stage_in.id, parameter),
                 list(
                     filter(
                         lambda workflow_input: not is_url_compatible_type(workflow_input.type_),
@@ -161,7 +161,7 @@ def build_orchestrator_workflow(
             )
 
         orchestrator.inputs.append(
-            to_workflow_input_parameter(
+            _to_workflow_input_parameter(
                 source=workflow.id,
                 parameter=input,
                 target_type=target_type
@@ -170,7 +170,7 @@ def build_orchestrator_workflow(
 
     orchestrator.inputs += list(
         map(
-            lambda parameter: to_workflow_input_parameter(stage_out.id, parameter),
+            lambda parameter: _to_workflow_input_parameter(stage_out.id, parameter),
             list(
                 filter(
                     lambda workflow_input: not is_directory_compatible_type(workflow_input.type_),
@@ -260,7 +260,7 @@ def build_orchestrator_workflow(
 
     return orchestrator
 
-def search_workflow(workflow_id: str, workflow: Workflows) -> Workflows:
+def _search_workflow(workflow_id: str, workflow: Workflows) -> Workflows:
     if isinstance(workflow, list):
         for wf in workflow:
             if workflow_id in wf.id:
@@ -291,7 +291,7 @@ def main(stage_in: str,
     print('------------------------------------------------------------------------')
 
     workflows_cwl = load_workflow(path=workflow)
-    workflow_cwl = search_workflow(workflow_id=workflow_id, workflow=workflows_cwl)
+    workflow_cwl = _search_workflow(workflow_id=workflow_id, workflow=workflows_cwl)
 
     print('------------------------------------------------------------------------')
 
