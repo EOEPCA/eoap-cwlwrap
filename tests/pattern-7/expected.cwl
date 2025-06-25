@@ -9,38 +9,38 @@ $graph:
       derived from my-asthonishing-stage-in/another_input
     type: string
   - id: aoi
-    label: area of interest - pattern-8/aoi
+    label: area of interest - pattern-7/aoi
     doc: area of interest as a bounding box - This parameter is derived from 
-      pattern-8/aoi
+      pattern-7/aoi
     type: string
   - id: epsg
-    label: EPSG code - pattern-8/epsg
-    doc: EPSG code - This parameter is derived from pattern-8/epsg
+    label: EPSG code - pattern-7/epsg
+    doc: EPSG code - This parameter is derived from pattern-7/epsg
     default: EPSG:4326
     type: string
   - id: bands
-    label: bands used for the NDWI - pattern-8/bands
+    label: bands used for the NDWI - pattern-7/bands
     doc: bands used for the NDWI - This parameter is derived from 
-      pattern-8/bands
+      pattern-7/bands
     default:
     - green
     - nir08
     type:
-      name: _:7afbe684-e856-479c-b22b-31a4e73a7f0f
+      name: _:db8f9da9-4640-40a6-a8eb-3a5f1c3056ea
       items: string
       type: array
-  - id: item
-    label: STAC item reference - pattern-8/item
+  - id: item_1
+    label: STAC item reference - pattern-7/item_1
     doc: Reference to a STAC item - This parameter is derived from 
-      pattern-8/item
+      pattern-7/item_1
     type: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
-  - id: produce_output
-    label: Flag to produce the output - pattern-8/produce_output
-    doc: Flag to produce the output - This parameter is derived from 
-      pattern-8/produce_output
+  - id: item_2
+    label: Optional STAC item reference - pattern-7/item_2
+    doc: Optional reference to a STAC item - This parameter is derived from 
+      pattern-7/item_2
     type:
     - 'null'
-    - boolean
+    - https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
   - id: s3_bucket
     label: my-super-stage-out/s3_bucket
     doc: 'This parameter is derived from: my-super-stage-out/s3_bucket'
@@ -69,10 +69,10 @@ $graph:
   - id: stac_catalog
     outputSource:
     - stage_out_0/s3_catalog_output
-    type: 
-    - https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
+    type: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
   requirements:
   - class: SubworkflowFeatureRequirement
+  - class: InlineJavascriptRequirement
   - class: SchemaDefRequirement
     types:
     - $import: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml
@@ -80,12 +80,22 @@ $graph:
   - id: stage_in_0
     in:
     - id: reference
-      source: item
+      source: item_1
     - id: another_input
       source: another_input
     out:
     - staged
     run: '#my-asthonishing-stage-in'
+  - id: stage_in_1
+    in:
+    - id: reference
+      source: item_2
+    - id: another_input
+      source: another_input
+    out:
+    - staged
+    run: '#my-asthonishing-stage-in'
+    when: $(inputs.reference !== null)
   - id: app
     in:
     - id: aoi
@@ -94,13 +104,13 @@ $graph:
       source: epsg
     - id: bands
       source: bands
-    - id: item
+    - id: item_1
       source: stage_in_0/staged
-    - id: produce_output
-      source: produce_output
+    - id: item_2
+      source: stage_in_1/staged
     out:
     - stac_catalog
-    run: '#pattern-8'
+    run: '#pattern-7'
   - id: stage_out_0
     in:
     - id: s3_bucket
@@ -191,7 +201,8 @@ $graph:
 
         href = sys.argv[1]
         empty_arg = sys.argv[2]
-
+        if not href or href == "None":
+          sys.exit(0)
         cat = asyncio.run(main(href))
   cwlVersion: v1.2
   baseCommand:
@@ -200,7 +211,7 @@ $graph:
   arguments:
   - $( inputs.reference.href )
   - $( inputs.another_input )
-- id: pattern-8
+- id: pattern-7
   class: Workflow
   label: Water bodies detection based on NDWI and the otsu threshold
   doc: Water bodies detection based on NDWI and otsu threshold applied to a 
@@ -222,41 +233,39 @@ $graph:
     - green
     - nir08
     type:
-      name: _:7afbe684-e856-479c-b22b-31a4e73a7f0f
+      name: _:db8f9da9-4640-40a6-a8eb-3a5f1c3056ea
       items: string
       type: array
-  - id: item
+  - id: item_1
     label: STAC item reference
     doc: Reference to a STAC item
     type: Directory
-  - id: produce_output
-    label: Flag to produce the output
-    doc: Flag to produce the output
+  - id: item_2
+    label: Optional STAC item reference
+    doc: Optional reference to a STAC item
     type:
     - 'null'
-    - boolean
+    - Directory
   outputs:
   - id: stac_catalog
     outputSource:
     - step/stac-catalog
-    type:
-    - 'null'
-    - Directory
+    type: Directory
   requirements: []
   cwlVersion: v1.2
   steps:
   - id: step
     in:
-    - id: item
-      source: item
+    - id: item_1
+      source: item_1
+    - id: item_2
+      source: item_2
     - id: aoi
       source: aoi
     - id: epsg
       source: epsg
     - id: band
       source: bands
-    - id: produce_output
-      source: produce_output
     out:
     - stac-catalog
     run: '#clt'
@@ -265,10 +274,16 @@ $graph:
 - id: clt
   class: CommandLineTool
   inputs:
-  - id: item
+  - id: item_1
     type: Directory
     inputBinding:
-      prefix: --input-item
+      prefix: --input-item-1
+  - id: item_2
+    type:
+    - 'null'
+    - Directory
+    inputBinding:
+      prefix: --input-item-2
   - id: aoi
     type: string
     inputBinding:
@@ -279,15 +294,11 @@ $graph:
       prefix: --epsg
   - id: band
     type:
-    - name: _:37146616-2be4-40db-bd6e-8d4428f56137
+    - name: _:ca3cd7ba-d561-4e5f-ad53-e976f27778ce
       items: string
       type: array
       inputBinding:
         prefix: --band
-  - id: produce_output
-    type:
-    - 'null'
-    - boolean
   outputs:
   - id: stac-catalog
     type: Directory
@@ -310,9 +321,7 @@ $graph:
   baseCommand:
   - vegetation-index
   arguments:
-  - pattern-8
-  - valueFrom: |
-      ${ return inputs.produce_output ? "--produce-output" : null; }
+  - pattern-7
   $namespaces: *id001
 - http://commonwl.org/cwltool#original_cwlVersion: v1.2
   id: my-super-stage-out
@@ -334,7 +343,7 @@ $graph:
   - id: stac_catalog
     label: STAC Catalog folder
     doc: The folder containing the STAC catalog to stage out
-    type: Directory?
+    type: Directory
   outputs:
   - id: s3_catalog_output
     type: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
@@ -387,7 +396,6 @@ $graph:
         from urllib.parse import urlparse
 
         cat_url = sys.argv[1]
-        print(f"cat_url {cat_url}", file=sys.stderr)
         bucket = sys.argv[2]
         subfolder = sys.argv[3]
 
@@ -396,13 +404,8 @@ $graph:
         region_name = os.environ["aws_region_name"]
         endpoint_url = os.environ["aws_endpoint_url"]
 
-        try:
-          shutil.copytree(cat_url, "/tmp/catalog")
-          cat = pystac.read_file(os.path.join("/tmp/catalog", "catalog.json"))
-        except:
-          print("Got an empty thing", file=sys.stderr)
-          print(f"null", end="", file=sys.stdout)
-          sys.exit(0)
+        shutil.copytree(cat_url, "/tmp/catalog")
+        cat = pystac.read_file(os.path.join("/tmp/catalog", "catalog.json"))
 
         class CustomStacIO(DefaultStacIO):
             """Custom STAC IO class that uses boto3 to read from S3."""
