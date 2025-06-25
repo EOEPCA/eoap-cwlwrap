@@ -33,7 +33,7 @@ def _clean_workflow(workflow: Workflow):
                     parameter.outputSource[i] = output_source.split(f"{workflow.id}/")[-1]
 
     for step in getattr(workflow, 'steps', []):
-        step.id = step.id.split(f"{workflow.id}/")[-1]
+        step.id = step.id.split('/')[-1]
 
         for step_in in getattr(step, 'in_', []):
             step_in.id = step_in.id.split('/')[-1]
@@ -44,7 +44,7 @@ def _clean_workflow(workflow: Workflow):
             step_outs[i] = step_out.split('/')[-1]
 
         if step.run:
-            step.run = f"#{step.run.split('#')[-1]}"
+            step.run = step.run[step.run.rfind('#'):]
 
         if step.scatter:
             step.scatter = step.scatter.split('/')[-1]
