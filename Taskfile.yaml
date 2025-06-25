@@ -23,11 +23,8 @@ tasks:
         --stage-out ./tests/templates/stage-out.cwl \
         --output {{.PATTERN}}/current.cwl \
         --puml
-      ignore_error: true
     - cmd: cwltool --validate {{.PATTERN}}/current.cwl
-      ignore_error: true
     - cmd: cwltool --print-dot {{.PATTERN}}/current.cwl | dot -Tpng -o {{.PATTERN}}/current.png
-      ignore_error: true
 
   default:
     deps:
@@ -39,4 +36,4 @@ tasks:
       task: execute
       vars:
         PATTERN: "{{.PATTERN}}"
-    - echo "All patterns processed (failures were ignored)"
+    - echo "All patterns processed"

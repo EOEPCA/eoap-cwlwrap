@@ -11,8 +11,7 @@ If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 from .loader import ( load_workflow,
                       dump_workflow )
 from .pumler import to_puml
-from .types import ( are_cwl_types_identical,
-                     is_array_type,
+from .types import ( is_array_type,
                      is_directory_compatible_type,
                      is_url_compatible_type,
                      replace_directory_with_url,
