@@ -24,17 +24,28 @@ inputs:
     type: Directory
 outputs:
   s3_catalog_output:
-    outputBinding:
-      outputEval: |
-        ${ return {"href": "s3://" + inputs.s3_bucket + "/" + inputs.sub_path + "/catalog.json"}; }
     type: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
+    outputBinding:
+      glob: catalog-uri.txt
+      loadContents: true
+      outputEval: |
+        ${ 
+          return { "href": self[0].contents };
+        }
+stdout: catalog-uri.txt
 baseCommand:
   - python
   - stage.py
 arguments:
   - $( inputs.stac_catalog.path )
   - $( inputs.s3_bucket )
-  - $( inputs.sub_path )
+  - ${ 
+      var firstPart = (Math.random() * 46656) | 0;
+      var secondPart = (Math.random() * 46656) | 0;
+      firstPart = ("000" + firstPart.toString(36)).slice(-3);
+      secondPart = ("000" + secondPart.toString(36)).slice(-3);
+      return inputs.sub_path + "-" + firstPart + secondPart;
+    } 
   
 requirements:
   SchemaDefRequirement:
@@ -60,10 +71,12 @@ requirements:
           import botocore
           import boto3
           import shutil
+          from loguru import logger
           from pystac.stac_io import DefaultStacIO, StacIO
           from urllib.parse import urlparse
 
           cat_url = sys.argv[1]
+          logger.info(cat_url)
           bucket = sys.argv[2]
           subfolder = sys.argv[3]
 
@@ -137,4 +150,4 @@ requirements:
           print(f"upload catalog.json to s3://{bucket}/{subfolder}", file=sys.stderr)
           pystac.write_file(cat, cat.get_self_href())
 
-          print(f"s3://{bucket}/{subfolder}/catalog.json", file=sys.stdout)
+          print(f"s3://{bucket}/{subfolder}/catalog.json", end="", file=sys.stdout)
