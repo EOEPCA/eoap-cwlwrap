@@ -57,9 +57,8 @@ def _to_workflow_input_parameter(source: str,
     )
 
 def _add_scatter_feature_requirement(workflow: Workflow):
-    for requirement in workflow.requirements:
-        if ScatterFeatureRequirement.__name__ == requirement.class_:
-            return;
+    if any(ScatterFeatureRequirement.__name__ == requirement.class_ for requirement in workflow.requirements):
+        return;
 
     workflow.requirements.append(ScatterFeatureRequirement())
 
