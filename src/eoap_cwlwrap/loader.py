@@ -21,33 +21,36 @@ __TARGET_CWL_VERSION__ = 'v1.2'
 
 yaml = YAML()
 
+def _clean_part(value: str, separator: str = '/') -> str:
+    return value.split(separator)[-1]
+
 def _clean_workflow(workflow: Workflow):
-    workflow.id = workflow.id.split('#')[-1]
+    workflow.id = _clean_part(workflow.id, '#')
 
     for parameters in [ workflow.inputs, workflow.outputs ]:
         for parameter in parameters:
-            parameter.id = parameter.id.split('/')[-1]
+            parameter.id = _clean_part(parameter.id)
 
             if hasattr(parameter, 'outputSource'):
                 for i, output_source in enumerate(parameter.outputSource):
-                    parameter.outputSource[i] = output_source.split(f"{workflow.id}/")[-1]
+                    parameter.outputSource[i] = _clean_part(output_source, f"{workflow.id}/")
 
     for step in getattr(workflow, 'steps', []):
-        step.id = step.id.split('/')[-1]
+        step.id = _clean_part(step.id)
 
         for step_in in getattr(step, 'in_', []):
-            step_in.id = step_in.id.split('/')[-1]
-            step_in.source = step_in.source.split('/')[-1]
+            step_in.id = _clean_part(step_in.id)
+            step_in.source = _clean_part(step_in.source)
 
         step_outs = getattr(step, 'out', [])
         for i, step_out in enumerate(step_outs):
-            step_outs[i] = step_out.split('/')[-1]
+            step_outs[i] = _clean_part(step_out)
 
         if step.run:
             step.run = step.run[step.run.rfind('#'):]
 
         if step.scatter:
-            step.scatter = step.scatter.split('/')[-1]
+            step.scatter = _clean_part(step.scatter)
 
 def load_workflow(path: str) -> Workflows:
     print(f"Loading CWL document from {path}...")
