@@ -26,10 +26,13 @@ It ensures:
 Inputs:
 
 - has one or more parameter of type [Directory](https://www.commonwl.org/v1.0/CommandLineTool.html#Directory)
+  * it can be nullable `?`;
+  * it can be an array `[]`.
 
 Outputs:
 
 - has one or more parameter of type [Directory](https://www.commonwl.org/v1.0/CommandLineTool.html#Directory)
+  * it can be an array `[]`.
 
 ### main
 
