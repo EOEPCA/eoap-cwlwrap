@@ -39,7 +39,7 @@ tasks:
     - cmd: cwltool --validate {{.PATTERN}}/current.cwl
     - plantuml -tsvg -o ../../docs/diagrams/$(basename "{{.PATTERN}}") {{.PATTERN}}
     - cmd: cwltool --print-dot {{.PATTERN}}/current.cwl | dot -Tsvg -o ./docs/diagrams/$(basename "{{.PATTERN}}")/workflow.svg
-    - cmd: cp {{.PATTERN}}/current.cwl ./docs/workflows$(basename "{{.PATTERN}}").cwl
+    - cmd: cp {{.PATTERN}}/current.cwl ./docs/workflows/$(basename "{{.PATTERN}}").cwl
 
   default:
     deps:

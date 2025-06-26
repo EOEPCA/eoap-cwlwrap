@@ -89,28 +89,7 @@ def build_orchestrator_workflow(
                 )
             )
         ),
-        outputs=list(
-            map(
-                lambda parameter: WorkflowOutputParameter(
-                    type_=parameter.type_,
-                    label=f"{parameter.label} - app/{parameter.id}" if parameter.label else f"app/{parameter.id}",
-                    secondaryFiles=parameter.secondaryFiles,
-                    streamable=parameter.streamable,
-                    doc=f"{parameter.doc} - This parameter is derived from app/{parameter.id}" if parameter.label else f"This parameter is derived from: app/{parameter.id}",
-                    id=parameter.id,
-                    format=parameter.format,
-                    outputSource=[ f"app/{parameter.id}" ],
-                    linkMerge=parameter.linkMerge,
-                    pickValue=parameter.pickValue,
-                    extension_fields=parameter.extension_fields,
-                    loadingOptions=parameter.loadingOptions
-                ),
-                filter(
-                    lambda workflow_output: not is_directory_compatible_type(workflow_output.type_),
-                    workflow.outputs
-                )
-            )
-        ),
+        outputs=[],
         steps=[]
     )
 
@@ -294,6 +273,23 @@ def build_orchestrator_workflow(
             )
 
             directories += 1
+        else:
+            orchestrator.outputs.append(
+                WorkflowOutputParameter(
+                    type_=output.type_,
+                    label=f"{output.label} - app/{output.id}" if output.label else f"app/{output.id}",
+                    secondaryFiles=output.secondaryFiles,
+                    streamable=output.streamable,
+                    doc=f"{output.doc} - This output is derived from app/{output.id}" if output.label else f"This output is derived from: app/{output.id}",
+                    id=output.id,
+                    format=output.format,
+                    outputSource=[ f"app/{output.id}" ],
+                    linkMerge=output.linkMerge,
+                    pickValue=output.pickValue,
+                    extension_fields=output.extension_fields,
+                    loadingOptions=output.loadingOptions
+                )
+            )
 
     end_time = time.time()
     print(f"Orchestrator Workflow built in {end_time - start_time:.4f} seconds")
