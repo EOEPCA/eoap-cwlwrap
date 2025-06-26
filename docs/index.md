@@ -94,3 +94,9 @@ Package installation will automatically install the following dependencies:
 - [ruamel.yaml](https://yaml.dev/doc/ruamel.yaml/)
 - [Jinja2](https://jinja.palletsprojects.com/en/stable/)
 - [click](https://click.palletsprojects.com/en/stable/)
+
+## Using the container
+
+```
+docker run -it --rm  ghcr.io/eoepca/eoap-cwlwrap/eoap-cwlwrap:latest eoap-cwlwrap --help
+```
