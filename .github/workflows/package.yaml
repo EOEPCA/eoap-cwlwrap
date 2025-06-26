@@ -1,8 +1,13 @@
 name: Publish to PyPI
 
+# on:
+#   release:
+#     types: [created]
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+    - develop
+    - main
 
 permissions:
   id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
