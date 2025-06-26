@@ -104,5 +104,5 @@ docker run -it --rm  ghcr.io/eoepca/eoap-cwlwrap/eoap-cwlwrap:latest eoap-cwlwra
 ## Run the tests
 
 ```
-hatch -e test run nose2 --verbose 
+hatch test --verbose
 ```
