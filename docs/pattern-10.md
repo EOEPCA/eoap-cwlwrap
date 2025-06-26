@@ -1,6 +1,7 @@
 # Pattern 10 - multiple inputs, multiple outputs
 
 The CWL includes:
+
 - input parameter of type `Directory[]`;
 - output parameter of type `Directory[]`.
 
