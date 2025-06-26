@@ -24,8 +24,10 @@ yaml = YAML()
 def _clean_part(value: str, separator: str = '/') -> str:
     return value.split(separator)[-1]
 
-def _clean_workflow(workflow: Workflow):
+def _clean_workflow(workflow: Any):
     workflow.id = _clean_part(workflow.id, '#')
+
+    print(f"  Cleaning {workflow.class_} {workflow.id}...")
 
     for parameters in [ workflow.inputs, workflow.outputs ]:
         for parameter in parameters:
@@ -40,11 +42,13 @@ def _clean_workflow(workflow: Workflow):
 
         for step_in in getattr(step, 'in_', []):
             step_in.id = _clean_part(step_in.id)
-            step_in.source = _clean_part(step_in.source)
+            step_in.source = _clean_part(step_in.source, f"{workflow.id}/")
 
-        step_outs = getattr(step, 'out', [])
-        for i, step_out in enumerate(step_outs):
-            step_outs[i] = _clean_part(step_out)
+        if step.out:
+            if isinstance(step.out, list):
+                step.out = [_clean_part(step_out) for step_out in step.out]
+            else:
+               step.out = _clean_part(step)
 
         if step.run:
             step.run = step.run[step.run.rfind('#'):]
