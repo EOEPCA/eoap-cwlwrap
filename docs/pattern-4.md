@@ -1,4 +1,9 @@
-# Pattern 4
+# Pattern 4 - single input, double output
+
+The CWL includes:
+
+- input parameter of type `Directory`;
+- two different output parameters of type `Directory`.
 
 ## Workflow Diagram
 

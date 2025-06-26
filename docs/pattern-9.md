@@ -1,4 +1,11 @@
-# Pattern 9
+# Pattern 9 - one input, optional outputs
+
+The CWL includes: 
+
+- one input parameter of type `Directory`;
+- output parameter of type `Directory[]?`.
+
+This scenario takes as input an acquisition, applies an algorithm and may or may not generate outputs.
 
 ## Workflow Diagram
 
