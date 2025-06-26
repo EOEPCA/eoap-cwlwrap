@@ -1,14 +1,10 @@
 import os
-import sys
 import unittest
-import tempfile
-import ruamel.yaml
 from cwltool.main import main as cwlmain
 from cwltool.context import LoadingContext, RuntimeContext
 from cwltool.executors import NoopJobExecutor
 from io import StringIO
 from click.testing import CliRunner
-import yaml
 from eoap_cwlwrap import builder as app
 
         
