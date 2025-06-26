@@ -9,6 +9,10 @@ This corner-case scenario takes as input an acquisition, applies an algorithm an
 
 Implementation: derive the NDVI mean taking as input a Landsat-9 acquisition.
 
+## CWL
+
+[Download Workflow](./workflows/pattern-6.cwl)
+
 ## Workflow Diagram
 
 ![file](./diagrams/pattern-6/workflow.svg)

@@ -7,6 +7,10 @@ The CWL includes:
 
 This scenario takes as input an acquisition, applies an algorithm and may or may not generate outputs.
 
+## CWL
+
+[Download Workflow](./workflows/pattern-9.cwl)
+
 ## Workflow Diagram
 
 ![file](./diagrams/pattern-9/workflow.svg)

@@ -9,6 +9,10 @@ This scenario takes as input an acquisition, applies an algorithm and may or may
 
 Implementation: process the NDVI taking as input a Landsat-9 acquisition with a parameter to create or not the output.
 
+## CWL
+
+[Download Workflow](./workflows/pattern-8.cwl)
+
 ## Workflow Diagram
 
 ![file](./diagrams/pattern-8/workflow.svg)

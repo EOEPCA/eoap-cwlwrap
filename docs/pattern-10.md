@@ -9,6 +9,10 @@ This scenario takes as input an array of acquisition, applies an algorithm to ea
 
 This scenario shows the need to flatten the output of the subworkflow, which is an array of arrays, into a single array of directories.
 
+## CWL
+
+[Download Workflow](./workflows/pattern-10.cwl)
+
 ## Workflow Diagram
 
 ![file](./diagrams/pattern-10/workflow.svg)

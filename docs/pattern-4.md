@@ -5,6 +5,10 @@ The CWL includes:
 - input parameter of type `Directory`;
 - two different output parameters of type `Directory`.
 
+## CWL
+
+[Download Workflow](./workflows/pattern-4.cwl)
+
 ## Workflow Diagram
 
 ![file](./diagrams/pattern-4/workflow.svg)
