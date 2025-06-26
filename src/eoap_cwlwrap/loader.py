@@ -50,7 +50,10 @@ def _clean_workflow(workflow: Workflow):
             step.run = step.run[step.run.rfind('#'):]
 
         if step.scatter:
-            step.scatter = _clean_part(step.scatter)
+            if isinstance(step.scatter, list):
+                step.scatter = [_clean_part(scatter, f"{workflow.id}/") for scatter in step.scatter]
+            else:
+                step.scatter = _clean_part(step.scatter, f"{workflow.id}/")
 
 def load_workflow(path: str) -> Workflows:
     print(f"Loading CWL document from {path}...")
