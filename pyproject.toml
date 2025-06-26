@@ -96,7 +96,8 @@ dependencies = [
     "cwl-utils>=0.38",
     "ruamel.yaml>=0.18",
     "cwltool>=3.1.20250110105449",
-    "Jinja2>=3.1.6"
+    "Jinja2>=3.1.6",
+    "nose2",
 ]
 
 
