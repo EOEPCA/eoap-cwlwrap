@@ -98,7 +98,7 @@ Package installation will automatically install the following dependencies:
 ## Using the container
 
 ```
-docker run -it --rm  ghcr.io/eoepca/eoap-cwlwrap/eoap-cwlwrap:latest eoap-cwlwrap --help
+docker run -it --rm ghcr.io/eoepca/eoap-cwlwrap/eoap-cwlwrap:latest eoap-cwlwrap --help
 ```
 
 ## Run the tests
