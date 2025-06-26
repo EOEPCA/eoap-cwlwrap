@@ -83,7 +83,7 @@ eoap-cwlwrap \
 
 ## 🧠 Requirements
 
-- Python ≥ 3.8
+- Python ≥ 3.9
 
 ### Dependendies
 
@@ -99,4 +99,10 @@ Package installation will automatically install the following dependencies:
 
 ```
 docker run -it --rm  ghcr.io/eoepca/eoap-cwlwrap/eoap-cwlwrap:latest eoap-cwlwrap --help
+```
+
+## Run the tests
+
+```
+hatch -e test run nose2 --verbose 
 ```
