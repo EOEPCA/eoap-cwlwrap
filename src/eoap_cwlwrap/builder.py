@@ -13,7 +13,7 @@ from .loader import ( load_workflow,
 from .pumler import to_puml
 from .types import ( is_array_type,
                      is_directory_compatible_type,
-                     is_url_compatible_type,
+                     is_uri_compatible_type,
                      is_nullable,
                      replace_directory_with_url,
                      type_to_string,
@@ -83,7 +83,7 @@ def build_orchestrator_workflow(
                 lambda parameter: _to_workflow_input_parameter(stage_in.id, parameter),
                 list(
                     filter(
-                        lambda workflow_input: not is_url_compatible_type(workflow_input.type_),
+                        lambda workflow_input: not is_uri_compatible_type(workflow_input.type_),
                         stage_in.inputs
                     )
                 )
@@ -132,11 +132,11 @@ def build_orchestrator_workflow(
                 workflow_step.in_.append(
                     WorkflowStepInput(
                         id=stage_in_input.id,
-                        source=input.id if is_url_compatible_type(stage_in_input.type_) else stage_in_input.id
+                        source=input.id if is_uri_compatible_type(stage_in_input.type_) else stage_in_input.id
                     )
                 )
 
-                if is_url_compatible_type(stage_in_input.type_):
+                if is_uri_compatible_type(stage_in_input.type_):
                     if is_array_type(input.type_):
                         print(f"  Array detected, 'scatter' required for {stage_in_input.id}:{input.id}")
 
@@ -264,7 +264,7 @@ def build_orchestrator_workflow(
                             loadingOptions=output.loadingOptions
                         ),
                         filter(
-                            lambda stage_out_cwl_output: is_url_compatible_type(stage_out_cwl_output.type_),
+                            lambda stage_out_cwl_output: is_uri_compatible_type(stage_out_cwl_output.type_),
                             stage_out.outputs
                         )
                     ),

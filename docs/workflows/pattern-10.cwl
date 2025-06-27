@@ -25,7 +25,7 @@ $graph:
     - ndvi
     - ndwi
     type:
-      name: _:b9f799a3-bc32-43c2-b56f-23f7dee1a9a9
+      name: _:b88709bf-e280-4123-8798-e5ddfbc75306
       items: string
       type: array
   - id: item
@@ -33,7 +33,7 @@ $graph:
     doc: Reference to a STAC item - This parameter is derived from 
       pattern-10/item
     type:
-      name: _:52e54a1e-28c2-4979-83dd-a1c9d1911629
+      name: _:e99cf6b5-54fe-47d4-9f2c-994c32da08b0
       items: 
         https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
       type: array
@@ -68,7 +68,7 @@ $graph:
     outputSource:
     - stage_out_0/s3_catalog_output
     type:
-      name: _:2e3adfc5-9fcb-4998-9759-dd031cc5005c
+      name: _:d395284a-eed8-4aed-8f6b-150f523ba587
       items: 
         https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
       type: array
@@ -348,14 +348,14 @@ $graph:
     - ndvi
     - ndwi
     type:
-      name: _:b9f799a3-bc32-43c2-b56f-23f7dee1a9a9
+      name: _:b88709bf-e280-4123-8798-e5ddfbc75306
       items: string
       type: array
   - id: item
     label: STAC item reference
     doc: Reference to a STAC item
     type:
-      name: _:e279da22-cff0-4ac3-90c6-66fe3cba4932
+      name: _:ec2f6f39-10ff-4a39-ae70-1780f2523c25
       items: Directory
       type: array
   outputs:
@@ -365,7 +365,7 @@ $graph:
     outputSource:
     - flatten/flat
     type:
-      name: _:f9819922-1b78-4930-8004-6b970fcc58d4
+      name: _:fa772508-5123-46ec-a429-ef9c6565ef94
       items: Directory
       type: array
   requirements:
@@ -419,7 +419,7 @@ $graph:
     - ndvi
     - ndwi
     type:
-      name: _:7825723d-ae31-4f40-accb-5eda28b67c68
+      name: _:b5439357-acbd-43b8-a0c1-dbe375890426
       items: string
       type: array
   - id: item
@@ -433,7 +433,7 @@ $graph:
     outputSource:
     - step/vegetation_index
     type:
-      name: _:60debaac-3c97-4139-a133-fa11eec24261
+      name: _:beb1b4e6-8278-4cc0-b337-21abfbb1850f
       items: Directory
       type: array
   requirements:
@@ -504,16 +504,16 @@ $graph:
   inputs:
   - id: nested
     type:
-      name: _:54bf5c39-0d3b-44d5-adf6-2ad90caec06c
+      name: _:6d05921c-7ac3-4de7-8e92-41741279938f
       items:
-        name: _:12cfd9b6-619b-4b6c-8560-bde6dfa9d96d
+        name: _:a64036da-9af5-4672-8536-3e3594047f55
         items: Directory
         type: array
       type: array
   outputs:
   - id: flat
     type:
-      name: _:02bd2b04-4ee3-44df-b274-7d3bfe078be0
+      name: _:8eb89f34-bf6a-4d5e-be0e-e022c3d4a2de
       items: Directory
       type: array
   requirements:

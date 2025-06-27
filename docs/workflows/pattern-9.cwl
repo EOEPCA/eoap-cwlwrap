@@ -26,7 +26,7 @@ $graph:
     - ndwi
     - none
     type:
-      name: _:1f831a19-e6f2-4aa9-a617-567a4120b0b8
+      name: _:c8051945-4eba-4a13-afb8-57cc235e8c9a
       items: string
       type: array
   - id: item
@@ -67,7 +67,7 @@ $graph:
     - stage_out_0/s3_catalog_output
     type:
     - 'null'
-    - name: _:5fbe43e1-6475-4129-87ba-222ecdc20857
+    - name: _:ca7a4928-36f8-4f31-a6ea-6acfdc21e7c2
       items: 
         https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
       type: array
@@ -346,7 +346,7 @@ $graph:
     - ndwi
     - none
     type:
-      name: _:1f831a19-e6f2-4aa9-a617-567a4120b0b8
+      name: _:c8051945-4eba-4a13-afb8-57cc235e8c9a
       items: string
       type: array
   - id: item
@@ -361,7 +361,7 @@ $graph:
     - step/vegetation_index
     type:
     - 'null'
-    - name: _:6605a6d0-9c96-411f-9577-d71d76a12641
+    - name: _:a60d84d3-a63f-49c9-9982-4a5a728bfb00
       items: Directory
       type: array
   requirements:

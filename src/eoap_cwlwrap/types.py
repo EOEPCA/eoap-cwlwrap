@@ -60,7 +60,7 @@ def is_directory_compatible_type(typ: Any) -> bool:
 
     return False
 
-def is_url_compatible_type(typ: Any) -> bool:
+def is_uri_compatible_type(typ: Any) -> bool:
     """
     Recursively check if a CWL v1.2 type is or contains a https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI,
     including unions and multi-dimensional arrays.
@@ -75,11 +75,11 @@ def is_url_compatible_type(typ: Any) -> bool:
 
     # Case 2: Union type (list of types)
     if isinstance(typ, list):
-        return any(is_url_compatible_type(t) for t in typ)
+        return any(is_uri_compatible_type(t) for t in typ)
 
     # Case 3: Array type (recursive item type check)
     if hasattr(typ, "items"):
-        return is_url_compatible_type(typ.items)
+        return is_uri_compatible_type(typ.items)
 
     return False
 
@@ -156,7 +156,7 @@ def validate_stage_in(stage_in: Workflow):
 
     url_inputs = list(
         filter(
-            lambda input: is_url_compatible_type(input.type_),
+            lambda input: is_uri_compatible_type(input.type_),
             stage_in.inputs
         )
     )
@@ -191,7 +191,7 @@ def validate_stage_out(stage_out: Workflow):
 
     url_outputs = list(
         filter(
-            lambda output: is_url_compatible_type(output.type_),
+            lambda output: is_uri_compatible_type(output.type_),
             stage_out.outputs
         )
     )

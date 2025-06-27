@@ -19,11 +19,11 @@
 <polygon fill="#eeeeee" stroke="black" stroke-dasharray="5,2" points="1194,-8 1194,-84 1354,-84 1354,-8 1194,-8"/>
 <text text-anchor="middle" x="1281.5" y="-15.8" font-family="Times,serif" font-size="14.00">Workflow Outputs</text>
 </g>
-<!-- main/stage_in_1 -->
+<!-- main/stage_in_0 -->
 <g id="node1" class="node">
-<title>main/stage_in_1</title>
+<title>main/stage_in_0</title>
 <polygon fill="lightgoldenrodyellow" stroke="black" points="322.5,-258.5 322.5,-294.5 453.5,-294.5 453.5,-258.5 322.5,-258.5"/>
-<text text-anchor="middle" x="388" y="-272.8" font-family="Times,serif" font-size="14.00">main/stage_in_1</text>
+<text text-anchor="middle" x="388" y="-272.8" font-family="Times,serif" font-size="14.00">main/stage_in_0</text>
 </g>
 <!-- main/app -->
 <g id="node2" class="node">
@@ -31,9 +31,9 @@
 <polygon fill="#f3cea1" stroke="black" points="99,-185.5 99,-221.5 563,-221.5 563,-185.5 99,-185.5"/>
 <text text-anchor="middle" x="331" y="-199.8" font-family="Times,serif" font-size="14.00">Water bodies detection based on NDWI and the otsu threshold</text>
 </g>
-<!-- main/stage_in_1&#45;&gt;main/app -->
+<!-- main/stage_in_0&#45;&gt;main/app -->
 <g id="edge1" class="edge">
-<title>main/stage_in_1&#45;&gt;main/app</title>
+<title>main/stage_in_0&#45;&gt;main/app</title>
 <path fill="none" stroke="black" d="M374.2,-258.31C367.27,-249.68 358.74,-239.06 351.1,-229.53"/>
 <polygon fill="black" stroke="black" points="353.66,-227.14 344.67,-221.53 348.2,-231.52 353.66,-227.14"/>
 </g>
@@ -49,15 +49,15 @@
 <path fill="none" stroke="black" d="M556.87,-185.49C762.06,-170.04 1053.35,-148.11 1193.09,-137.59"/>
 <polygon fill="black" stroke="black" points="1193.59,-141.06 1203.3,-136.82 1193.06,-134.08 1193.59,-141.06"/>
 </g>
-<!-- main/stage_in_0 -->
+<!-- main/stage_in_1 -->
 <g id="node3" class="node">
-<title>main/stage_in_0</title>
+<title>main/stage_in_1</title>
 <polygon fill="lightgoldenrodyellow" stroke="black" points="471.5,-258.5 471.5,-294.5 602.5,-294.5 602.5,-258.5 471.5,-258.5"/>
-<text text-anchor="middle" x="537" y="-272.8" font-family="Times,serif" font-size="14.00">main/stage_in_0</text>
+<text text-anchor="middle" x="537" y="-272.8" font-family="Times,serif" font-size="14.00">main/stage_in_1</text>
 </g>
-<!-- main/stage_in_0&#45;&gt;main/app -->
+<!-- main/stage_in_1&#45;&gt;main/app -->
 <g id="edge2" class="edge">
-<title>main/stage_in_0&#45;&gt;main/app</title>
+<title>main/stage_in_1&#45;&gt;main/app</title>
 <path fill="none" stroke="black" d="M487.66,-258.49C458.44,-248.42 421.24,-235.6 390.42,-224.98"/>
 <polygon fill="black" stroke="black" points="391.25,-221.56 380.65,-221.61 388.97,-228.18 391.25,-221.56"/>
 </g>
@@ -115,41 +115,41 @@
 <polygon fill="#94ddf4" stroke="black" points="459,-334.5 459,-370.5 615,-370.5 615,-334.5 459,-334.5"/>
 <text text-anchor="middle" x="537" y="-348.8" font-family="Times,serif" font-size="14.00">main/another_input</text>
 </g>
-<!-- main/another_input&#45;&gt;main/stage_in_1 -->
-<g id="edge8" class="edge">
-<title>main/another_input&#45;&gt;main/stage_in_1</title>
-<path fill="none" stroke="black" d="M508.45,-334.46C491.69,-324.74 469.94,-312.62 450,-303 446.92,-301.51 443.73,-300.03 440.49,-298.58"/>
-<polygon fill="black" stroke="black" points="441.88,-295.36 431.32,-294.55 439.06,-301.77 441.88,-295.36"/>
-</g>
 <!-- main/another_input&#45;&gt;main/stage_in_0 -->
 <g id="edge7" class="edge">
 <title>main/another_input&#45;&gt;main/stage_in_0</title>
+<path fill="none" stroke="black" d="M508.45,-334.46C491.69,-324.74 469.94,-312.62 450,-303 446.92,-301.51 443.73,-300.03 440.49,-298.58"/>
+<polygon fill="black" stroke="black" points="441.88,-295.36 431.32,-294.55 439.06,-301.77 441.88,-295.36"/>
+</g>
+<!-- main/another_input&#45;&gt;main/stage_in_1 -->
+<g id="edge8" class="edge">
+<title>main/another_input&#45;&gt;main/stage_in_1</title>
 <path fill="none" stroke="black" d="M537,-334.34C537,-325.56 537,-314.66 537,-304.77"/>
 <polygon fill="black" stroke="black" points="540.5,-304.57 537,-294.57 533.5,-304.57 540.5,-304.57"/>
 </g>
 <!-- main/item_1 -->
 <g id="node9" class="node">
 <title>main/item_1</title>
-<polygon fill="#94ddf4" stroke="black" points="633,-334.5 633,-370.5 737,-370.5 737,-334.5 633,-334.5"/>
-<text text-anchor="middle" x="685" y="-348.8" font-family="Times,serif" font-size="14.00">main/item_1</text>
+<polygon fill="#94ddf4" stroke="black" points="337,-334.5 337,-370.5 441,-370.5 441,-334.5 337,-334.5"/>
+<text text-anchor="middle" x="389" y="-348.8" font-family="Times,serif" font-size="14.00">main/item_1</text>
 </g>
 <!-- main/item_1&#45;&gt;main/stage_in_0 -->
 <g id="edge9" class="edge">
 <title>main/item_1&#45;&gt;main/stage_in_0</title>
-<path fill="none" stroke="black" d="M667.35,-334.41C655.81,-324.05 639.97,-311.28 624,-303 620.23,-301.04 616.28,-299.22 612.24,-297.51"/>
-<polygon fill="black" stroke="black" points="613.28,-294.16 602.69,-293.76 610.72,-300.67 613.28,-294.16"/>
+<path fill="none" stroke="black" d="M388.77,-334.34C388.65,-325.56 388.5,-314.66 388.37,-304.77"/>
+<polygon fill="black" stroke="black" points="391.87,-304.52 388.23,-294.57 384.87,-304.62 391.87,-304.52"/>
 </g>
 <!-- main/item_2 -->
 <g id="node10" class="node">
 <title>main/item_2</title>
-<polygon fill="#94ddf4" stroke="black" points="337,-334.5 337,-370.5 441,-370.5 441,-334.5 337,-334.5"/>
-<text text-anchor="middle" x="389" y="-348.8" font-family="Times,serif" font-size="14.00">main/item_2</text>
+<polygon fill="#94ddf4" stroke="black" points="633,-334.5 633,-370.5 737,-370.5 737,-334.5 633,-334.5"/>
+<text text-anchor="middle" x="685" y="-348.8" font-family="Times,serif" font-size="14.00">main/item_2</text>
 </g>
 <!-- main/item_2&#45;&gt;main/stage_in_1 -->
 <g id="edge10" class="edge">
 <title>main/item_2&#45;&gt;main/stage_in_1</title>
-<path fill="none" stroke="black" d="M388.77,-334.34C388.65,-325.56 388.5,-314.66 388.37,-304.77"/>
-<polygon fill="black" stroke="black" points="391.87,-304.52 388.23,-294.57 384.87,-304.62 391.87,-304.52"/>
+<path fill="none" stroke="black" d="M667.35,-334.41C655.81,-324.05 639.97,-311.28 624,-303 620.23,-301.04 616.28,-299.22 612.24,-297.51"/>
+<polygon fill="black" stroke="black" points="613.28,-294.16 602.69,-293.76 610.72,-300.67 613.28,-294.16"/>
 </g>
 <!-- main/aws_access_key_id -->
 <g id="node11" class="node">
