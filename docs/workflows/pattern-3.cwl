@@ -26,7 +26,7 @@ $graph:
     - green
     - nir08
     type:
-      name: _:5e2c17e1-b66e-4145-b50f-0eabe7f4434a
+      name: _:366815f0-d8db-49a5-94e4-a39be5baaa7e
       items: string
       type: array
   - id: items
@@ -34,7 +34,7 @@ $graph:
     doc: Reference to a STAC item - This parameter is derived from 
       pattern-3/items
     type:
-      name: _:6b3520e6-56e2-499d-b365-73b83d5504e4
+      name: _:4cbda045-7795-43c4-bcbb-48e9cb40db13
       items: 
         https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
       type: array
@@ -67,7 +67,7 @@ $graph:
     outputSource:
     - stage_out_0/s3_catalog_output
     type:
-      name: _:5f395c45-ea6e-42bf-889d-ab61464d86f3
+      name: _:7d43c315-d75d-4dd9-b223-bef185a795f8
       items: 
         https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
       type: array
@@ -348,14 +348,14 @@ $graph:
     - green
     - nir08
     type:
-      name: _:5e2c17e1-b66e-4145-b50f-0eabe7f4434a
+      name: _:366815f0-d8db-49a5-94e4-a39be5baaa7e
       items: string
       type: array
   - id: items
     label: STAC item reference
     doc: Reference to a STAC item
     type:
-      name: _:d3ef17f8-91c6-4a88-ba43-676bb08dabf1
+      name: _:448ccba1-bd6f-445c-a60b-5b1e44e9eea9
       items: Directory
       type: array
   outputs:
@@ -363,7 +363,7 @@ $graph:
     outputSource:
     - step/stac-catalog
     type:
-      name: _:68e0f498-e9de-463d-9f09-fb62f5c7ed3f
+      name: _:240449c8-affe-44f1-b8f3-2d5d1b3ce585
       items: Directory
       type: array
   requirements:
@@ -404,7 +404,7 @@ $graph:
       prefix: --epsg
   - id: band
     type:
-    - name: _:fa22ef2b-85b7-42e2-bbcb-86074bb8afb0
+    - name: _:f8e704b4-2b7e-445a-84e1-2befdb6ebd1d
       items: string
       type: array
       inputBinding:

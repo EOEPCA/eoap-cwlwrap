@@ -96,6 +96,12 @@ def load_workflow(path: str) -> Workflows:
 
     return workflow
 
+def to_yaml(workflow: Workflows) -> Any:
+    return save(
+        val=workflow,
+        relative_uris=False
+    )
+
 def dump_workflow(workflow: Workflows, output: str):
     print(f"Saving the new Workflow to {output}...")
 
@@ -103,11 +109,6 @@ def dump_workflow(workflow: Workflows, output: str):
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     with output_path.open("w") as f:
-        yaml.dump(
-            save(
-                val=workflow,
-                relative_uris=False
-            ),
-        f)
+        yaml.dump(to_yaml(workflow), f)
 
     print(f"New Workflow successfully saved to {output}!")

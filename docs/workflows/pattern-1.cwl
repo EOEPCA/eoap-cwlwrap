@@ -26,7 +26,7 @@ $graph:
     - green
     - nir08
     type:
-      name: _:bfc5ab64-ac88-470d-ade8-4a2a075631b4
+      name: _:2f3f86ba-c6c7-4ca7-b50d-b2949491569b
       items: string
       type: array
   - id: item
@@ -337,7 +337,7 @@ $graph:
     - green
     - nir08
     type:
-      name: _:bfc5ab64-ac88-470d-ade8-4a2a075631b4
+      name: _:2f3f86ba-c6c7-4ca7-b50d-b2949491569b
       items: string
       type: array
   - id: item
@@ -384,7 +384,7 @@ $graph:
       prefix: --epsg
   - id: band
     type:
-    - name: _:a0ccd598-ea25-40f9-9e16-e539f8471637
+    - name: _:5ce92795-dd05-4d44-9504-a4d4a66aedc7
       items: string
       type: array
       inputBinding:
