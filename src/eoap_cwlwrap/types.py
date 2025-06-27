@@ -20,8 +20,8 @@ import sys
 
 Workflows = Union[Workflow, list[Workflow]]
 
-URL_SCHEMA = 'https://raw.githubusercontent.com/eoap/schemas/main/url.yaml'
-URL_TYPE = f"{URL_SCHEMA}#URL"
+URL_SCHEMA = 'https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml'
+URL_TYPE = f"{URL_SCHEMA}#URI"
 
 def is_nullable(typ: Any) -> bool:
     if isinstance(typ, list):
@@ -62,11 +62,11 @@ def is_directory_compatible_type(typ: Any) -> bool:
 
 def is_url_compatible_type(typ: Any) -> bool:
     """
-    Recursively check if a CWL v1.2 type is or contains a https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL,
+    Recursively check if a CWL v1.2 type is or contains a https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI,
     including unions and multi-dimensional arrays.
     
     :param typ: A CWLType (or nested list of types) from cwl_utils.parser
-    :return: True if the type (even deeply nested) is a https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL, else False
+    :return: True if the type (even deeply nested) is a https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI, else False
     """
 
     # Case 1: Direct string reference
@@ -94,7 +94,7 @@ def replace_directory_with_url(typ: Any) -> Any:
     Recursively traverses the CWL type (from cwl_utils.parser.cwl_v1_2) and replaces
     every occurrence of `Directory` with the external schema reference:
     
-        "https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL"
+        "https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI"
 
     :param typ: CWL type (can be primitive, list, or schema object)
     :return: Modified type with Directory replaced

@@ -8,13 +8,13 @@
 
 ### stage-in
 
-- _One_ input parameter of type [URL](https://raw.githubusercontent.com/eoap/schemas/main/url.yaml);
+- _One_ input parameter of type [URI](https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml);
 - _One_ output of type [Directory](https://www.commonwl.org/v1.0/CommandLineTool.html#Directory).
 
 ### stage-out 
 
 - _One_ input parameter of type [Directory](https://www.commonwl.org/v1.0/CommandLineTool.html#Directory);
-- _One_ output of type [URL](https://raw.githubusercontent.com/eoap/schemas/main/url.yaml).
+- _One_ output of type [URI](https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml).
 
 ### app
 
@@ -32,10 +32,10 @@ Outputs:
 ### main
 
 - `inputs` coming from `app`:
-  * if type is assignable to [Directory](https://www.commonwl.org/v1.0/CommandLineTool.html#Directory) it is converted to [URL](https://raw.githubusercontent.com/eoap/schemas/main/url.yaml) input in `main`;
+  * if type is assignable to [Directory](https://www.commonwl.org/v1.0/CommandLineTool.html#Directory) it is converted to [URI](https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml) input in `main`;
   * any other kind of input won't be transformed;
 - `outpus` coming from `app`:
-  * if type is assignable to [Directory](https://www.commonwl.org/v1.0/CommandLineTool.html#Directory) it is converted to [URL](https://raw.githubusercontent.com/eoap/schemas/main/url.yaml) output in `main`;
+  * if type is assignable to [Directory](https://www.commonwl.org/v1.0/CommandLineTool.html#Directory) it is converted to [URI](https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml) output in `main`;
   * any other kind of output won't be transformed, but referenced to the related `app` output;
 
 ---

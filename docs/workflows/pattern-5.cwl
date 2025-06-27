@@ -25,14 +25,15 @@ $graph:
     - ndvi
     - ndwi
     type:
-      name: _:868aad92-a800-4a2b-91a4-85412028d6ed
+      name: _:3d1e47ae-5666-42da-ad68-3f211eb629f3
       items: string
       type: array
   - id: item
     label: STAC item reference - pattern-5/item
     doc: Reference to a STAC item - This parameter is derived from 
       pattern-5/item
-    type: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
+    type: 
+      https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
   - id: s3_bucket
     label: my-super-stage-out/s3_bucket
     doc: 'This parameter is derived from: my-super-stage-out/s3_bucket'
@@ -64,14 +65,16 @@ $graph:
     outputSource:
     - stage_out_0/s3_catalog_output
     type:
-      name: _:a378e4be-3f20-4de8-9c38-c294f1e9ef4a
-      items: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
+      name: _:1726d08d-0120-4358-a98a-dc54c0fdf285
+      items: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
       type: array
   requirements:
   - class: SubworkflowFeatureRequirement
   - class: SchemaDefRequirement
     types:
-    - $import: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml
+    - $import: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
   - class: ScatterFeatureRequirement
   steps:
   - id: stage_in_0
@@ -124,7 +127,8 @@ $graph:
   - id: reference
     label: STAC Item URL
     doc: A STAC Item to stage
-    type: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
+    type: 
+      https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
   - id: another_input
     label: Another Input
     doc: An additional input for demonstration purposes
@@ -137,16 +141,138 @@ $graph:
   requirements:
   - class: SchemaDefRequirement
     types:
-    - name: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Date
       fields:
       - name: 
-          https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL/href
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Date/value
         type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#DateTime
+      fields:
       - name: 
-          https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL/description
-        type:
-        - 'null'
-        - string
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#DateTime/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Duration
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Duration/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Email
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Email/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Hostname
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Hostname/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IDNEmail
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IDNEmail/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IDNHostname
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IDNHostname/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IPv4
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IPv4/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IPv6
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IPv6/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IRI
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IRI/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IRIReference
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IRIReference/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#JsonPointer
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#JsonPointer/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Password
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Password/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#RelativeJsonPointer
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#RelativeJsonPointer/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#UUID
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#UUID/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URIReference
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URIReference/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URITemplate
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URITemplate/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Time
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Time/value
+        type: string
       type: record
   - class: DockerRequirement
     dockerPull: ghcr.io/eoap/mastering-app-package/stage:1.0.0
@@ -217,7 +343,7 @@ $graph:
     - ndvi
     - ndwi
     type:
-      name: _:868aad92-a800-4a2b-91a4-85412028d6ed
+      name: _:3d1e47ae-5666-42da-ad68-3f211eb629f3
       items: string
       type: array
   - id: item
@@ -231,7 +357,7 @@ $graph:
     outputSource:
     - step/vegetation_index
     type:
-      name: _:29a69b76-1e17-4aa2-b8e3-494ccbb38cf6
+      name: _:3f62f7e0-6c0c-4106-b998-826d47ca3efc
       items: Directory
       type: array
   requirements:
@@ -320,7 +446,8 @@ $graph:
     type: Directory
   outputs:
   - id: s3_catalog_output
-    type: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
+    type: 
+      https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
     outputBinding:
       loadContents: true
       glob: catalog-uri.txt
@@ -331,16 +458,138 @@ $graph:
   requirements:
   - class: SchemaDefRequirement
     types:
-    - name: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Date
       fields:
       - name: 
-          https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL/href
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Date/value
         type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#DateTime
+      fields:
       - name: 
-          https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL/description
-        type:
-        - 'null'
-        - string
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#DateTime/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Duration
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Duration/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Email
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Email/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Hostname
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Hostname/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IDNEmail
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IDNEmail/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IDNHostname
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IDNHostname/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IPv4
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IPv4/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IPv6
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IPv6/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IRI
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IRI/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IRIReference
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#IRIReference/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#JsonPointer
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#JsonPointer/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Password
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Password/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#RelativeJsonPointer
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#RelativeJsonPointer/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#UUID
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#UUID/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URIReference
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URIReference/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URITemplate
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URITemplate/value
+        type: string
+      type: record
+    - name: 
+        https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Time
+      fields:
+      - name: 
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#Time/value
+        type: string
       type: record
   - class: DockerRequirement
     dockerPull: ghcr.io/eoap/mastering-app-package/stage:1.0.0

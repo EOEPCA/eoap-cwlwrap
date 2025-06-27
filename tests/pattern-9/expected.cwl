@@ -33,7 +33,7 @@ $graph:
     label: STAC item reference - pattern-9/item
     doc: Reference to a STAC item - This parameter is derived from 
       pattern-9/item
-    type: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
+    type: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
   - id: s3_bucket
     label: my-super-stage-out/s3_bucket
     doc: 'This parameter is derived from: my-super-stage-out/s3_bucket'
@@ -65,13 +65,13 @@ $graph:
     type:
       - "null"
       - type: array
-        items: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
+        items: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
   requirements:
   - class: SubworkflowFeatureRequirement
   - class: ScatterFeatureRequirement
   - class: SchemaDefRequirement
     types:
-    - $import: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml
+    - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
   steps:
   - id: stage_in_0
     in:
@@ -124,7 +124,7 @@ $graph:
   - id: reference
     label: STAC Item URL
     doc: A STAC Item to stage
-    type: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
+    type: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
   - id: another_input
     label: Another Input
     doc: An additional input for demonstration purposes
@@ -137,13 +137,13 @@ $graph:
   requirements:
   - class: SchemaDefRequirement
     types:
-    - name: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
+    - name: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
       fields:
       - name: 
-          https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL/href
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI/href
         type: string
       - name: 
-          https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL/description
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI/description
         type:
         - 'null'
         - string
@@ -326,7 +326,7 @@ $graph:
     type: Directory
   outputs:
   - id: s3_catalog_output
-    type: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
+    type: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
     outputBinding:
       loadContents: true
       glob: catalog-uri.txt
@@ -337,13 +337,13 @@ $graph:
   requirements:
   - class: SchemaDefRequirement
     types:
-    - name: https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL
+    - name: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
       fields:
       - name: 
-          https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL/href
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI/href
         type: string
       - name: 
-          https://raw.githubusercontent.com/eoap/schemas/main/url.yaml#URL/description
+          https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI/description
         type:
         - 'null'
         - string
