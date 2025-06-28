@@ -13,6 +13,7 @@ from .loader import ( load_workflow,
                       dump_workflow )
 from .pumler import to_puml
 from datetime import datetime
+from pathlib import Path
 import click
 import time
 
@@ -54,7 +55,14 @@ def main(stage_in: str,
     print('BUILD SUCCESS')
     print('------------------------------------------------------------------------')
 
-    dump_workflow(main_workflow, output)
+    print(f"Saving the new Workflow to {output}...")
+
+    output_path = Path(output)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w") as f:
+        dump_workflow(main_workflow, output_path)
+
+    print(f"New Workflow successfully saved to {output}!")
 
     print('------------------------------------------------------------------------')
 
