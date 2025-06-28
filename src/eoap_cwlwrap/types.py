@@ -24,10 +24,7 @@ URL_SCHEMA = 'https://raw.githubusercontent.com/eoap/schemas/main/string_format.
 URL_TYPE = f"{URL_SCHEMA}#URI"
 
 def is_nullable(typ: Any) -> bool:
-    if isinstance(typ, list):
-        return any(isinstance(t, str) and 'null' == t for t in typ)
-
-    return False
+    return isinstance(typ, list) and 'null' in typ
 
 def is_directory_compatible_type(typ: Any) -> bool:
     """
