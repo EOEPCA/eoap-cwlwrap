@@ -17,10 +17,10 @@ import click
 import time
 
 @click.command()
-@click.option("--stage-in", type=click.Path(exists=True), help="The CWL stage-in file")
-@click.option("--workflow", type=click.Path(exists=True), help="The CWL workflow file")
-@click.option("--workflow-id", help="ID of the workflow")
-@click.option("--stage-out", type=click.Path(exists=True), help="The CWL stage-out file")
+@click.option("--stage-in", required=True, help="The CWL stage-in file")
+@click.option("--workflow", required=True, help="The CWL workflow file")
+@click.option("--workflow-id", required=True, help="ID of the workflow")
+@click.option("--stage-out", required=True, help="The CWL stage-out file")
 @click.option("--output", type=click.Path(), required=True, help="Output file path")
 @click.option('--puml', is_flag=True, help="Serializes the workflow as PlantUML diagram.")
 def main(stage_in: str,

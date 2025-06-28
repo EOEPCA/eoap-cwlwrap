@@ -16,6 +16,11 @@ from cwltool.update import update
 from ruamel.yaml import YAML
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
+import gzip
+import io
+import requests
+import os
 
 __TARGET_CWL_VERSION__ = 'v1.2'
 
@@ -59,11 +64,35 @@ def _clean_workflow(workflow: Any):
             else:
                 step.scatter = _clean_part(step.scatter, f"{workflow.id}/")
 
+def _is_url(path_or_url: str) -> bool:
+    try:
+        result = urlparse(path_or_url)
+        return all([result.scheme in ('http', 'https'), result.netloc])
+    except Exception:
+        return False
+
 def load_workflow(path: str) -> Workflows:
     print(f"Loading CWL document from {path}...")
 
-    with open(path, 'r') as workflow_stream:
-        raw_workflow = yaml.load(workflow_stream)
+    if _is_url(path):
+        response = requests.get(path, stream=True)
+        response.raise_for_status()
+
+        # Read first 2 bytes to check for gzip
+        magic = response.raw.read(2)
+        remaining = response.raw.read()  # Read rest of the stream
+        combined = io.BytesIO(magic + remaining)
+
+        if magic == b'\x1f\x8b':
+            decompressed = gzip.GzipFile(fileobj=combined)
+            raw_workflow = yaml.load(io.TextIOWrapper(decompressed, encoding='utf-8'))
+        else:
+            raw_workflow = yaml.load(io.TextIOWrapper(combined, encoding='utf-8'))
+    elif os.path.exists(path):
+        with open(path, 'r', encoding='utf-8') as f:
+            raw_workflow = yaml.load(f)
+    else:
+        raise ValueError(f"Invalid source {path}: not a URL or existing file path")
 
     print(f"Raw CWL document successfully loaded from {path}! Now updating the model to v1.2...")
 
