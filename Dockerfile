@@ -45,6 +45,12 @@ WORKDIR /app
 ENV VIRTUAL_ENV=/app/envs/eoap-cwlwrap
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
+RUN echo "**** install yq ****" && \
+    VERSION="v4.12.2"                                                                               && \
+    BINARY="yq_linux_amd64"                                                                         && \
+    wget --quiet https://github.com/mikefarah/yq/releases/download/${VERSION}/${BINARY}.tar.gz -O - |\
+    tar xz && mv ${BINARY} /usr/bin/yq   
+
 # Prune any existing environments and create a new production environment
 RUN hatch env prune && \
     hatch env create prod && \
