@@ -2,10 +2,16 @@
 FROM rockylinux:9.3-minimal AS build
 
 # Install necessary build tools
-RUN microdnf install -y curl tar
+RUN microdnf install -y curl tar wget
 
 # Download the hatch tar.gz file from GitHub
 RUN curl -L https://github.com/pypa/hatch/releases/latest/download/hatch-x86_64-unknown-linux-gnu.tar.gz -o /tmp/hatch-x86_64-unknown-linux-gnu.tar.gz
+
+# install yq
+RUN VERSION="v4.12.2"                                                                               && \
+    BINARY="yq_linux_amd64"                                                                         && \
+    wget --quiet https://github.com/mikefarah/yq/releases/download/${VERSION}/${BINARY}.tar.gz -O - |\
+    tar xz && mv ${BINARY} /usr/bin/yq   
 
 # Extract the hatch binary
 RUN tar -xzf /tmp/hatch-x86_64-unknown-linux-gnu.tar.gz -C /tmp/
@@ -30,6 +36,7 @@ RUN useradd -u 1001 -r -g 0 -m -d ${HOME} -s /sbin/nologin \
 
 # Copy the hatch binary from the build stage
 COPY --from=build /tmp/hatch /usr/bin/hatch
+COPY --from=build /usr/bin/yq /usr/bin/yq
 
 # Ensure the hatch binary is executable
 RUN chmod +x /usr/bin/hatch
@@ -45,11 +52,7 @@ WORKDIR /app
 ENV VIRTUAL_ENV=/app/envs/eoap-cwlwrap
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-RUN echo "**** install yq ****" && \
-    VERSION="v4.12.2"                                                                               && \
-    BINARY="yq_linux_amd64"                                                                         && \
-    wget --quiet https://github.com/mikefarah/yq/releases/download/${VERSION}/${BINARY}.tar.gz -O - |\
-    tar xz && mv ${BINARY} /usr/bin/yq   
+
 
 # Prune any existing environments and create a new production environment
 RUN hatch env prune && \
