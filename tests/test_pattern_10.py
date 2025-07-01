@@ -16,6 +16,3 @@ class TestPattern10(TestCWL):
 
     def test_pattern_wrapped_cwl(self):
         self._wrapped_cwl_validation()
-        
-
-    

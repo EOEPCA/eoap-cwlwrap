@@ -9,8 +9,10 @@ If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
 from . import wrap
-from .loader import ( load_workflow,
-                      dump_workflow )
+from .loader import (
+    load_workflow,
+    dump_workflow
+)
 from .pumler import to_puml
 from datetime import datetime
 from pathlib import Path
@@ -43,7 +45,7 @@ def main(
     print('------------------------------------------------------------------------')
 
     file_stage_in_cwl = None
-    if directory_stage_in:
+    if file_stage_in:
         file_stage_in_cwl = load_workflow(path=file_stage_in)
 
     print('------------------------------------------------------------------------')

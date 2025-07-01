@@ -7,7 +7,6 @@ from io import StringIO
 from click.testing import CliRunner
 from eoap_cwlwrap import builder as app
 
-        
 class TestCWL(unittest.TestCase):
 
     def validate_cwl_file(self, cwl_file) -> int:
@@ -30,7 +29,7 @@ class TestCWL(unittest.TestCase):
         return result
 
     def setUp(self):
-        self.stagein_cwl_file = os.path.join(os.path.dirname(__file__), "templates/stage-in.cwl")
+        self.stagein_cwl_file = os.path.join(os.path.dirname(__file__), "templates/directory-stage-in.cwl")
         self.stageout_cwl_file = os.path.join(os.path.dirname(__file__), "templates/stage-out.cwl")
 
         self.app_cwl_file = None    
@@ -50,12 +49,11 @@ class TestCWL(unittest.TestCase):
         assert os.path.exists(self.stageout_cwl_file), f"Stage-out CWL file {self.stageout_cwl_file} does not exist"
         assert os.path.exists(self.app_cwl_file), f"App CWL file {self.app_cwl_file} does not exist"
 
-            
         runner = CliRunner()
         result = runner.invoke(
             app.main,
             [
-                "--stage-in",
+                "--directory-stage-in",
                 self.stagein_cwl_file,
                 "--stage-out",
                 self.stageout_cwl_file,
@@ -68,6 +66,5 @@ class TestCWL(unittest.TestCase):
             ],
         )
 
-        self.assertEqual(result.exit_code, 0, f"Wrapped CWL {self.app_cwl_file} validation failed")
+        self.assertEqual(result.exit_code, 0, f"Wrapped CWL {self.app_cwl_file} validation failed: {result.output}")
         self.assertEqual(self._cwl_validation(".wrapped.cwl"), 0)
-
