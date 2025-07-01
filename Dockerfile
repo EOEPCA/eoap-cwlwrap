@@ -8,7 +8,7 @@ RUN microdnf install -y curl tar wget
 RUN curl -L https://github.com/pypa/hatch/releases/latest/download/hatch-x86_64-unknown-linux-gnu.tar.gz -o /tmp/hatch-x86_64-unknown-linux-gnu.tar.gz
 
 # install yq
-RUN VERSION="v4.12.2"                                                                               && \
+RUN VERSION="v4.45.4"                                                                               && \
     BINARY="yq_linux_amd64"                                                                         && \
     wget --quiet https://github.com/mikefarah/yq/releases/download/${VERSION}/${BINARY}.tar.gz -O - |\
     tar xz && mv ${BINARY} /usr/bin/yq   
