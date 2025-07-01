@@ -19,23 +19,23 @@
 <polygon fill="#eeeeee" stroke="black" stroke-dasharray="5,2" points="1194,-8 1194,-84 1354,-84 1354,-8 1194,-8"/>
 <text text-anchor="middle" x="1281.5" y="-15.8" font-family="Times,serif" font-size="14.00">Workflow Outputs</text>
 </g>
-<!-- main/stage_in_1 -->
+<!-- main/directory_stage_in_0 -->
 <g id="node1" class="node">
-<title>main/stage_in_1</title>
-<polygon fill="lightgoldenrodyellow" stroke="black" points="322.5,-258.5 322.5,-294.5 453.5,-294.5 453.5,-258.5 322.5,-258.5"/>
-<text text-anchor="middle" x="388" y="-272.8" font-family="Times,serif" font-size="14.00">main/stage_in_1</text>
+<title>main/directory_stage_in_0</title>
+<polygon fill="lightgoldenrodyellow" stroke="black" points="295.5,-258.5 295.5,-294.5 498.5,-294.5 498.5,-258.5 295.5,-258.5"/>
+<text text-anchor="middle" x="397" y="-272.8" font-family="Times,serif" font-size="14.00">main/directory_stage_in_0</text>
 </g>
 <!-- main/app -->
 <g id="node2" class="node">
 <title>main/app</title>
-<polygon fill="#f3cea1" stroke="black" points="99,-185.5 99,-221.5 563,-221.5 563,-185.5 99,-185.5"/>
-<text text-anchor="middle" x="331" y="-199.8" font-family="Times,serif" font-size="14.00">Water bodies detection based on NDWI and the otsu threshold</text>
+<polygon fill="#f3cea1" stroke="black" points="100,-185.5 100,-221.5 564,-221.5 564,-185.5 100,-185.5"/>
+<text text-anchor="middle" x="332" y="-199.8" font-family="Times,serif" font-size="14.00">Water bodies detection based on NDWI and the otsu threshold</text>
 </g>
-<!-- main/stage_in_1&#45;&gt;main/app -->
+<!-- main/directory_stage_in_0&#45;&gt;main/app -->
 <g id="edge1" class="edge">
-<title>main/stage_in_1&#45;&gt;main/app</title>
-<path fill="none" stroke="black" d="M374.2,-258.31C367.27,-249.68 358.74,-239.06 351.1,-229.53"/>
-<polygon fill="black" stroke="black" points="353.66,-227.14 344.67,-221.53 348.2,-231.52 353.66,-227.14"/>
+<title>main/directory_stage_in_0&#45;&gt;main/app</title>
+<path fill="none" stroke="black" d="M381.27,-258.31C373.2,-249.5 363.24,-238.63 354.39,-228.96"/>
+<polygon fill="black" stroke="black" points="356.92,-226.54 347.59,-221.53 351.76,-231.27 356.92,-226.54"/>
 </g>
 <!-- main/stage_out_0 -->
 <g id="node4" class="node">
@@ -46,20 +46,20 @@
 <!-- main/app&#45;&gt;main/stage_out_0 -->
 <g id="edge3" class="edge">
 <title>main/app&#45;&gt;main/stage_out_0</title>
-<path fill="none" stroke="black" d="M556.87,-185.49C762.06,-170.04 1053.35,-148.11 1193.09,-137.59"/>
-<polygon fill="black" stroke="black" points="1193.59,-141.06 1203.3,-136.82 1193.06,-134.08 1193.59,-141.06"/>
+<path fill="none" stroke="black" d="M557.63,-185.49C762.6,-170.04 1053.59,-148.11 1193.18,-137.59"/>
+<polygon fill="black" stroke="black" points="1193.66,-141.07 1203.37,-136.82 1193.14,-134.08 1193.66,-141.07"/>
 </g>
-<!-- main/stage_in_0 -->
+<!-- main/directory_stage_in_1 -->
 <g id="node3" class="node">
-<title>main/stage_in_0</title>
-<polygon fill="lightgoldenrodyellow" stroke="black" points="471.5,-258.5 471.5,-294.5 602.5,-294.5 602.5,-258.5 471.5,-258.5"/>
-<text text-anchor="middle" x="537" y="-272.8" font-family="Times,serif" font-size="14.00">main/stage_in_0</text>
+<title>main/directory_stage_in_1</title>
+<polygon fill="lightgoldenrodyellow" stroke="black" points="516.5,-258.5 516.5,-294.5 719.5,-294.5 719.5,-258.5 516.5,-258.5"/>
+<text text-anchor="middle" x="618" y="-272.8" font-family="Times,serif" font-size="14.00">main/directory_stage_in_1</text>
 </g>
-<!-- main/stage_in_0&#45;&gt;main/app -->
+<!-- main/directory_stage_in_1&#45;&gt;main/app -->
 <g id="edge2" class="edge">
-<title>main/stage_in_0&#45;&gt;main/app</title>
-<path fill="none" stroke="black" d="M487.66,-258.49C458.44,-248.42 421.24,-235.6 390.42,-224.98"/>
-<polygon fill="black" stroke="black" points="391.25,-221.56 380.65,-221.61 388.97,-228.18 391.25,-221.56"/>
+<title>main/directory_stage_in_1&#45;&gt;main/app</title>
+<path fill="none" stroke="black" d="M549.5,-258.49C507.79,-248.14 454.37,-234.88 410.9,-224.09"/>
+<polygon fill="black" stroke="black" points="411.49,-220.63 400.94,-221.61 409.8,-227.42 411.49,-220.63"/>
 </g>
 <!-- main/stac_catalog -->
 <g id="node17" class="node">
@@ -82,8 +82,8 @@
 <!-- main/aoi&#45;&gt;main/app -->
 <g id="edge4" class="edge">
 <title>main/aoi&#45;&gt;main/app</title>
-<path fill="none" stroke="black" d="M69.19,-334.13C78.1,-324.06 90.28,-311.69 103,-303 153.8,-268.31 218.79,-241.69 266.38,-224.92"/>
-<polygon fill="black" stroke="black" points="267.66,-228.18 275.96,-221.6 265.36,-221.57 267.66,-228.18"/>
+<path fill="none" stroke="black" d="M69.19,-334.12C78.1,-324.05 90.28,-311.68 103,-303 154.02,-268.22 219.3,-241.61 267.09,-224.87"/>
+<polygon fill="black" stroke="black" points="268.4,-228.12 276.71,-221.55 266.12,-221.5 268.4,-228.12"/>
 </g>
 <!-- main/bands -->
 <g id="node6" class="node">
@@ -94,8 +94,8 @@
 <!-- main/bands&#45;&gt;main/app -->
 <g id="edge5" class="edge">
 <title>main/bands&#45;&gt;main/app</title>
-<path fill="none" stroke="black" d="M180.83,-334.35C211.16,-308.13 269.14,-257.99 303.51,-228.27"/>
-<polygon fill="black" stroke="black" points="306.02,-230.73 311.29,-221.54 301.44,-225.43 306.02,-230.73"/>
+<path fill="none" stroke="black" d="M180.95,-334.35C211.45,-308.13 269.78,-257.99 304.35,-228.27"/>
+<polygon fill="black" stroke="black" points="306.87,-230.71 312.18,-221.54 302.31,-225.41 306.87,-230.71"/>
 </g>
 <!-- main/epsg -->
 <g id="node7" class="node">
@@ -106,8 +106,8 @@
 <!-- main/epsg&#45;&gt;main/app -->
 <g id="edge6" class="edge">
 <title>main/epsg&#45;&gt;main/app</title>
-<path fill="none" stroke="black" d="M280.65,-334.35C290.52,-308.9 309.12,-260.93 320.74,-230.96"/>
-<polygon fill="black" stroke="black" points="324.04,-232.13 324.39,-221.54 317.51,-229.6 324.04,-232.13"/>
+<path fill="none" stroke="black" d="M273.59,-334.17C273.76,-314.79 275.94,-282.85 287,-258 291.69,-247.47 299.08,-237.4 306.54,-228.88"/>
+<polygon fill="black" stroke="black" points="309.11,-231.26 313.33,-221.54 303.97,-226.51 309.11,-231.26"/>
 </g>
 <!-- main/another_input -->
 <g id="node8" class="node">
@@ -115,41 +115,41 @@
 <polygon fill="#94ddf4" stroke="black" points="459,-334.5 459,-370.5 615,-370.5 615,-334.5 459,-334.5"/>
 <text text-anchor="middle" x="537" y="-348.8" font-family="Times,serif" font-size="14.00">main/another_input</text>
 </g>
-<!-- main/another_input&#45;&gt;main/stage_in_1 -->
-<g id="edge8" class="edge">
-<title>main/another_input&#45;&gt;main/stage_in_1</title>
-<path fill="none" stroke="black" d="M508.45,-334.46C491.69,-324.74 469.94,-312.62 450,-303 446.92,-301.51 443.73,-300.03 440.49,-298.58"/>
-<polygon fill="black" stroke="black" points="441.88,-295.36 431.32,-294.55 439.06,-301.77 441.88,-295.36"/>
-</g>
-<!-- main/another_input&#45;&gt;main/stage_in_0 -->
+<!-- main/another_input&#45;&gt;main/directory_stage_in_0 -->
 <g id="edge7" class="edge">
-<title>main/another_input&#45;&gt;main/stage_in_0</title>
-<path fill="none" stroke="black" d="M537,-334.34C537,-325.56 537,-314.66 537,-304.77"/>
-<polygon fill="black" stroke="black" points="540.5,-304.57 537,-294.57 533.5,-304.57 540.5,-304.57"/>
+<title>main/another_input&#45;&gt;main/directory_stage_in_0</title>
+<path fill="none" stroke="black" d="M507.44,-334.44C490.72,-324.94 469.34,-313.03 450,-303 447.58,-301.74 445.08,-300.47 442.56,-299.2"/>
+<polygon fill="black" stroke="black" points="443.87,-295.94 433.35,-294.63 440.75,-302.21 443.87,-295.94"/>
+</g>
+<!-- main/another_input&#45;&gt;main/directory_stage_in_1 -->
+<g id="edge8" class="edge">
+<title>main/another_input&#45;&gt;main/directory_stage_in_1</title>
+<path fill="none" stroke="black" d="M555.79,-334.34C566.52,-324.53 580.14,-312.08 591.91,-301.34"/>
+<polygon fill="black" stroke="black" points="594.29,-303.9 599.32,-294.57 589.57,-298.73 594.29,-303.9"/>
 </g>
 <!-- main/item_1 -->
 <g id="node9" class="node">
 <title>main/item_1</title>
-<polygon fill="#94ddf4" stroke="black" points="633,-334.5 633,-370.5 737,-370.5 737,-334.5 633,-334.5"/>
-<text text-anchor="middle" x="685" y="-348.8" font-family="Times,serif" font-size="14.00">main/item_1</text>
+<polygon fill="#94ddf4" stroke="black" points="337,-334.5 337,-370.5 441,-370.5 441,-334.5 337,-334.5"/>
+<text text-anchor="middle" x="389" y="-348.8" font-family="Times,serif" font-size="14.00">main/item_1</text>
 </g>
-<!-- main/item_1&#45;&gt;main/stage_in_0 -->
+<!-- main/item_1&#45;&gt;main/directory_stage_in_0 -->
 <g id="edge9" class="edge">
-<title>main/item_1&#45;&gt;main/stage_in_0</title>
-<path fill="none" stroke="black" d="M667.35,-334.41C655.81,-324.05 639.97,-311.28 624,-303 620.23,-301.04 616.28,-299.22 612.24,-297.51"/>
-<polygon fill="black" stroke="black" points="613.28,-294.16 602.69,-293.76 610.72,-300.67 613.28,-294.16"/>
+<title>main/item_1&#45;&gt;main/directory_stage_in_0</title>
+<path fill="none" stroke="black" d="M390.86,-334.34C391.8,-325.56 392.98,-314.66 394.05,-304.77"/>
+<polygon fill="black" stroke="black" points="397.56,-304.89 395.15,-294.57 390.6,-304.14 397.56,-304.89"/>
 </g>
 <!-- main/item_2 -->
 <g id="node10" class="node">
 <title>main/item_2</title>
-<polygon fill="#94ddf4" stroke="black" points="337,-334.5 337,-370.5 441,-370.5 441,-334.5 337,-334.5"/>
-<text text-anchor="middle" x="389" y="-348.8" font-family="Times,serif" font-size="14.00">main/item_2</text>
+<polygon fill="#94ddf4" stroke="black" points="633,-334.5 633,-370.5 737,-370.5 737,-334.5 633,-334.5"/>
+<text text-anchor="middle" x="685" y="-348.8" font-family="Times,serif" font-size="14.00">main/item_2</text>
 </g>
-<!-- main/item_2&#45;&gt;main/stage_in_1 -->
+<!-- main/item_2&#45;&gt;main/directory_stage_in_1 -->
 <g id="edge10" class="edge">
-<title>main/item_2&#45;&gt;main/stage_in_1</title>
-<path fill="none" stroke="black" d="M388.77,-334.34C388.65,-325.56 388.5,-314.66 388.37,-304.77"/>
-<polygon fill="black" stroke="black" points="391.87,-304.52 388.23,-294.57 384.87,-304.62 391.87,-304.52"/>
+<title>main/item_2&#45;&gt;main/directory_stage_in_1</title>
+<path fill="none" stroke="black" d="M669.46,-334.34C660.84,-324.81 649.95,-312.79 640.42,-302.26"/>
+<polygon fill="black" stroke="black" points="642.76,-299.63 633.46,-294.57 637.57,-304.33 642.76,-299.63"/>
 </g>
 <!-- main/aws_access_key_id -->
 <g id="node11" class="node">

@@ -19,11 +19,11 @@
 <polygon fill="#eeeeee" stroke="black" stroke-dasharray="5,2" points="878,-8 878,-84 1091,-84 1091,-8 878,-8"/>
 <text text-anchor="middle" x="1018.5" y="-15.8" font-family="Times,serif" font-size="14.00">Workflow Outputs</text>
 </g>
-<!-- main/stage_in_0 -->
+<!-- main/directory_stage_in_0 -->
 <g id="node1" class="node">
-<title>main/stage_in_0</title>
-<polygon fill="lightgoldenrodyellow" stroke="black" points="636.5,-258.5 636.5,-294.5 767.5,-294.5 767.5,-258.5 636.5,-258.5"/>
-<text text-anchor="middle" x="702" y="-272.8" font-family="Times,serif" font-size="14.00">main/stage_in_0</text>
+<title>main/directory_stage_in_0</title>
+<polygon fill="lightgoldenrodyellow" stroke="black" points="578.5,-258.5 578.5,-294.5 781.5,-294.5 781.5,-258.5 578.5,-258.5"/>
+<text text-anchor="middle" x="680" y="-272.8" font-family="Times,serif" font-size="14.00">main/directory_stage_in_0</text>
 </g>
 <!-- main/app -->
 <g id="node2" class="node">
@@ -31,11 +31,11 @@
 <polygon fill="#f3cea1" stroke="black" points="610,-185.5 610,-221.5 882,-221.5 882,-185.5 610,-185.5"/>
 <text text-anchor="middle" x="746" y="-199.8" font-family="Times,serif" font-size="14.00">NDVI and NDWI vegetation indexes</text>
 </g>
-<!-- main/stage_in_0&#45;&gt;main/app -->
+<!-- main/directory_stage_in_0&#45;&gt;main/app -->
 <g id="edge1" class="edge">
-<title>main/stage_in_0&#45;&gt;main/app</title>
-<path fill="none" stroke="black" d="M712.65,-258.31C717.89,-249.85 724.32,-239.48 730.13,-230.11"/>
-<polygon fill="black" stroke="black" points="733.15,-231.87 735.45,-221.53 727.2,-228.19 733.15,-231.87"/>
+<title>main/directory_stage_in_0&#45;&gt;main/app</title>
+<path fill="none" stroke="black" d="M695.98,-258.31C704.16,-249.5 714.28,-238.63 723.26,-228.96"/>
+<polygon fill="black" stroke="black" points="725.93,-231.24 730.17,-221.53 720.8,-226.47 725.93,-231.24"/>
 </g>
 <!-- main/stage_out_0 -->
 <g id="node3" class="node">
@@ -94,8 +94,8 @@
 <!-- main/aoi&#45;&gt;main/app -->
 <g id="edge4" class="edge">
 <title>main/aoi&#45;&gt;main/app</title>
-<path fill="none" stroke="black" d="M439.6,-334.32C448.48,-324.06 460.83,-311.43 474,-303 532.27,-265.73 606.58,-240.05 662.79,-224.28"/>
-<polygon fill="black" stroke="black" points="664,-227.58 672.71,-221.55 662.14,-220.83 664,-227.58"/>
+<path fill="none" stroke="black" d="M440.29,-334.27C449.24,-324.25 461.42,-311.88 474,-303 528.58,-264.49 599.88,-239.4 655.78,-224.19"/>
+<polygon fill="black" stroke="black" points="656.91,-227.51 665.68,-221.56 655.11,-220.75 656.91,-227.51"/>
 </g>
 <!-- main/epsg -->
 <g id="node6" class="node">
@@ -106,8 +106,8 @@
 <!-- main/epsg&#45;&gt;main/app -->
 <g id="edge5" class="edge">
 <title>main/epsg&#45;&gt;main/app</title>
-<path fill="none" stroke="black" d="M804.97,-334.23C799.17,-315.18 788.9,-283.79 777,-258 772.77,-248.84 767.47,-239.19 762.45,-230.65"/>
-<polygon fill="black" stroke="black" points="765.34,-228.66 757.18,-221.89 759.34,-232.27 765.34,-228.66"/>
+<path fill="none" stroke="black" d="M809.07,-334.49C807.45,-315.11 803.03,-282.91 791,-258 786.04,-247.73 778.66,-237.79 771.3,-229.32"/>
+<polygon fill="black" stroke="black" points="773.66,-226.72 764.33,-221.69 768.49,-231.44 773.66,-226.72"/>
 </g>
 <!-- main/another_input -->
 <g id="node7" class="node">
@@ -115,11 +115,11 @@
 <polygon fill="#94ddf4" stroke="black" points="483,-334.5 483,-370.5 639,-370.5 639,-334.5 483,-334.5"/>
 <text text-anchor="middle" x="561" y="-348.8" font-family="Times,serif" font-size="14.00">main/another_input</text>
 </g>
-<!-- main/another_input&#45;&gt;main/stage_in_0 -->
+<!-- main/another_input&#45;&gt;main/directory_stage_in_0 -->
 <g id="edge6" class="edge">
-<title>main/another_input&#45;&gt;main/stage_in_0</title>
-<path fill="none" stroke="black" d="M590.92,-334.47C607.84,-324.98 629.46,-313.07 649,-303 651.55,-301.68 654.18,-300.35 656.85,-299.02"/>
-<polygon fill="black" stroke="black" points="658.53,-302.09 665.95,-294.52 655.43,-295.81 658.53,-302.09"/>
+<title>main/another_input&#45;&gt;main/directory_stage_in_0</title>
+<path fill="none" stroke="black" d="M588.6,-334.34C604.97,-324.16 625.92,-311.13 643.63,-300.12"/>
+<polygon fill="black" stroke="black" points="645.91,-302.82 652.55,-294.57 642.21,-296.88 645.91,-302.82"/>
 </g>
 <!-- main/item -->
 <g id="node8" class="node">
@@ -127,11 +127,11 @@
 <polygon fill="#94ddf4" stroke="black" points="657.5,-334.5 657.5,-370.5 746.5,-370.5 746.5,-334.5 657.5,-334.5"/>
 <text text-anchor="middle" x="702" y="-348.8" font-family="Times,serif" font-size="14.00">main/item</text>
 </g>
-<!-- main/item&#45;&gt;main/stage_in_0 -->
+<!-- main/item&#45;&gt;main/directory_stage_in_0 -->
 <g id="edge7" class="edge">
-<title>main/item&#45;&gt;main/stage_in_0</title>
-<path fill="none" stroke="black" d="M702,-334.34C702,-325.56 702,-314.66 702,-304.77"/>
-<polygon fill="black" stroke="black" points="705.5,-304.57 702,-294.57 698.5,-304.57 705.5,-304.57"/>
+<title>main/item&#45;&gt;main/directory_stage_in_0</title>
+<path fill="none" stroke="black" d="M696.9,-334.34C694.26,-325.46 690.98,-314.43 688.01,-304.45"/>
+<polygon fill="black" stroke="black" points="691.28,-303.16 685.07,-294.57 684.57,-305.15 691.28,-303.16"/>
 </g>
 <!-- main/aws_access_key_id -->
 <g id="node9" class="node">
@@ -142,14 +142,14 @@
 <!-- main/aws_access_key_id&#45;&gt;main/stage_out_0 -->
 <g id="edge8" class="edge">
 <title>main/aws_access_key_id&#45;&gt;main/stage_out_0</title>
-<path fill="none" stroke="black" d="M308.53,-334.46C330.55,-323.26 360,-308.27 386,-295 481.61,-246.21 497.94,-214.98 601,-185 762.88,-137.91 814.27,-174.2 984.4,-149.12"/>
+<path fill="none" stroke="black" d="M300.21,-334.34C353.18,-299.29 481.08,-219.84 601,-185 762.89,-137.97 814.27,-174.2 984.4,-149.12"/>
 <polygon fill="black" stroke="black" points="985.09,-152.55 994.45,-147.59 984.03,-145.63 985.09,-152.55"/>
 </g>
 <!-- main/aws_access_key_id&#45;&gt;main/stage_out_1 -->
 <g id="edge9" class="edge">
 <title>main/aws_access_key_id&#45;&gt;main/stage_out_1</title>
-<path fill="none" stroke="black" d="M286.6,-334.37C311.36,-299.36 373.2,-219.98 447,-185 512.09,-154.15 711.73,-140.25 825.12,-134.71"/>
-<polygon fill="black" stroke="black" points="825.32,-138.2 835.14,-134.23 824.98,-131.21 825.32,-138.2"/>
+<path fill="none" stroke="black" d="M285.75,-334.36C308.77,-299.33 366.6,-219.93 438,-185 504.32,-152.56 709.88,-139.27 825.29,-134.25"/>
+<polygon fill="black" stroke="black" points="825.64,-137.74 835.49,-133.82 825.35,-130.74 825.64,-137.74"/>
 </g>
 <!-- main/aws_secret_access_key -->
 <g id="node10" class="node">
@@ -178,14 +178,14 @@
 <!-- main/endpoint_url&#45;&gt;main/stage_out_0 -->
 <g id="edge12" class="edge">
 <title>main/endpoint_url&#45;&gt;main/stage_out_0</title>
-<path fill="none" stroke="black" d="M113.35,-334.4C129.35,-323.91 151.11,-310.99 172,-303 188.52,-296.67 193.99,-299.88 211,-295 345.49,-256.38 369.32,-214.97 506,-185 711.7,-139.89 772.46,-178.95 984.26,-149.12"/>
+<path fill="none" stroke="black" d="M113.76,-334.28C129.74,-323.88 151.34,-311.1 172,-303 187.26,-297.02 192.28,-299.65 208,-295 342.17,-255.28 366.31,-214.94 503,-185 710.09,-139.63 771.19,-179.12 984.51,-149.09"/>
 <polygon fill="black" stroke="black" points="985.06,-152.54 994.46,-147.65 984.06,-145.62 985.06,-152.54"/>
 </g>
 <!-- main/endpoint_url&#45;&gt;main/stage_out_1 -->
 <g id="edge13" class="edge">
 <title>main/endpoint_url&#45;&gt;main/stage_out_1</title>
-<path fill="none" stroke="black" d="M111.88,-334.32C160.01,-299.21 276.51,-219.66 388,-185 467.46,-160.29 700.47,-143.46 825.13,-135.95"/>
-<polygon fill="black" stroke="black" points="825.6,-139.42 835.38,-135.33 825.19,-132.44 825.6,-139.42"/>
+<path fill="none" stroke="black" d="M111.28,-334.33C158.16,-299.25 271.72,-219.74 381,-185 461.65,-159.36 699.32,-142.87 825.37,-135.67"/>
+<polygon fill="black" stroke="black" points="825.57,-139.16 835.36,-135.1 825.18,-132.17 825.57,-139.16"/>
 </g>
 <!-- main/region_name -->
 <g id="node12" class="node">

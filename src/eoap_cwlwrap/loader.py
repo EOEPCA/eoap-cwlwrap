@@ -26,7 +26,10 @@ __TARGET_CWL_VERSION__ = 'v1.2'
 
 yaml = YAML()
 
-def _clean_part(value: str, separator: str = '/') -> str:
+def _clean_part(
+    value: str,
+    separator: str = '/'
+) -> str:
     return value.split(separator)[-1]
 
 def _clean_workflow(workflow: Any):
@@ -125,7 +128,10 @@ def load_workflow(path: str) -> Workflows:
 
     return workflow
 
-def dump_workflow(workflow: Workflows, stream: Any):
+def dump_workflow(
+    workflow: Workflows,
+    stream: Any
+):
     data = save(
         val=workflow,
         relative_uris=False

@@ -8,36 +8,50 @@ You should have received a copy of the license along with this work.
 If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 '''
 
-from .types import ( is_array_type,
-                     is_directory_compatible_type,
-                     is_uri_compatible_type,
-                     is_nullable,
-                     replace_directory_with_url,
-                     type_to_string,
-                     URL_SCHEMA,
-                     URL_TYPE,
-                     validate_stage_in,
-                     validate_stage_out,
-                     Workflows )
-from cwl_utils.parser.cwl_v1_2 import ( LoadingOptions,
-                                        InlineJavascriptRequirement,
-                                        ProcessRequirement,
-                                        ScatterFeatureRequirement,
-                                        SchemaDefRequirement,
-                                        SubworkflowFeatureRequirement,
-                                        Workflow,
-                                        WorkflowInputParameter,
-                                        WorkflowOutputParameter,
-                                        WorkflowStep,
-                                        WorkflowStepInput,
-                                        WorkflowStepOutput )
-from typing import ( Any, Optional )
+from .types import (
+    Directory_or_File,
+    get_assignable_type,
+    is_array_type,
+    is_directory_compatible_type,
+    is_type_assignable_to,
+    is_uri_compatible_type,
+    is_nullable,
+    replace_directory_with_url,
+    replace_type_with_url,
+    type_to_string,
+    URL_SCHEMA,
+    URL_TYPE,
+    validate_directory_stage_in,
+    validate_file_stage_in,
+    validate_stage_out,
+    Workflows
+)
+from cwl_utils.parser.cwl_v1_2 import (
+    LoadingOptions,
+    InlineJavascriptRequirement,
+    ProcessRequirement,
+    ScatterFeatureRequirement,
+    SchemaDefRequirement,
+    SubworkflowFeatureRequirement,
+    Workflow,
+    WorkflowInputParameter,
+    WorkflowOutputParameter,
+    WorkflowStep,
+    WorkflowStepInput,
+    WorkflowStepOutput
+)
+from typing import (
+    Any,
+    Optional
+)
 import sys
 import time
 
-def _to_workflow_input_parameter(source: str,
-                                 parameter: Any,
-                                 target_type: Optional[Any] = None) -> WorkflowInputParameter:
+def _to_workflow_input_parameter(
+    source: str,
+    parameter: Any,
+    target_type: Optional[Any] = None
+) -> WorkflowInputParameter:
     return WorkflowInputParameter(
         type_=target_type if target_type else parameter.type_,
         label=f"{parameter.label} - {source}/{parameter.id}" if parameter.label else f"{source}/{parameter.id}",
@@ -54,39 +68,38 @@ def _to_workflow_input_parameter(source: str,
         loadingOptions=parameter.loadingOptions,
     )
 
-def _add_feature_requirement(requirement: ProcessRequirement, workflow: Workflow):
+def _add_feature_requirement(
+    requirement: ProcessRequirement,
+    workflow: Workflow
+):
     if any(requirement.class_ == current_requirement.class_ for current_requirement in workflow.requirements):
         return;
 
     workflow.requirements.append(requirement)
 
 def _build_orchestrator_workflow(
-        stage_in: Workflow,
-        workflow: Workflow,
-        stage_out: Workflow) -> Workflow:
+    directory_stage_in: Workflow,
+    file_stage_in: Workflow,
+    workflow: Workflow,
+    stage_out: Workflow
+) -> Workflow:
     start_time = time.time()
     print(f"Building the CWL Orchestrator Workflow...")
 
     orchestrator = Workflow(
         id='main',
+        label='Temporary workflow for packing',
+        doc='This workflow is used to pack the CWL files',
         requirements=[
             SubworkflowFeatureRequirement(),
             SchemaDefRequirement(types=[ { '$import': URL_SCHEMA } ])
         ],
-        inputs=list(
-            map(
-                lambda parameter: _to_workflow_input_parameter(stage_in.id, parameter),
-                list(
-                    filter(
-                        lambda workflow_input: not is_uri_compatible_type(workflow_input.type_),
-                        stage_in.inputs
-                    )
-                )
-            )
-        ),
+        inputs=[],
         outputs=[],
         steps=[]
     )
+
+    main_workflow = [ orchestrator ]
 
     app = WorkflowStep(
         id='app',
@@ -99,23 +112,40 @@ def _build_orchestrator_workflow(
 
     print(f"Analyzing {workflow.id} inputs:")
 
-    directories = 0
+    stage_in_counters = {
+        'Directory': 0,
+        'File': 0
+    }
+
+    stage_in_cwl = {
+        'Directory': directory_stage_in,
+        'File': file_stage_in
+    }
+
     for input in workflow.inputs:
         print(f"* {workflow.id}/{input.id}: {type_to_string(input.type_)}")
 
+        assignable_type = get_assignable_type(actual=input.type_, expected=Directory_or_File)
+
         target_type = input.type_
 
-        if is_directory_compatible_type(target_type):
-            print(f"  Directory type detected, creating a related 'stage_in_{directories}'...")
+        if assignable_type:
+            stage_in = stage_in_cwl[type_to_string(assignable_type)]
+            if not stage_in:
+                sys.exit(f"  input requires a {type_to_string(assignable_type)} stage-in, that was not specified")
+
+            stage_in_id = f"{type_to_string(assignable_type).lower()}_stage_in_{stage_in_counters[type_to_string(assignable_type)]}"
+
+            print(f"  {type_to_string(assignable_type)} type detected, creating a related '{stage_in_id}'...")
 
             print(f"  Converting {type_to_string(input.type_)} to URL-compatible type...")
 
-            target_type = replace_directory_with_url(input.type_)
+            target_type = replace_type_with_url(source=input.type_, to_be_replaced=Directory_or_File)
 
             print(f"  {type_to_string(input.type_)} converted to {type_to_string(target_type)}")
 
             workflow_step = WorkflowStep(
-                id=f"stage_in_{directories}",
+                id=stage_in_id,
                 in_=[],
                 out=list(map(lambda out: out.id, stage_in.outputs)),
                 run=f"#{stage_in.id}"
@@ -153,16 +183,33 @@ def _build_orchestrator_workflow(
                             workflow=orchestrator
                         )
 
-            print(f"  Connecting 'app/{input.id}' to 'stage_in_{directories}' output...")
+            print(f"  Connecting 'app/{input.id}' to '{stage_in_id}' output...")
 
             app.in_.append(
                 WorkflowStepInput(
                     id=input.id,
-                    source=f"stage_in_{directories}/{next(filter(lambda out: is_directory_compatible_type(out.type_), stage_in.outputs), None).id}"
+                    source=f"{stage_in_id}/{next(filter(lambda out: is_type_assignable_to(out.type_, Directory_or_File), stage_in.outputs), None).id}"
                 )
             )
 
-            directories += 1
+            if 0 == stage_in_counters[type_to_string(assignable_type)]:
+                main_workflow.append(stage_in)
+
+                orchestrator.inputs.extend(
+                    list(
+                        map(
+                            lambda parameter: _to_workflow_input_parameter(stage_in.id, parameter),
+                            list(
+                                filter(
+                                    lambda workflow_input: not is_uri_compatible_type(workflow_input.type_),
+                                    stage_in.inputs
+                                )
+                            )
+                        )
+                    )
+                )
+
+            stage_in_counters[type_to_string(assignable_type)] += 1
         else:
             app.in_.append(
                 WorkflowStepInput(
@@ -179,33 +226,24 @@ def _build_orchestrator_workflow(
             )
         )
 
-    orchestrator.inputs += list(
-        map(
-            lambda parameter: _to_workflow_input_parameter(stage_out.id, parameter),
-            list(
-                filter(
-                    lambda workflow_input: not is_directory_compatible_type(workflow_input.type_),
-                    stage_out.inputs
-                )
-            )
-        )
-    )
+    # once all '{type}_stage_in_{index}' are defined, we can now append the 'app' step
 
-    # once all 'stage_in_{index}' are defined, we can now append the 'app' step
+    main_workflow.append(workflow)
+
     orchestrator.steps.append(app)
 
     # outputs
 
     print(f"Analyzing {workflow.id} outputs:")
 
-    directories = 0
+    stage_out_counter = 0
     for output in workflow.outputs:
         print(f"* {workflow.id}/{output.id}: {type_to_string(output.type_)}")
 
         app.out.append(output.id)
 
         if is_directory_compatible_type(output.type_):
-            print(f"  Directory type detected, creating a related 'stage_out_{directories}'...")
+            print(f"  Directory type detected, creating a related 'stage_out_{stage_out_counter}'...")
 
             print(f"  Converting {type_to_string(output.type_)} to URL-compatible type...")
 
@@ -214,7 +252,7 @@ def _build_orchestrator_workflow(
             print(f"  {type_to_string(output.type_)} converted to {type_to_string(url_type)}")
 
             workflow_step = WorkflowStep(
-                id=f"stage_out_{directories}",
+                id=f"stage_out_{stage_out_counter}",
                 in_=[],
                 out=list(map(lambda out: out.id, stage_out.outputs)),
                 run=f"#{stage_out.id}"
@@ -241,7 +279,7 @@ def _build_orchestrator_workflow(
                         workflow=orchestrator
                     )
 
-            print(f"  Connecting 'app/{output.id}' to 'stage_out_{directories}' output...")
+            print(f"  Connecting 'app/{output.id}' to 'stage_out_{stage_out_counter}' output...")
 
             orchestrator.outputs.append(
                 next(
@@ -249,7 +287,7 @@ def _build_orchestrator_workflow(
                         lambda mapping_output: WorkflowOutputParameter(
                             id=output.id,
                             type_=url_type,
-                            outputSource=[f"stage_out_{directories}/{mapping_output.id}"],
+                            outputSource=[f"stage_out_{stage_out_counter}/{mapping_output.id}"],
                             label=output.label,
                             secondaryFiles=output.secondaryFiles,
                             streamable=output.streamable,
@@ -267,7 +305,7 @@ def _build_orchestrator_workflow(
                 )
             )
 
-            directories += 1
+            stage_out_counter += 1
         else:
             orchestrator.outputs.append(
                 WorkflowOutputParameter(
@@ -286,10 +324,27 @@ def _build_orchestrator_workflow(
                 )
             )
 
+    if stage_out_counter > 0:
+        main_workflow.append(stage_out)
+
+        orchestrator.inputs.extend(
+            list(
+                map(
+                    lambda parameter: _to_workflow_input_parameter(stage_out.id, parameter),
+                    list(
+                        filter(
+                            lambda workflow_input: not is_directory_compatible_type(workflow_input.type_),
+                            stage_out.inputs
+                        )
+                    )
+                )
+            )
+        )
+
     end_time = time.time()
     print(f"Orchestrator Workflow built in {end_time - start_time:.4f} seconds")
 
-    return orchestrator
+    return main_workflow
 
 def _search_workflow(workflow_id: str, workflow: Workflows) -> Workflows:
     if isinstance(workflow, list):
@@ -301,25 +356,32 @@ def _search_workflow(workflow_id: str, workflow: Workflows) -> Workflows:
 
     sys.exit(f"Sorry, '{workflow_id}' not found in the workflow input file, only {list(map(lambda wf: wf.id, workflow)) if isinstance(workflow, list) else [workflow.id]} available.")
 
-def wrap(stage_in: Workflow,
-         workflows: Workflows,
-         workflow_id: str,
-         stage_out: Workflow) -> Workflow:
+def wrap(
+    workflows: Workflow,
+    workflow_id: str,
+    stage_out: Workflow,
+    directory_stage_in: Optional[Workflow] = None,
+    file_stage_in: Optional[Workflow] = None
+) -> Workflow:
+    if directory_stage_in:
+        validate_directory_stage_in(directory_stage_in=directory_stage_in)
 
-    validate_stage_in(stage_in=stage_in)
+    if file_stage_in:
+        validate_file_stage_in(file_stage_in=file_stage_in)
+
     workflow = _search_workflow(workflow_id=workflow_id, workflow=workflows)
     validate_stage_out(stage_out=stage_out)
 
-    orchestrator = _build_orchestrator_workflow(stage_in, workflow, stage_out)
-
-    main_workflow = [ orchestrator, stage_in ]
+    orchestrator = _build_orchestrator_workflow(
+        directory_stage_in=directory_stage_in,
+        file_stage_in=file_stage_in,
+        workflow=workflow,
+        stage_out=stage_out
+    )
 
     if isinstance(workflows, list):
         for wf in workflows:
-            main_workflow.append(wf)
-    else:
-        main_workflow.append(workflows)
+            if workflow_id not in wf.id:
+                orchestrator.append(wf)
 
-    main_workflow.append(stage_out)
-
-    return main_workflow
+    return orchestrator

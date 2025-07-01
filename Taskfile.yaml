@@ -30,7 +30,8 @@ tasks:
     - cmd: |
         set
         eoap-cwlwrap \
-        --stage-in ./tests/templates/stage-in.cwl \
+        --directory-stage-in ./tests/templates/directory-stage-in.cwl \
+        --file-stage-in ./tests/templates/file-stage-in.cwl \
         --workflow {{.PATTERN}}/workflow.cwl \
         --workflow-id $( basename {{.PATTERN}} ) \
         --stage-out ./tests/templates/stage-out.cwl \

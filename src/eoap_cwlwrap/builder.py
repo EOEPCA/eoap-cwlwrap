@@ -18,21 +18,33 @@ import click
 import time
 
 @click.command()
-@click.option("--stage-in", required=True, help="The CWL stage-in file")
+@click.option("--directory-stage-in", required=False, help="The CWL stage-in file for Directory derived types")
+@click.option("--file-stage-in", required=False, help="The CWL stage-in file for File derived types")
 @click.option("--workflow", required=True, help="The CWL workflow file")
 @click.option("--workflow-id", required=True, help="ID of the workflow")
 @click.option("--stage-out", required=True, help="The CWL stage-out file")
 @click.option("--output", type=click.Path(), required=True, help="Output file path")
 @click.option('--puml', is_flag=True, help="Serializes the workflow as PlantUML diagram.")
-def main(stage_in: str,
-         workflow: str,
-         workflow_id: str,
-         stage_out: str,
-         output: str,
-         puml: bool):
+def main(
+    directory_stage_in: str,
+    file_stage_in: str,
+    workflow: str,
+    workflow_id: str,
+    stage_out: str,
+    output: str,
+    puml: bool
+):
     start_time = time.time()
 
-    stage_in_cwl = load_workflow(path=stage_in)
+    directory_stage_in_cwl = None
+    if directory_stage_in:
+        directory_stage_in_cwl = load_workflow(path=directory_stage_in)
+
+    print('------------------------------------------------------------------------')
+
+    file_stage_in_cwl = None
+    if directory_stage_in:
+        file_stage_in_cwl = load_workflow(path=file_stage_in)
 
     print('------------------------------------------------------------------------')
 
@@ -45,7 +57,8 @@ def main(stage_in: str,
     print('------------------------------------------------------------------------')
 
     main_workflow = wrap(
-        stage_in=stage_in_cwl,
+        directory_stage_in=directory_stage_in_cwl,
+        file_stage_in=file_stage_in_cwl,
         workflows=workflows_cwl,
         workflow_id=workflow_id,
         stage_out=stage_out_cwl

@@ -19,11 +19,11 @@
 <polygon fill="#eeeeee" stroke="black" stroke-dasharray="5,2" points="1045,-8 1045,-84 1255,-84 1255,-8 1045,-8"/>
 <text text-anchor="middle" x="1182.5" y="-15.8" font-family="Times,serif" font-size="14.00">Workflow Outputs</text>
 </g>
-<!-- main/stage_in_0 -->
+<!-- main/directory_stage_in_0 -->
 <g id="node1" class="node">
-<title>main/stage_in_0</title>
-<polygon fill="lightgoldenrodyellow" stroke="black" points="362.5,-258.5 362.5,-294.5 493.5,-294.5 493.5,-258.5 362.5,-258.5"/>
-<text text-anchor="middle" x="428" y="-272.8" font-family="Times,serif" font-size="14.00">main/stage_in_0</text>
+<title>main/directory_stage_in_0</title>
+<polygon fill="lightgoldenrodyellow" stroke="black" points="326.5,-258.5 326.5,-294.5 529.5,-294.5 529.5,-258.5 326.5,-258.5"/>
+<text text-anchor="middle" x="428" y="-272.8" font-family="Times,serif" font-size="14.00">main/directory_stage_in_0</text>
 </g>
 <!-- main/app -->
 <g id="node2" class="node">
@@ -31,9 +31,9 @@
 <polygon fill="#f3cea1" stroke="black" points="140,-185.5 140,-221.5 412,-221.5 412,-185.5 140,-185.5"/>
 <text text-anchor="middle" x="276" y="-199.8" font-family="Times,serif" font-size="14.00">NDVI and NDWI vegetation indexes</text>
 </g>
-<!-- main/stage_in_0&#45;&gt;main/app -->
+<!-- main/directory_stage_in_0&#45;&gt;main/app -->
 <g id="edge1" class="edge">
-<title>main/stage_in_0&#45;&gt;main/app</title>
+<title>main/directory_stage_in_0&#45;&gt;main/app</title>
 <path fill="none" stroke="black" d="M391.59,-258.49C370.69,-248.73 344.24,-236.38 321.92,-225.95"/>
 <polygon fill="black" stroke="black" points="323.18,-222.67 312.64,-221.61 320.22,-229.02 323.18,-222.67"/>
 </g>
@@ -103,9 +103,9 @@
 <polygon fill="#94ddf4" stroke="black" points="350,-334.5 350,-370.5 506,-370.5 506,-334.5 350,-334.5"/>
 <text text-anchor="middle" x="428" y="-348.8" font-family="Times,serif" font-size="14.00">main/another_input</text>
 </g>
-<!-- main/another_input&#45;&gt;main/stage_in_0 -->
+<!-- main/another_input&#45;&gt;main/directory_stage_in_0 -->
 <g id="edge6" class="edge">
-<title>main/another_input&#45;&gt;main/stage_in_0</title>
+<title>main/another_input&#45;&gt;main/directory_stage_in_0</title>
 <path fill="none" stroke="black" d="M428,-334.34C428,-325.56 428,-314.66 428,-304.77"/>
 <polygon fill="black" stroke="black" points="431.5,-304.57 428,-294.57 424.5,-304.57 431.5,-304.57"/>
 </g>
@@ -187,11 +187,11 @@
 <polygon fill="#94ddf4" stroke="black" points="524.5,-334.5 524.5,-370.5 613.5,-370.5 613.5,-334.5 524.5,-334.5"/>
 <text text-anchor="middle" x="569" y="-348.8" font-family="Times,serif" font-size="14.00">main/item</text>
 </g>
-<!-- main/item&#45;&gt;main/stage_in_0 -->
+<!-- main/item&#45;&gt;main/directory_stage_in_0 -->
 <g id="edge13" class="edge">
-<title>main/item&#45;&gt;main/stage_in_0</title>
-<path fill="none" stroke="black" d="M553.49,-334.09C543.43,-323.74 529.53,-311.1 515,-303 511.29,-300.93 507.39,-299.02 503.39,-297.24"/>
-<polygon fill="black" stroke="black" points="504.48,-293.91 493.9,-293.36 501.83,-300.39 504.48,-293.91"/>
+<title>main/item&#45;&gt;main/directory_stage_in_0</title>
+<path fill="none" stroke="black" d="M553.49,-334.09C543.43,-323.74 529.53,-311.1 515,-303 512.27,-301.48 509.44,-300.04 506.54,-298.68"/>
+<polygon fill="black" stroke="black" points="507.66,-295.35 497.09,-294.6 504.89,-301.78 507.66,-295.35"/>
 </g>
 </g>
 </svg>

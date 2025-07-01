@@ -16,38 +16,38 @@
 </g>
 <g id="clust2" class="cluster">
 <title>cluster_outputs</title>
-<polygon fill="#eeeeee" stroke="black" stroke-dasharray="5,2" points="85,-8 85,-84 230,-84 230,-8 85,-8"/>
-<text text-anchor="middle" x="157.5" y="-15.8" font-family="Times,serif" font-size="14.00">Workflow Outputs</text>
+<polygon fill="#eeeeee" stroke="black" stroke-dasharray="5,2" points="74,-8 74,-84 219,-84 219,-8 74,-8"/>
+<text text-anchor="middle" x="146.5" y="-15.8" font-family="Times,serif" font-size="14.00">Workflow Outputs</text>
 </g>
-<!-- main/stage_in_0 -->
+<!-- main/directory_stage_in_0 -->
 <g id="node1" class="node">
-<title>main/stage_in_0</title>
-<polygon fill="lightgoldenrodyellow" stroke="black" points="199.5,-185.5 199.5,-221.5 330.5,-221.5 330.5,-185.5 199.5,-185.5"/>
-<text text-anchor="middle" x="265" y="-199.8" font-family="Times,serif" font-size="14.00">main/stage_in_0</text>
+<title>main/directory_stage_in_0</title>
+<polygon fill="lightgoldenrodyellow" stroke="black" points="174.5,-185.5 174.5,-221.5 377.5,-221.5 377.5,-185.5 174.5,-185.5"/>
+<text text-anchor="middle" x="276" y="-199.8" font-family="Times,serif" font-size="14.00">main/directory_stage_in_0</text>
 </g>
 <!-- main/app -->
 <g id="node2" class="node">
 <title>main/app</title>
-<polygon fill="#f3cea1" stroke="black" points="108,-112.5 108,-148.5 206,-148.5 206,-112.5 108,-112.5"/>
-<text text-anchor="middle" x="157" y="-126.8" font-family="Times,serif" font-size="14.00">NDVI mean</text>
+<polygon fill="#f3cea1" stroke="black" points="97,-112.5 97,-148.5 195,-148.5 195,-112.5 97,-112.5"/>
+<text text-anchor="middle" x="146" y="-126.8" font-family="Times,serif" font-size="14.00">NDVI mean</text>
 </g>
-<!-- main/stage_in_0&#45;&gt;main/app -->
+<!-- main/directory_stage_in_0&#45;&gt;main/app -->
 <g id="edge1" class="edge">
-<title>main/stage_in_0&#45;&gt;main/app</title>
-<path fill="none" stroke="black" d="M239.13,-185.49C224.94,-176.17 207.16,-164.47 191.77,-154.36"/>
-<polygon fill="black" stroke="black" points="193.31,-151.18 183.03,-148.61 189.47,-157.03 193.31,-151.18"/>
+<title>main/directory_stage_in_0&#45;&gt;main/app</title>
+<path fill="none" stroke="black" d="M244.86,-185.49C227.3,-175.9 205.17,-163.82 186.3,-153.51"/>
+<polygon fill="black" stroke="black" points="187.79,-150.34 177.33,-148.61 184.43,-156.48 187.79,-150.34"/>
 </g>
 <!-- main/mean -->
 <g id="node7" class="node">
 <title>main/mean</title>
-<polygon fill="#94ddf4" stroke="black" points="109.5,-39.5 109.5,-75.5 204.5,-75.5 204.5,-39.5 109.5,-39.5"/>
-<text text-anchor="middle" x="157" y="-53.8" font-family="Times,serif" font-size="14.00">main/mean</text>
+<polygon fill="#94ddf4" stroke="black" points="98.5,-39.5 98.5,-75.5 193.5,-75.5 193.5,-39.5 98.5,-39.5"/>
+<text text-anchor="middle" x="146" y="-53.8" font-family="Times,serif" font-size="14.00">main/mean</text>
 </g>
 <!-- main/app&#45;&gt;main/mean -->
 <g id="edge6" class="edge">
 <title>main/app&#45;&gt;main/mean</title>
-<path fill="none" stroke="black" d="M157,-112.31C157,-104.29 157,-94.55 157,-85.57"/>
-<polygon fill="black" stroke="black" points="160.5,-85.53 157,-75.53 153.5,-85.53 160.5,-85.53"/>
+<path fill="none" stroke="black" d="M146,-112.31C146,-104.29 146,-94.55 146,-85.57"/>
+<polygon fill="black" stroke="black" points="149.5,-85.53 146,-75.53 142.5,-85.53 149.5,-85.53"/>
 </g>
 <!-- main/aoi -->
 <g id="node3" class="node">
@@ -58,8 +58,8 @@
 <!-- main/aoi&#45;&gt;main/app -->
 <g id="edge2" class="edge">
 <title>main/aoi&#45;&gt;main/app</title>
-<path fill="none" stroke="black" d="M66.9,-261.35C84.79,-235.57 118.72,-186.67 139.45,-156.79"/>
-<polygon fill="black" stroke="black" points="142.35,-158.75 145.18,-148.54 136.6,-154.76 142.35,-158.75"/>
+<path fill="none" stroke="black" d="M65.62,-261.35C81.51,-235.68 111.59,-187.09 130.1,-157.18"/>
+<polygon fill="black" stroke="black" points="133.16,-158.89 135.45,-148.54 127.21,-155.2 133.16,-158.89"/>
 </g>
 <!-- main/epsg -->
 <g id="node4" class="node">
@@ -70,8 +70,8 @@
 <!-- main/epsg&#45;&gt;main/app -->
 <g id="edge3" class="edge">
 <title>main/epsg&#45;&gt;main/app</title>
-<path fill="none" stroke="black" d="M157,-261.35C157,-236.12 157,-188.76 157,-158.74"/>
-<polygon fill="black" stroke="black" points="160.5,-158.54 157,-148.54 153.5,-158.54 160.5,-158.54"/>
+<path fill="none" stroke="black" d="M155.72,-261.35C153.83,-236.12 150.28,-188.76 148.04,-158.74"/>
+<polygon fill="black" stroke="black" points="151.51,-158.25 147.28,-148.54 144.53,-158.77 151.51,-158.25"/>
 </g>
 <!-- main/another_input -->
 <g id="node5" class="node">
@@ -79,11 +79,11 @@
 <polygon fill="#94ddf4" stroke="black" points="328,-261.5 328,-297.5 484,-297.5 484,-261.5 328,-261.5"/>
 <text text-anchor="middle" x="406" y="-275.8" font-family="Times,serif" font-size="14.00">main/another_input</text>
 </g>
-<!-- main/another_input&#45;&gt;main/stage_in_0 -->
+<!-- main/another_input&#45;&gt;main/directory_stage_in_0 -->
 <g id="edge4" class="edge">
-<title>main/another_input&#45;&gt;main/stage_in_0</title>
-<path fill="none" stroke="black" d="M376.47,-261.39C359.76,-251.87 338.38,-239.96 319,-230 316.45,-228.69 313.82,-227.36 311.16,-226.04"/>
-<polygon fill="black" stroke="black" points="312.57,-222.84 302.05,-221.59 309.5,-229.13 312.57,-222.84"/>
+<title>main/another_input&#45;&gt;main/directory_stage_in_0</title>
+<path fill="none" stroke="black" d="M375.85,-261.34C357.72,-251.02 334.45,-237.77 314.94,-226.67"/>
+<polygon fill="black" stroke="black" points="316.41,-223.48 305.99,-221.57 312.95,-229.56 316.41,-223.48"/>
 </g>
 <!-- main/item -->
 <g id="node6" class="node">
@@ -91,11 +91,11 @@
 <polygon fill="#94ddf4" stroke="black" points="220.5,-261.5 220.5,-297.5 309.5,-297.5 309.5,-261.5 220.5,-261.5"/>
 <text text-anchor="middle" x="265" y="-275.8" font-family="Times,serif" font-size="14.00">main/item</text>
 </g>
-<!-- main/item&#45;&gt;main/stage_in_0 -->
+<!-- main/item&#45;&gt;main/directory_stage_in_0 -->
 <g id="edge5" class="edge">
-<title>main/item&#45;&gt;main/stage_in_0</title>
-<path fill="none" stroke="black" d="M265,-261.34C265,-252.56 265,-241.66 265,-231.77"/>
-<polygon fill="black" stroke="black" points="268.5,-231.57 265,-221.57 261.5,-231.57 268.5,-231.57"/>
+<title>main/item&#45;&gt;main/directory_stage_in_0</title>
+<path fill="none" stroke="black" d="M267.55,-261.34C268.86,-252.56 270.48,-241.66 271.95,-231.77"/>
+<polygon fill="black" stroke="black" points="275.45,-231.98 273.46,-221.57 268.53,-230.95 275.45,-231.98"/>
 </g>
 </g>
 </svg>
