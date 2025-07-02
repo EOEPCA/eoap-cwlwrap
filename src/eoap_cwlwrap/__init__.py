@@ -88,8 +88,8 @@ def _build_orchestrator_workflow(
 
     orchestrator = Workflow(
         id='main',
-        label='Temporary workflow for packing',
-        doc='This workflow is used to pack the CWL files',
+        label=f"{workflow.class_} {workflow.id} orchestrator",
+        doc=f"This Workflow is used to orchestrate the {workflow.class_} {workflow.id}",
         requirements=[
             SubworkflowFeatureRequirement(),
             SchemaDefRequirement(types=[ { '$import': URL_SCHEMA } ])
@@ -268,16 +268,27 @@ def _build_orchestrator_workflow(
                     )
                 )
 
-                if is_array_type(url_type) and is_directory_compatible_type(stage_out_input.type_):
-                    print(f"  Array detected, scatter required for {stage_out_input.id}:app/{output.id}")
+                if is_directory_compatible_type(stage_out_input.type_):
+                    if is_array_type(url_type):
+                        print(f"  Array detected, scatter required for {stage_out_input.id}:app/{output.id}")
 
-                    workflow_step.scatter = stage_out_input.id
-                    workflow_step.scatterMethod = 'dotproduct'
+                        workflow_step.scatter = stage_out_input.id
+                        workflow_step.scatterMethod = 'dotproduct'
 
-                    _add_feature_requirement(
-                        requirement=ScatterFeatureRequirement(),
-                        workflow=orchestrator
-                    )
+                        _add_feature_requirement(
+                            requirement=ScatterFeatureRequirement(),
+                            workflow=orchestrator
+                        )
+
+                    if is_nullable(url_type):
+                        print(f"  Nullable detected, 'when' required for {stage_out_input.id}:app/{output.id}")
+
+                        workflow_step.when = f"$(inputs.{stage_out_input.id} !== null)"
+
+                        _add_feature_requirement(
+                            requirement=InlineJavascriptRequirement(),
+                            workflow=orchestrator
+                        )
 
             print(f"  Connecting 'app/{output.id}' to 'stage_out_{stage_out_counter}' output...")
 
