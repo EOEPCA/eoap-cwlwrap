@@ -1,6 +1,7 @@
 version: '3'
 
 vars:
+  BASE_CWL_URL: 'https://raw.githubusercontent.com/eoap/application-package-patterns/refs/heads/main'
   PATTERNS: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ]
 
 tasks:
@@ -28,11 +29,11 @@ tasks:
     cmds:
     - cmd: |
              eoap-cwlwrap \
-             --directory-stage-in https://raw.githubusercontent.com/eoap/application-package-patterns/refs/heads/main/templates/stage-in.cwl \
-             --file-stage-in https://raw.githubusercontent.com/eoap/application-package-patterns/refs/heads/main/templates/stage-in-file.cwl \
-             --workflow https://raw.githubusercontent.com/eoap/application-package-patterns/refs/heads/main/cwl-workflow/pattern-{{.PATTERN}}.cwl \
+             --directory-stage-in {{.BASE_CWL_URL}}/templates/stage-in.cwl \
+             --file-stage-in {{.BASE_CWL_URL}}/templates/stage-in-file.cwl \
+             --workflow {{.BASE_CWL_URL}}/cwl-workflow/pattern-{{.PATTERN}}.cwl \
              --workflow-id pattern-{{.PATTERN}} \
-             --stage-out https://raw.githubusercontent.com/eoap/application-package-patterns/refs/heads/main/templates/stage-out.cwl \
+             --stage-out {{.BASE_CWL_URL}}/templates/stage-out.cwl \
              --output ./tests/pattern-{{.PATTERN}}/current.cwl \
              --puml
     - plantuml -tsvg -o ../../docs/diagrams/pattern-{{.PATTERN}} ./tests/pattern-{{.PATTERN}}
