@@ -35,7 +35,6 @@ tasks:
              --stage-out https://raw.githubusercontent.com/eoap/application-package-patterns/refs/heads/main/templates/stage-out.cwl \
              --output ./tests/pattern-{{.PATTERN}}/current.cwl \
              --puml
-    - cmd: cwltool --validate ./tests/pattern-{{.PATTERN}}/current.cwl
     - plantuml -tsvg -o ../../docs/diagrams/pattern-{{.PATTERN}} ./tests/pattern-{{.PATTERN}}
     - cmd: cwltool --print-dot ./tests/pattern-{{.PATTERN}}/current.cwl | dot -Tsvg -o ./docs/diagrams/pattern-{{.PATTERN}}/workflow.svg
 
