@@ -42,13 +42,13 @@ def main(
     if directory_stage_in:
         directory_stage_in_cwl = load_workflow(path=directory_stage_in)
 
-    print('------------------------------------------------------------------------')
+        print('------------------------------------------------------------------------')
 
     file_stage_in_cwl = None
     if file_stage_in:
         file_stage_in_cwl = load_workflow(path=file_stage_in)
 
-    print('------------------------------------------------------------------------')
+        print('------------------------------------------------------------------------')
 
     workflows_cwl = load_workflow(path=workflow)
 

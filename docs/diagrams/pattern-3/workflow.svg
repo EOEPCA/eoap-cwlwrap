@@ -16,8 +16,8 @@
 </g>
 <g id="clust2" class="cluster">
 <title>cluster_outputs</title>
-<polygon fill="#eeeeee" stroke="black" stroke-dasharray="5,2" points="1064,-8 1064,-84 1224,-84 1224,-8 1064,-8"/>
-<text text-anchor="middle" x="1151.5" y="-15.8" font-family="Times,serif" font-size="14.00">Workflow Outputs</text>
+<polygon fill="#eeeeee" stroke="black" stroke-dasharray="5,2" points="1060,-8 1060,-84 1228,-84 1228,-8 1060,-8"/>
+<text text-anchor="middle" x="1155.5" y="-15.8" font-family="Times,serif" font-size="14.00">Workflow Outputs</text>
 </g>
 <!-- main/directory_stage_in_0 -->
 <g id="node1" class="node">
@@ -49,15 +49,15 @@
 <path fill="none" stroke="black" d="M482.39,-185.49C668.81,-170.28 932.26,-148.78 1063.37,-138.08"/>
 <polygon fill="black" stroke="black" points="1063.66,-141.57 1073.34,-137.27 1063.09,-134.59 1063.66,-141.57"/>
 </g>
-<!-- main/stac_catalog -->
+<!-- main/water_bodies -->
 <g id="node15" class="node">
-<title>main/stac_catalog</title>
-<polygon fill="#94ddf4" stroke="black" points="1072,-39.5 1072,-75.5 1216,-75.5 1216,-39.5 1072,-39.5"/>
-<text text-anchor="middle" x="1144" y="-53.8" font-family="Times,serif" font-size="14.00">main/stac_catalog</text>
+<title>main/water_bodies</title>
+<polygon fill="#94ddf4" stroke="black" points="1068.5,-39.5 1068.5,-75.5 1219.5,-75.5 1219.5,-39.5 1068.5,-39.5"/>
+<text text-anchor="middle" x="1144" y="-53.8" font-family="Times,serif" font-size="14.00">main/water_bodies</text>
 </g>
-<!-- main/stage_out_0&#45;&gt;main/stac_catalog -->
+<!-- main/stage_out_0&#45;&gt;main/water_bodies -->
 <g id="edge14" class="edge">
-<title>main/stage_out_0&#45;&gt;main/stac_catalog</title>
+<title>main/stage_out_0&#45;&gt;main/water_bodies</title>
 <path fill="none" stroke="black" d="M1144,-112.31C1144,-104.29 1144,-94.55 1144,-85.57"/>
 <polygon fill="black" stroke="black" points="1147.5,-85.53 1144,-75.53 1140.5,-85.53 1147.5,-85.53"/>
 </g>

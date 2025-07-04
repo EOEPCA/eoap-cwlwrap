@@ -5,7 +5,9 @@ from cwltool.context import LoadingContext, RuntimeContext
 from cwltool.executors import NoopJobExecutor
 from io import StringIO
 from click.testing import CliRunner
-from eoap_cwlwrap import builder as app
+from eoap_cwlwrap import wrap
+from eoap_cwlwrap.loader import ( load_workflow, dump_workflow )
+from pathlib import Path
 
 class TestCWL(unittest.TestCase):
 
@@ -29,42 +31,31 @@ class TestCWL(unittest.TestCase):
         return result
 
     def setUp(self):
-        self.stagein_cwl_file = os.path.join(os.path.dirname(__file__), "templates/directory-stage-in.cwl")
-        self.stageout_cwl_file = os.path.join(os.path.dirname(__file__), "templates/stage-out.cwl")
-
-        self.app_cwl_file = None    
+        self.output = '.wrapped.cwl'
+        self.base_url = 'https://raw.githubusercontent.com/eoap/application-package-patterns/refs/heads/main'
         self.entrypoint = None
 
     def tearDown(self):
-        if os.path.exists(".wrapped.cwl"):
-            os.remove(".wrapped.cwl")
+        if os.path.exists(self.output):
+            os.remove(self.output)
 
     def _cwl_validation(self, app_cwl_file):
         return self.validate_cwl_file(app_cwl_file)
 
     def _wrapped_cwl_validation(self):
+        stage_in_cwl = load_workflow(path=f"{self.base_url}/templates/stage-in.cwl")
+        workflows_cwl = load_workflow(path=f"{self.base_url}/cwl-workflow/{self.entrypoint}.cwl")
+        stage_out_cwl = load_workflow(path=f"{self.base_url}/templates/stage-out.cwl")
 
-        # assert stage-in.cwl exists
-        assert os.path.exists(self.stagein_cwl_file), f"Stage-in CWL file {self.stagein_cwl_file} does not exist"
-        assert os.path.exists(self.stageout_cwl_file), f"Stage-out CWL file {self.stageout_cwl_file} does not exist"
-        assert os.path.exists(self.app_cwl_file), f"App CWL file {self.app_cwl_file} does not exist"
-
-        runner = CliRunner()
-        result = runner.invoke(
-            app.main,
-            [
-                "--directory-stage-in",
-                self.stagein_cwl_file,
-                "--stage-out",
-                self.stageout_cwl_file,
-                "--workflow-id",
-                self.entrypoint,
-                "--workflow",
-                self.app_cwl_file,
-                "--output",
-                ".wrapped.cwl",
-            ],
+        main_workflow = wrap(
+            directory_stage_in=stage_in_cwl,
+            workflows=workflows_cwl,
+            workflow_id=self.entrypoint,
+            stage_out=stage_out_cwl
         )
 
-        self.assertEqual(result.exit_code, 0, f"Wrapped CWL {self.app_cwl_file} validation failed: {result.output}")
+        output_path = Path(self.output)
+        with output_path.open("w") as f:
+            dump_workflow(main_workflow, output_path)
+
         self.assertEqual(self._cwl_validation(".wrapped.cwl"), 0)

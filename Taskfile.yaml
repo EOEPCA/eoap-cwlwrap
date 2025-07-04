@@ -1,8 +1,7 @@
 version: '3'
 
 vars:
-  PATTERNS:
-    sh: find ./tests/ -mindepth 1 -maxdepth 1 -type d -name pattern-*
+  PATTERNS: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ]
 
 tasks:
 
@@ -28,18 +27,17 @@ tasks:
     - task: plantuml_install
     cmds:
     - cmd: |
-        set
-        eoap-cwlwrap \
-        --directory-stage-in ./tests/templates/directory-stage-in.cwl \
-        --file-stage-in ./tests/templates/file-stage-in.cwl \
-        --workflow {{.PATTERN}}/workflow.cwl \
-        --workflow-id $( basename {{.PATTERN}} ) \
-        --stage-out ./tests/templates/stage-out.cwl \
-        --output {{.PATTERN}}/current.cwl \
-        --puml
-    - cmd: cwltool --validate {{.PATTERN}}/current.cwl
-    - plantuml -tsvg -o ../../docs/diagrams/$(basename "{{.PATTERN}}") {{.PATTERN}}
-    - cmd: cwltool --print-dot {{.PATTERN}}/current.cwl | dot -Tsvg -o ./docs/diagrams/$(basename "{{.PATTERN}}")/workflow.svg
+             eoap-cwlwrap \
+             --directory-stage-in https://raw.githubusercontent.com/eoap/application-package-patterns/refs/heads/main/templates/stage-in.cwl \
+             --file-stage-in https://raw.githubusercontent.com/eoap/application-package-patterns/refs/heads/main/templates/stage-in-file.cwl \
+             --workflow https://raw.githubusercontent.com/eoap/application-package-patterns/refs/heads/main/cwl-workflow/pattern-{{.PATTERN}}.cwl \
+             --workflow-id pattern-{{.PATTERN}} \
+             --stage-out https://raw.githubusercontent.com/eoap/application-package-patterns/refs/heads/main/templates/stage-out.cwl \
+             --output ./tests/pattern-{{.PATTERN}}/current.cwl \
+             --puml
+    - cmd: cwltool --validate ./tests/pattern-{{.PATTERN}}/current.cwl
+    - plantuml -tsvg -o ../../docs/diagrams/pattern-{{.PATTERN}} ./tests/pattern-{{.PATTERN}}
+    - cmd: cwltool --print-dot ./tests/pattern-{{.PATTERN}}/current.cwl | dot -Tsvg -o ./docs/diagrams/pattern-{{.PATTERN}}/workflow.svg
 
   default:
     deps:
