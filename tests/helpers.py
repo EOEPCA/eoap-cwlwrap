@@ -53,12 +53,14 @@ class TestCWL(unittest.TestCase):
         return self.validate_cwl_file(app_cwl_file)
 
     def _wrapped_cwl_validation(self):
-        stage_in_cwl = load_workflow(path=f"{self.base_url}/templates/stage-in.cwl")
+        directory_stage_in = load_workflow(path=f"{self.base_url}/templates/stage-in.cwl")
+        file_stage_in = load_workflow(path=f"{self.base_url}/templates/stage-in-file.cwl")
         workflows_cwl = load_workflow(path=f"{self.base_url}/cwl-workflow/{self.entrypoint}.cwl")
         stage_out_cwl = load_workflow(path=f"{self.base_url}/templates/stage-out.cwl")
 
         main_workflow = wrap(
-            directory_stage_in=stage_in_cwl,
+            directory_stage_in=directory_stage_in,
+            file_stage_in=file_stage_in,
             workflows=workflows_cwl,
             workflow_id=self.entrypoint,
             stage_out=stage_out_cwl
