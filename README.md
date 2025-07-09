@@ -6,3 +6,16 @@ It ensures:
 - **Type-safe chaining** of step outputs to the next step's inputs.
 - **Reusable, modular design** by keeping each step in its own file.
 - **Packed output** ready for execution or distribution.
+
+## Contribute
+
+Submit a [Github issue](https://github.com/EOEPCA/eoap-cwlwrap/issues) if you have comments or suggestions.
+
+## Documentation
+
+See the documentation at https://eoepca.github.io/eoap-cwlwrap/
+
+## License
+
+[![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
+
