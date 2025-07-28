@@ -86,13 +86,28 @@ def _build_orchestrator_workflow(
     start_time = time.time()
     print(f"Building the CWL Orchestrator Workflow...")
 
+    imports = { URL_SCHEMA }
+
+    for workflow_ref in [directory_stage_in, file_stage_in, workflow, stage_out]:
+        if workflow_ref:
+            for requirement in getattr(workflow_ref, 'requirements', []):
+                if isinstance(requirement, SchemaDefRequirement):
+                    for type_ in requirement.types:
+                        if '#' in type_.name:
+                            imports.add(type_.name.split('#')[0])
+
     orchestrator = Workflow(
         id='main',
         label=f"{workflow.class_} {workflow.id} orchestrator",
         doc=f"This Workflow is used to orchestrate the {workflow.class_} {workflow.id}",
         requirements=[
             SubworkflowFeatureRequirement(),
-            SchemaDefRequirement(types=[ { '$import': URL_SCHEMA } ])
+            SchemaDefRequirement(types=list(
+                map(
+                    lambda import_: { '$import': import_ },
+                    imports
+                )
+            ))
         ],
         inputs=[],
         outputs=[],
