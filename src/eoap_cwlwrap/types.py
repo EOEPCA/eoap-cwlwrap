@@ -15,7 +15,6 @@ from cwl_utils.parser.cwl_v1_2 import (
     File,
     InputArraySchema,
     OutputArraySchema,
-    SchemaDefRequirement,
     Workflow
 )
 from typing import (

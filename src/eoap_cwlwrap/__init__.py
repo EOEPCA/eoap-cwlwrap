@@ -20,7 +20,6 @@ from .types import (
     replace_type_with_url,
     type_to_string,
     URL_SCHEMA,
-    URL_TYPE,
     validate_directory_stage_in,
     validate_file_stage_in,
     validate_stage_out,
@@ -88,27 +87,10 @@ def _build_orchestrator_workflow(
 
     imports = { URL_SCHEMA }
 
-    for workflow_ref in [directory_stage_in, file_stage_in, workflow, stage_out]:
-        if workflow_ref:
-            for requirement in getattr(workflow_ref, 'requirements', []):
-                if isinstance(requirement, SchemaDefRequirement):
-                    for type_ in requirement.types:
-                        if '#' in type_.name:
-                            imports.add(type_.name.split('#')[0])
-
     orchestrator = Workflow(
         id='main',
         label=f"{workflow.class_} {workflow.id} orchestrator",
         doc=f"This Workflow is used to orchestrate the {workflow.class_} {workflow.id}",
-        requirements=[
-            SubworkflowFeatureRequirement(),
-            SchemaDefRequirement(types=list(
-                map(
-                    lambda import_: { '$import': import_ },
-                    imports
-                )
-            ))
-        ],
         inputs=[],
         outputs=[],
         steps=[]
@@ -138,7 +120,11 @@ def _build_orchestrator_workflow(
     }
 
     for input in workflow.inputs:
-        print(f"* {workflow.id}/{input.id}: {type_to_string(input.type_)}")
+        type_string = type_to_string(input.type_)
+        if '#' in type_string:
+            imports.add(type_string.split('#')[0])
+
+        print(f"* {workflow.id}/{input.id}: {type_string}")
 
         assignable_type = get_assignable_type(actual=input.type_, expected=Directory_or_File)
 
@@ -253,7 +239,10 @@ def _build_orchestrator_workflow(
 
     stage_out_counter = 0
     for output in workflow.outputs:
-        print(f"* {workflow.id}/{output.id}: {type_to_string(output.type_)}")
+        type_string = type_to_string(output.type_)
+        if '#' in type_string:
+            imports.add(type_string.split('#')[0])
+        print(f"* {workflow.id}/{output.id}: {type_string}")
 
         app.out.append(output.id)
 
@@ -366,6 +355,18 @@ def _build_orchestrator_workflow(
                 )
             )
         )
+
+    orchestrator.requirements = [
+        SubworkflowFeatureRequirement(),
+        SchemaDefRequirement(
+            types=list(
+                map(
+                    lambda import_: { '$import': import_ },
+                    imports
+                )
+            )
+        )
+    ]
 
     end_time = time.time()
     print(f"Orchestrator Workflow built in {end_time - start_time:.4f} seconds")
