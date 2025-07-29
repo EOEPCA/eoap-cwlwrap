@@ -26,7 +26,6 @@ from .types import (
     Workflows
 )
 from cwl_utils.parser.cwl_v1_2 import (
-    LoadingOptions,
     InlineJavascriptRequirement,
     ProcessRequirement,
     ScatterFeatureRequirement,
@@ -36,8 +35,7 @@ from cwl_utils.parser.cwl_v1_2 import (
     WorkflowInputParameter,
     WorkflowOutputParameter,
     WorkflowStep,
-    WorkflowStepInput,
-    WorkflowStepOutput
+    WorkflowStepInput
 )
 from typing import (
     Any,
@@ -87,6 +85,10 @@ def _build_orchestrator_workflow(
 
     imports = { URL_SCHEMA }
 
+    def _ad_import(type_string: str):
+        if '#' in type_string:
+            imports.add(type_string.split('#')[0])
+
     orchestrator = Workflow(
         id='main',
         label=f"{workflow.class_} {workflow.id} orchestrator",
@@ -121,8 +123,7 @@ def _build_orchestrator_workflow(
 
     for input in workflow.inputs:
         type_string = type_to_string(input.type_)
-        if '#' in type_string:
-            imports.add(type_string.split('#')[0])
+        _ad_import(type_string)
 
         print(f"* {workflow.id}/{input.id}: {type_string}")
 
@@ -240,8 +241,7 @@ def _build_orchestrator_workflow(
     stage_out_counter = 0
     for output in workflow.outputs:
         type_string = type_to_string(output.type_)
-        if '#' in type_string:
-            imports.add(type_string.split('#')[0])
+        _ad_import(type_string)
         print(f"* {workflow.id}/{output.id}: {type_string}")
 
         app.out.append(output.id)
