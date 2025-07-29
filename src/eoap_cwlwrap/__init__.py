@@ -93,6 +93,7 @@ def _build_orchestrator_workflow(
         id='main',
         label=f"{workflow.class_} {workflow.id} orchestrator",
         doc=f"This Workflow is used to orchestrate the {workflow.class_} {workflow.id}",
+        requirements=[SubworkflowFeatureRequirement()],
         inputs=[],
         outputs=[],
         steps=[]
@@ -356,17 +357,17 @@ def _build_orchestrator_workflow(
             )
         )
 
-    orchestrator.requirements = [
-        SubworkflowFeatureRequirement(),
-        SchemaDefRequirement(
+    _add_feature_requirement(
+        requirement=SchemaDefRequirement(
             types=list(
                 map(
                     lambda import_: { '$import': import_ },
                     imports
                 )
             )
-        )
-    ]
+        ),
+        workflow=orchestrator
+    )
 
     end_time = time.time()
     print(f"Orchestrator Workflow built in {end_time - start_time:.4f} seconds")
