@@ -37,11 +37,11 @@ jobs:
       run: hatch build
     - name: Test package
       run: hatch test --verbose 
-    # - name: Publish package distributions to PyPI
-    #   uses: pypa/gh-action-pypi-publish@release/v1
-    #   with:
-    #     skip-existing: true
-    #     repository-url: https://upload.pypi.org/legacy/
+    - name: Publish package distributions to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        skip-existing: true
+        repository-url: https://upload.pypi.org/legacy/
   
   container-build:
     needs: deploy 
