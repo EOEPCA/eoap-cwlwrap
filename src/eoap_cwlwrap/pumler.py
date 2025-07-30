@@ -8,6 +8,7 @@ You should have received a copy of the license along with this work.
 If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
+import sys
 from .types import type_to_string
 from cwl_utils.parser.cwl_v1_2 import Workflow
 from jinja2 import Environment
@@ -113,11 +114,11 @@ def to_puml(workflows: list[Workflow], output: str):
         output_path = Path(output)
         output_path = Path(f"{output_path.parent}/{diagram_type}.puml")
 
-        print(f"Saving the new PlantUML Workflow diagram to {output_path}...")
+        print(f"Saving the new PlantUML Workflow diagram to {output_path}...", file=sys.stderr)
 
         template = env.from_string(sring_template)
 
         with output_path.open("w") as f:
             f.write(template.render(workflows=workflows))
 
-        print(f"PlantUML Workflow diagram successfully saved to {output_path}!")
+        print(f"PlantUML Workflow diagram successfully saved to {output_path}!", file=sys.stderr)

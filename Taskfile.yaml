@@ -2,7 +2,7 @@ version: '3'
 
 vars:
   BASE_CWL_URL: 'https://raw.githubusercontent.com/eoap/application-package-patterns/refs/heads/main'
-  PATTERNS: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ]
+  PATTERNS: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ]
 
 tasks:
 
