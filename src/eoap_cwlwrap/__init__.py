@@ -8,6 +8,7 @@ You should have received a copy of the license along with this work.
 If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 '''
 
+import sys
 from .types import (
     Directory_or_File,
     get_assignable_type,
@@ -81,7 +82,7 @@ def _build_orchestrator_workflow(
     stage_out: Workflow
 ) -> Workflow:
     start_time = time.time()
-    print(f"Building the CWL Orchestrator Workflow...")
+    print(f"Building the CWL Orchestrator Workflow...", file=sys.stderr)
 
     imports = { URL_SCHEMA }
 
@@ -110,7 +111,7 @@ def _build_orchestrator_workflow(
 
     # inputs
 
-    print(f"Analyzing {workflow.id} inputs:")
+    print(f"Analyzing {workflow.id} inputs...", file=sys.stderr)
 
     stage_in_counters = {
         'Directory': 0,
@@ -126,7 +127,7 @@ def _build_orchestrator_workflow(
         type_string = type_to_string(input.type_)
         _ad_import(type_string)
 
-        print(f"* {workflow.id}/{input.id}: {type_string}")
+        print(f"* {workflow.id}/{input.id}: {type_string}", file=sys.stderr)
 
         assignable_type = get_assignable_type(actual=input.type_, expected=Directory_or_File)
 
@@ -139,13 +140,13 @@ def _build_orchestrator_workflow(
 
             stage_in_id = f"{type_to_string(assignable_type).lower()}_stage_in_{stage_in_counters[type_to_string(assignable_type)]}"
 
-            print(f"  {type_to_string(assignable_type)} type detected, creating a related '{stage_in_id}'...")
+            print(f"  {type_to_string(assignable_type)} type detected, creating a related '{stage_in_id}'...", file=sys.stderr)
 
-            print(f"  Converting {type_to_string(input.type_)} to URL-compatible type...")
+            print(f"  Converting {type_to_string(input.type_)} to URL-compatible type...", file=sys.stderr)
 
             target_type = replace_type_with_url(source=input.type_, to_be_replaced=Directory_or_File)
 
-            print(f"  {type_to_string(input.type_)} converted to {type_to_string(target_type)}")
+            print(f"  {type_to_string(input.type_)} converted to {type_to_string(target_type)}", file=sys.stderr)
 
             workflow_step = WorkflowStep(
                 id=stage_in_id,
@@ -166,7 +167,7 @@ def _build_orchestrator_workflow(
 
                 if is_uri_compatible_type(stage_in_input.type_):
                     if is_array_type(input.type_):
-                        print(f"  Array detected, 'scatter' required for {stage_in_input.id}:{input.id}")
+                        print(f"  Array detected, 'scatter' required for {stage_in_input.id}:{input.id}", file=sys.stderr)
 
                         workflow_step.scatter = stage_in_input.id
                         workflow_step.scatterMethod = 'dotproduct'
@@ -177,7 +178,7 @@ def _build_orchestrator_workflow(
                         )
 
                     if is_nullable(input.type_):
-                        print(f"  Nullable detected, 'when' required for {stage_in_input.id}:{input.id}")
+                        print(f"  Nullable detected, 'when' required for {stage_in_input.id}:{input.id}", file=sys.stderr)
 
                         workflow_step.when = f"$(inputs.{stage_in_input.id} !== null)"
 
@@ -186,7 +187,7 @@ def _build_orchestrator_workflow(
                             workflow=orchestrator
                         )
 
-            print(f"  Connecting 'app/{input.id}' to '{stage_in_id}' output...")
+            print(f"  Connecting 'app/{input.id}' to '{stage_in_id}' output...", file=sys.stderr)
 
             app.in_.append(
                 WorkflowStepInput(
@@ -237,24 +238,24 @@ def _build_orchestrator_workflow(
 
     # outputs
 
-    print(f"Analyzing {workflow.id} outputs:")
+    print(f"Analyzing {workflow.id} outputs...", file=sys.stderr)
 
     stage_out_counter = 0
     for output in workflow.outputs:
         type_string = type_to_string(output.type_)
         _ad_import(type_string)
-        print(f"* {workflow.id}/{output.id}: {type_string}")
+        print(f"* {workflow.id}/{output.id}: {type_string}", file=sys.stderr)
 
         app.out.append(output.id)
 
         if is_directory_compatible_type(output.type_):
-            print(f"  Directory type detected, creating a related 'stage_out_{stage_out_counter}'...")
+            print(f"  Directory type detected, creating a related 'stage_out_{stage_out_counter}'...", file=sys.stderr)
 
-            print(f"  Converting {type_to_string(output.type_)} to URL-compatible type...")
+            print(f"  Converting {type_to_string(output.type_)} to URL-compatible type...", file=sys.stderr)
 
             url_type = replace_directory_with_url(output.type_)
 
-            print(f"  {type_to_string(output.type_)} converted to {type_to_string(url_type)}")
+            print(f"  {type_to_string(output.type_)} converted to {type_to_string(url_type)}", file=sys.stderr)
 
             workflow_step = WorkflowStep(
                 id=f"stage_out_{stage_out_counter}",
@@ -275,7 +276,7 @@ def _build_orchestrator_workflow(
 
                 if is_directory_compatible_type(stage_out_input.type_):
                     if is_array_type(url_type):
-                        print(f"  Array detected, scatter required for {stage_out_input.id}:app/{output.id}")
+                        print(f"  Array detected, scatter required for {stage_out_input.id}:app/{output.id}", file=sys.stderr)
 
                         workflow_step.scatter = stage_out_input.id
                         workflow_step.scatterMethod = 'dotproduct'
@@ -286,7 +287,7 @@ def _build_orchestrator_workflow(
                         )
 
                     if is_nullable(url_type):
-                        print(f"  Nullable detected, 'when' required for {stage_out_input.id}:app/{output.id}")
+                        print(f"  Nullable detected, 'when' required for {stage_out_input.id}:app/{output.id}", file=sys.stderr)
 
                         workflow_step.when = f"$(inputs.{stage_out_input.id} !== null)"
 
@@ -295,7 +296,7 @@ def _build_orchestrator_workflow(
                             workflow=orchestrator
                         )
 
-            print(f"  Connecting 'app/{output.id}' to 'stage_out_{stage_out_counter}' output...")
+            print(f"  Connecting 'app/{output.id}' to 'stage_out_{stage_out_counter}' output...", file=sys.stderr)
 
             orchestrator.outputs.append(
                 next(
@@ -370,7 +371,7 @@ def _build_orchestrator_workflow(
     )
 
     end_time = time.time()
-    print(f"Orchestrator Workflow built in {end_time - start_time:.4f} seconds")
+    print(f"Orchestrator Workflow built in {end_time - start_time:.4f} seconds", file=sys.stderr)
 
     return main_workflow
 

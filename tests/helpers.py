@@ -9,6 +9,7 @@ If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
 import os
+import sys
 import unittest
 from cwltool.main import main as cwlmain
 from cwltool.context import LoadingContext, RuntimeContext
@@ -36,7 +37,7 @@ class TestCWL(unittest.TestCase):
             runtimeContext=RuntimeContext(),
         )
         if result != 0:
-            print(stream_out.getvalue())
+            print(stream_out.getvalue(), file=sys.stderr)
             raise RuntimeError(f"Validation failed with exit code {result}")
         return result
 

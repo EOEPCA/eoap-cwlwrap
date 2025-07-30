@@ -8,6 +8,7 @@ You should have received a copy of the license along with this work.
 If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
+import sys
 from .types import Workflows
 from cwl_utils.parser import load_document_by_yaml, save
 from cwl_utils.parser.cwl_v1_2 import Workflow
@@ -35,7 +36,7 @@ def _clean_part(
 def _clean_workflow(workflow: Any):
     workflow.id = _clean_part(workflow.id, '#')
 
-    print(f"  Cleaning {workflow.class_} {workflow.id}...")
+    print(f"  Cleaning {workflow.class_} {workflow.id}...", file=sys.stderr)
 
     for parameters in [ workflow.inputs, workflow.outputs ]:
         for parameter in parameters:
@@ -75,7 +76,7 @@ def _is_url(path_or_url: str) -> bool:
         return False
 
 def load_workflow(path: str) -> Workflows:
-    print(f"Loading CWL document from {path}...")
+    print(f"Loading CWL document from {path}...", file=sys.stderr)
 
     if _is_url(path):
         response = requests.get(path, stream=True)
@@ -97,7 +98,7 @@ def load_workflow(path: str) -> Workflows:
     else:
         raise ValueError(f"Invalid source {path}: not a URL or existing file path")
 
-    print(f"Raw CWL document successfully loaded from {path}! Now updating the model to v1.2...")
+    print(f"Raw CWL document successfully loaded from {path}! Now updating the model to v1.2...", file=sys.stderr)
 
     updated_workflow = update(
         doc=raw_workflow,
@@ -108,7 +109,7 @@ def load_workflow(path: str) -> Workflows:
         update_to=__TARGET_CWL_VERSION__
     )
 
-    print('Raw CWL document successfully updated! Now converting to the CWL model...')
+    print('Raw CWL document successfully updated! Now converting to the CWL model...', file=sys.stderr)
 
     workflow = load_document_by_yaml(
         yaml=updated_workflow,
@@ -116,7 +117,7 @@ def load_workflow(path: str) -> Workflows:
         load_all=True
     )
 
-    print('Raw CWL document successfully updated! Now dereferencing the FQNs...')
+    print('Raw CWL document successfully updated! Now dereferencing the FQNs...', file=sys.stderr)
 
     if isinstance(workflow, list):
         for wf in workflow:
@@ -124,7 +125,7 @@ def load_workflow(path: str) -> Workflows:
     else:
         _clean_workflow(workflow)
 
-    print(f"CWL document successfully dereferenced!")
+    print(f"CWL document successfully dereferenced!", file=sys.stderr)
 
     return workflow
 

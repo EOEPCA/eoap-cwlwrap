@@ -8,6 +8,7 @@ You should have received a copy of the license along with this work.
 If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
+import sys
 from . import wrap
 from .loader import (
     load_workflow,
@@ -42,21 +43,21 @@ def main(
     if directory_stage_in:
         directory_stage_in_cwl = load_workflow(path=directory_stage_in)
 
-        print('------------------------------------------------------------------------')
+        print('------------------------------------------------------------------------', file=sys.stderr)
 
     file_stage_in_cwl = None
     if file_stage_in:
         file_stage_in_cwl = load_workflow(path=file_stage_in)
 
-        print('------------------------------------------------------------------------')
+        print('------------------------------------------------------------------------', file=sys.stderr)
 
     workflows_cwl = load_workflow(path=workflow)
 
-    print('------------------------------------------------------------------------')
+    print('------------------------------------------------------------------------', file=sys.stderr)
 
     stage_out_cwl = load_workflow(path=stage_out)
 
-    print('------------------------------------------------------------------------')
+    print('------------------------------------------------------------------------', file=sys.stderr)
 
     main_workflow = wrap(
         directory_stage_in=directory_stage_in_cwl,
@@ -66,20 +67,20 @@ def main(
         stage_out=stage_out_cwl
     )
 
-    print('------------------------------------------------------------------------')
-    print('BUILD SUCCESS')
-    print('------------------------------------------------------------------------')
+    print('------------------------------------------------------------------------', file=sys.stderr)
+    print('BUILD SUCCESS', file=sys.stderr)
+    print('------------------------------------------------------------------------', file=sys.stderr)
 
-    print(f"Saving the new Workflow to {output}...")
+    print(f"Saving the new Workflow to {output}...", file=sys.stderr)
 
     output_path = Path(output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w") as f:
         dump_workflow(main_workflow, output_path)
 
-    print(f"New Workflow successfully saved to {output}!")
+    print(f"New Workflow successfully saved to {output}!", file=sys.stderr)
 
-    print('------------------------------------------------------------------------')
+    print('------------------------------------------------------------------------', file=sys.stderr)
 
     if puml:
         to_puml(
@@ -87,12 +88,12 @@ def main(
             output=output
         )
 
-        print('------------------------------------------------------------------------')
+        print('--------------------------------------------------------------', file=sys.stderr)
 
     end_time = time.time()
 
-    print(f"Total time: {end_time - start_time:.4f} seconds")
-    print(f"Finished at: {datetime.fromtimestamp(end_time).isoformat(timespec='milliseconds')}")
+    print(f"Total time: {end_time - start_time:.4f} seconds", file=sys.stderr)
+    print(f"Finished at: {datetime.fromtimestamp(end_time).isoformat(timespec='milliseconds')}", file=sys.stderr)
 
 if __name__ == "__main__":
     main()

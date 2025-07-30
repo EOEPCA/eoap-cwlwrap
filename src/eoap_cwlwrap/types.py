@@ -8,6 +8,7 @@ You should have received a copy of the license along with this work.
 If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
+import sys
 from cwl_utils.parser.cwl_v1_2 import (
     CommandInputArraySchema,
     CommandOutputArraySchema,
@@ -167,7 +168,7 @@ def _validate_stage_in(
     stage_in: Workflow,
     expected_output_type: Any
 ):
-    print(f"Validating stage-in '{stage_in.id}'...")
+    print(f"Validating stage-in '{stage_in.id}'...", file=sys.stderr)
 
     url_inputs = list(
         filter(
@@ -189,7 +190,7 @@ def _validate_stage_in(
     if len(directory_outputs) != 1:
         sys.exit(f"stage-in '{stage_in.id}' not valid, {_create_error_message(directory_outputs)} Directory-compatible output found, please specify one.")
 
-    print(f"stage-in '{stage_in.id}' is valid")
+    print(f"stage-in '{stage_in.id}' is valid", file=sys.stderr)
 
 def validate_directory_stage_in(directory_stage_in: Workflow):
     _validate_stage_in(stage_in=directory_stage_in, expected_output_type=Directory)
@@ -198,7 +199,7 @@ def validate_file_stage_in(file_stage_in: Workflow):
     _validate_stage_in(stage_in=file_stage_in, expected_output_type=File)
 
 def validate_stage_out(stage_out: Workflow):
-    print(f"Validating stage-out '{stage_out.id}'...")
+    print(f"Validating stage-out '{stage_out.id}'...", file=sys.stderr)
 
     directory_inputs = list(
         filter(
@@ -220,4 +221,4 @@ def validate_stage_out(stage_out: Workflow):
     if len(url_outputs) != 1:
         sys.exit(f"stage-out '{stage_out.id}' not valid, {_create_error_message(url_outputs)} URL-compatible output found, please specify one.")
 
-    print(f"stage-out '{stage_out.id}' is valid")
+    print(f"stage-out '{stage_out.id}' is valid", file=sys.stderr)
