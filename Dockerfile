@@ -21,7 +21,9 @@ FROM rockylinux:9.3-minimal
 
 # Install runtime dependencies
 RUN microdnf install -y --nodocs nodejs && \
-    microdnf clean all
+    microdnf clean all && \
+    curl -L https://github.com/jqlang/jq/releases/download/jq-1.8.1/jq-linux-amd64 -o /usr/bin/jq && \
+    chmod +x /usr/bin/jq
 
 # Set up a default user and home directory
 ENV HOME=/home/neo
