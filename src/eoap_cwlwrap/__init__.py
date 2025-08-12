@@ -1,4 +1,6 @@
 '''
+EOAP CWLWrap is a command-line utility that composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps, defined according to [Application package patterns based on data stage-in and stage-out behaviors commonly used in EO workflows](https://github.com/eoap/application-package-patterns), and **packs** it into a single self-contained CWL document.
+
 EOAP CWLWrap (c) 2025
 
 EOAP CWLWrap is licensed under
@@ -38,9 +40,11 @@ from cwl_utils.parser.cwl_v1_2 import (
     WorkflowStep,
     WorkflowStepInput
 )
+from loguru import logger
 from typing import (
     Any,
-    Optional
+    Optional,
+    Union
 )
 import sys
 import time
@@ -82,7 +86,7 @@ def _build_orchestrator_workflow(
     stage_out: Workflow
 ) -> Workflow:
     start_time = time.time()
-    print(f"Building the CWL Orchestrator Workflow...", file=sys.stderr)
+    logger.info(f"Building the CWL Orchestrator Workflow...")
 
     imports = { URL_SCHEMA }
 
@@ -111,7 +115,7 @@ def _build_orchestrator_workflow(
 
     # inputs
 
-    print(f"Analyzing {workflow.id} inputs...", file=sys.stderr)
+    logger.info(f"Analyzing {workflow.id} inputs...")
 
     stage_in_counters = {
         'Directory': 0,
@@ -127,7 +131,7 @@ def _build_orchestrator_workflow(
         type_string = type_to_string(input.type_)
         _ad_import(type_string)
 
-        print(f"* {workflow.id}/{input.id}: {type_string}", file=sys.stderr)
+        logger.info(f"* {workflow.id}/{input.id}: {type_string}")
 
         assignable_type = get_assignable_type(actual=input.type_, expected=Directory_or_File)
 
@@ -140,13 +144,13 @@ def _build_orchestrator_workflow(
 
             stage_in_id = f"{type_to_string(assignable_type).lower()}_stage_in_{stage_in_counters[type_to_string(assignable_type)]}"
 
-            print(f"  {type_to_string(assignable_type)} type detected, creating a related '{stage_in_id}'...", file=sys.stderr)
+            logger.info(f"  {type_to_string(assignable_type)} type detected, creating a related '{stage_in_id}'...")
 
-            print(f"  Converting {type_to_string(input.type_)} to URL-compatible type...", file=sys.stderr)
+            logger.info(f"  Converting {type_to_string(input.type_)} to URL-compatible type...")
 
             target_type = replace_type_with_url(source=input.type_, to_be_replaced=Directory_or_File)
 
-            print(f"  {type_to_string(input.type_)} converted to {type_to_string(target_type)}", file=sys.stderr)
+            logger.info(f"  {type_to_string(input.type_)} converted to {type_to_string(target_type)}")
 
             workflow_step = WorkflowStep(
                 id=stage_in_id,
@@ -167,7 +171,7 @@ def _build_orchestrator_workflow(
 
                 if is_uri_compatible_type(stage_in_input.type_):
                     if is_array_type(input.type_):
-                        print(f"  Array detected, 'scatter' required for {stage_in_input.id}:{input.id}", file=sys.stderr)
+                        logger.info(f"  Array detected, 'scatter' required for {stage_in_input.id}:{input.id}")
 
                         workflow_step.scatter = stage_in_input.id
                         workflow_step.scatterMethod = 'dotproduct'
@@ -178,7 +182,7 @@ def _build_orchestrator_workflow(
                         )
 
                     if is_nullable(input.type_):
-                        print(f"  Nullable detected, 'when' required for {stage_in_input.id}:{input.id}", file=sys.stderr)
+                        logger.info(f"  Nullable detected, 'when' required for {stage_in_input.id}:{input.id}")
 
                         workflow_step.when = f"$(inputs.{stage_in_input.id} !== null)"
 
@@ -187,7 +191,7 @@ def _build_orchestrator_workflow(
                             workflow=orchestrator
                         )
 
-            print(f"  Connecting 'app/{input.id}' to '{stage_in_id}' output...", file=sys.stderr)
+            logger.info(f"  Connecting 'app/{input.id}' to '{stage_in_id}' output...")
 
             app.in_.append(
                 WorkflowStepInput(
@@ -238,24 +242,24 @@ def _build_orchestrator_workflow(
 
     # outputs
 
-    print(f"Analyzing {workflow.id} outputs...", file=sys.stderr)
+    logger.info(f"Analyzing {workflow.id} outputs...")
 
     stage_out_counter = 0
     for output in workflow.outputs:
         type_string = type_to_string(output.type_)
         _ad_import(type_string)
-        print(f"* {workflow.id}/{output.id}: {type_string}", file=sys.stderr)
+        logger.info(f"* {workflow.id}/{output.id}: {type_string}")
 
         app.out.append(output.id)
 
         if is_directory_compatible_type(output.type_):
-            print(f"  Directory type detected, creating a related 'stage_out_{stage_out_counter}'...", file=sys.stderr)
+            logger.info(f"  Directory type detected, creating a related 'stage_out_{stage_out_counter}'...")
 
-            print(f"  Converting {type_to_string(output.type_)} to URL-compatible type...", file=sys.stderr)
+            logger.info(f"  Converting {type_to_string(output.type_)} to URL-compatible type...")
 
             url_type = replace_directory_with_url(output.type_)
 
-            print(f"  {type_to_string(output.type_)} converted to {type_to_string(url_type)}", file=sys.stderr)
+            logger.info(f"  {type_to_string(output.type_)} converted to {type_to_string(url_type)}")
 
             workflow_step = WorkflowStep(
                 id=f"stage_out_{stage_out_counter}",
@@ -276,7 +280,7 @@ def _build_orchestrator_workflow(
 
                 if is_directory_compatible_type(stage_out_input.type_):
                     if is_array_type(url_type):
-                        print(f"  Array detected, scatter required for {stage_out_input.id}:app/{output.id}", file=sys.stderr)
+                        logger.info(f"  Array detected, scatter required for {stage_out_input.id}:app/{output.id}")
 
                         workflow_step.scatter = stage_out_input.id
                         workflow_step.scatterMethod = 'dotproduct'
@@ -287,7 +291,7 @@ def _build_orchestrator_workflow(
                         )
 
                     if is_nullable(url_type):
-                        print(f"  Nullable detected, 'when' required for {stage_out_input.id}:app/{output.id}", file=sys.stderr)
+                        logger.info(f"  Nullable detected, 'when' required for {stage_out_input.id}:app/{output.id}")
 
                         workflow_step.when = f"$(inputs.{stage_out_input.id} !== null)"
 
@@ -296,7 +300,7 @@ def _build_orchestrator_workflow(
                             workflow=orchestrator
                         )
 
-            print(f"  Connecting 'app/{output.id}' to 'stage_out_{stage_out_counter}' output...", file=sys.stderr)
+            logger.info(f"  Connecting 'app/{output.id}' to 'stage_out_{stage_out_counter}' output...")
 
             orchestrator.outputs.append(
                 next(
@@ -371,11 +375,11 @@ def _build_orchestrator_workflow(
     )
 
     end_time = time.time()
-    print(f"Orchestrator Workflow built in {end_time - start_time:.4f} seconds", file=sys.stderr)
+    logger.info(f"Orchestrator Workflow built in {end_time - start_time:.4f} seconds")
 
     return main_workflow
 
-def _search_workflow(workflow_id: str, workflow: Workflows) -> Workflows:
+def _search_workflow(workflow_id: str, workflow: Workflows) -> Workflow:
     if isinstance(workflow, list):
         for wf in workflow:
             if workflow_id in wf.id:
@@ -386,12 +390,25 @@ def _search_workflow(workflow_id: str, workflow: Workflows) -> Workflows:
     sys.exit(f"Sorry, '{workflow_id}' not found in the workflow input file, only {list(map(lambda wf: wf.id, workflow)) if isinstance(workflow, list) else [workflow.id]} available.")
 
 def wrap(
-    workflows: Workflow,
+    workflows: Workflows,
     workflow_id: str,
     stage_out: Workflow,
     directory_stage_in: Optional[Workflow] = None,
     file_stage_in: Optional[Workflow] = None
-) -> Workflow:
+) -> list[Workflow]:
+    '''
+    Composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps, defined according to [Application package patterns based on data stage-in and stage-out behaviors commonly used in EO workflows](https://github.com/eoap/application-package-patterns), and **packs** it into a single self-contained CWL document.
+
+    Args:
+        `workflows` (`Workflows`): The CWL document object model (or models, if the CWl is a `$graph`)
+        `workflow_id` (`str`): ID of the workflow
+        `stage_out` (`Workflow`): The CWL stage-out document object model
+        `directory_stage_in` (`Optional[Workflow]`): The CWL stage-in file for `Directory` derived types
+        `file_stage_in` (`Optional[Workflow]`): The CWL stage-in file for `File` derived types
+
+    Returns:
+        `list[Workflow]`: The composed CWL `$graph`.
+    '''
     if directory_stage_in:
         validate_directory_stage_in(directory_stage_in=directory_stage_in)
 

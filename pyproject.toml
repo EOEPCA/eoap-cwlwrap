@@ -28,11 +28,12 @@ classifiers = [
 ]
 
 dependencies = [
-    "click>=8.0",
-    "cwl-utils>=0.38",
-    "ruamel.yaml>=0.18",
-    "cwltool>=3.1.20250110105449",
-    "Jinja2>=3.1.6"
+  "click>=8.0",
+  "cwl-loader==0.1.0",
+  "cwl-utils>=0.38",
+  "cwltool>=3.1.20250110105449",
+  "Jinja2>=3.1.6",
+  "loguru"
 ]
 
 [project.urls]
@@ -69,21 +70,19 @@ exclude_lines = [
   "if TYPE_CHECKING:",
 ]
 
-
 [tool.hatch.envs.default]
 skip-install = false
 dependencies = [
-    "click>=8.0",
-    "cwl-utils>=0.38",
-    "ruamel.yaml>=0.18",
-    "cwltool>=3.1.20250110105449",
-    "Jinja2>=3.1.6"
+  "click>=8.0",
+  "cwl-loader==0.1.0",
+  "cwl-utils>=0.38",
+  "cwltool>=3.1.20250110105449",
+  "Jinja2>=3.1.6",
+  "loguru"
 ]
 
 [tool.hatch.envs.prod]
 path = "/app/envs/eoap-cwlwrap"
-
-
 
 [project.scripts]
 eoap-cwlwrap = "eoap_cwlwrap.builder:main"
@@ -92,14 +91,13 @@ eoap-cwlwrap = "eoap_cwlwrap.builder:main"
 skip-install = false
 
 dependencies = [
-    "click>=8.0",
-    "cwl-utils>=0.38",
-    "ruamel.yaml>=0.18",
-    "cwltool>=3.1.20250110105449",
-    "Jinja2>=3.1.6",
-    "nose2",
+  "click>=8.0",
+  "cwl-loader==0.1.0",
+  "cwl-utils>=0.38",
+  "cwltool>=3.1.20250110105449",
+  "Jinja2>=3.1.6",
+  "loguru"
 ]
-
 
 [tool.hatch.envs.test.scripts]
 test = "hatch run nose2"

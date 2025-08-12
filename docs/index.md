@@ -4,6 +4,20 @@
 
 ---
 
+## 🛠 Installation
+
+```
+pip install eoap-cwlwrap
+```
+
+or, for early adopters:
+
+```
+pip install --no-cache-dir git+https://github.com/EOEPCA/eoap-cwlwrap@main
+```
+
+---
+
 ## 🧠 Prerequisites
 
 ### stage-in
@@ -46,14 +60,6 @@ Outputs:
 - 🧪 Validate type compatibility between steps;
 - 📦 Pack the entire workflow and dependencies into one file;
 - 💾 Output to any location, with automatic directory creation.
-
----
-
-## 🛠 Installation
-
-```bash
-pip install -e .
-```
 
 ---
 
