@@ -1,4 +1,8 @@
 site_name: EOAP CWL Wrap
+site_url: https://eoepca.github.io/eoap-cwlwrap/
+site_author: Fabrice Brito, Simone Tripodi
+repo_url: https://github.com/EOEPCA/eoap-cwlwrap/
+repo_name: EOEPCA/eoap-cwlwrap
 
 theme:
   logo: imgs/icon-eoap.png
@@ -58,18 +62,10 @@ extra_javascript:
 
 nav:
   - Introduction: index.md
-  - Patterns:
-    - pattern-1.ipynb
-    - pattern-2.ipynb
-    - pattern-3.ipynb
-    - pattern-4.ipynb
-    - pattern-5.ipynb
-    - pattern-6.ipynb
-    - pattern-7.ipynb
-    - pattern-8.ipynb
-    - pattern-9.ipynb
-    - pattern-10.ipynb
-    - pattern-11.ipynb
-    - pattern-12.ipynb
+  - example.ipynb
+  - API doc:
+    - api/latest/eoap_cwlwrap/index.md
+    - api/latest/eoap_cwlwrap/builder.md
+    - api/latest/eoap_cwlwrap/types.md
 
 copyright: <a href="https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg">License CC BY-SA 4.0</a>, by <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons</a>
