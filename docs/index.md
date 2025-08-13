@@ -76,14 +76,14 @@ eoap-cwlwrap \
 
 ### 🔧 Options
 
-| Option                                                                                       | Description                                              |
-|----------------------------------------------------------------------------------------------|----------------------------------------------------------|
-| `--directory-stage-in`                                                                       | The CWL stage-in URL or file for Directory derived types |
-| `--file-stage-in", required=False, help="The CWL stage-in URL or file for File derived types |                                                          |
-| `--workflow`                                                                                 | The CWL workflow URL or file                             |
-| `--workflow-id`                                                                              | ID of the workflow                                       |
-| `--stage-out`                                                                                | `The CWL stage-out URL or file                           |
-| `--output"`                                                                                  | The output file path                                     |
+| Option                 | Description                                              |
+|------------------------|----------------------------------------------------------|
+| `--directory-stage-in` | The CWL stage-in URL or file for Directory derived types |
+| `--file-stage-in`      | The CWL stage-in URL or file for File derived types      |
+| `--workflow`           | The CWL workflow URL or file                             |
+| `--workflow-id`        | ID of the workflow                                       |
+| `--stage-out`          | `The CWL stage-out URL or file                           |
+| `--output"`            | The output file path                                     |
 
 ---
 
