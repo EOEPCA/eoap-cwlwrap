@@ -76,14 +76,14 @@ eoap-cwlwrap \
 
 ### 🔧 Options
 
-| Option          | Description                                                                                      |
-|-----------------|--------------------------------------------------------------------------------------------------|
-| `--stage-in`    | The CWL `stage-in` file path.                                                                    |
-| `--workflow`    | The CWL `app` file path.                                                                         |
-| `--workflow-id` | The ID of the `Workflow` chained as `app`                                                        |
-| `--stage_out`   | The CWL `stage-out` file path.                                                                   |
-| `--output`      | The target CWL output file path. Intermediate directories are created if not existing.           |
-| `--puml`        | Enable the generation of the [PlantUML](https://plantuml.com/) diagram of the generated Workflow |
+| Option                                                                                       | Description                                              |
+|----------------------------------------------------------------------------------------------|----------------------------------------------------------|
+| `--directory-stage-in`                                                                       | The CWL stage-in URL or file for Directory derived types |
+| `--file-stage-in", required=False, help="The CWL stage-in URL or file for File derived types |                                                          |
+| `--workflow`                                                                                 | The CWL workflow URL or file                             |
+| `--workflow-id`                                                                              | ID of the workflow                                       |
+| `--stage-out`                                                                                | `The CWL stage-out URL or file                           |
+| `--output"`                                                                                  | The output file path                                     |
 
 ---
 
@@ -97,6 +97,7 @@ Package installation will automatically install the following dependencies:
 
 - [cwltool](https://cwltool.readthedocs.io/en/latest/)
 - [cwl-utils](https://cwl-utils.readthedocs.io/en/latest/)
+- [cwl-loader](https://terradue.github.io/cwl-loader/)
 - [ruamel.yaml](https://yaml.dev/doc/ruamel.yaml/)
 - [Jinja2](https://jinja.palletsprojects.com/en/stable/)
 - [click](https://click.palletsprojects.com/en/stable/)
