@@ -28,6 +28,7 @@ from .types import (
     validate_stage_out,
     Workflows
 )
+from cwl_loader import load_cwl_from_yaml
 from cwl_utils.parser.cwl_v1_2 import (
     InlineJavascriptRequirement,
     ProcessRequirement,
@@ -43,8 +44,8 @@ from cwl_utils.parser.cwl_v1_2 import (
 from loguru import logger
 from typing import (
     Any,
-    Optional,
-    Union
+    Mapping,
+    Optional
 )
 import sys
 import time
@@ -431,3 +432,31 @@ def wrap(
                 orchestrator.append(wf)
 
     return orchestrator
+
+def wrap_raw(
+    workflows: Mapping[str, Any],
+    workflow_id: str,
+    stage_out: Mapping[str, Any],
+    directory_stage_in: Optional[Mapping[str, Any]] = None,
+    file_stage_in: Optional[Mapping[str, Any]] = None
+)-> list[Workflow]:
+    '''
+    Composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps, defined according to [Application package patterns based on data stage-in and stage-out behaviors commonly used in EO workflows](https://github.com/eoap/application-package-patterns), and **packs** it into a single self-contained CWL document.
+
+    Args:
+        `workflows` (`Mapping[str, Any]`): The CWL document object model (or models, if the CWl is a `$graph`)
+        `workflow_id` (`str`): ID of the workflow
+        `stage_out` (`Mapping[str, Any]`): The CWL stage-out document object model
+        `directory_stage_in` (`Optional[Mapping[str, Any]]`): The CWL stage-in file for `Directory` derived types
+        `file_stage_in` (`Optional[Mapping[str, Any]]`): The CWL stage-in file for `File` derived types
+
+    Returns:
+        `list[Workflow]`: The composed CWL `$graph`.
+    '''
+    return wrap(
+        workflows=load_cwl_from_yaml(workflows),
+        workflow_id=workflow_id,
+        stage_out=load_cwl_from_yaml(stage_out),
+        directory_stage_in=load_cwl_from_yaml(directory_stage_in) if directory_stage_in else None,
+        file_stage_in=load_cwl_from_yaml(file_stage_in) if file_stage_in else None
+    )
