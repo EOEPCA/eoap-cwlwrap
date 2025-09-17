@@ -29,10 +29,9 @@ classifiers = [
 
 dependencies = [
   "click>=8.0",
-  "cwl-loader>=0.3.0",
+  "cwl-loader>=0.6.0",
   "cwl-utils>=0.38",
   "cwltool>=3.1.20250110105449",
-  "Jinja2>=3.1.6",
   "loguru"
 ]
 
@@ -74,10 +73,9 @@ exclude_lines = [
 skip-install = false
 dependencies = [
   "click>=8.0",
-  "cwl-loader>=0.4.0",
+  "cwl-loader>=0.6.0",
   "cwl-utils>=0.39",
   "cwltool>=3.1.20250110105449",
-  "Jinja2>=3.1.6",
   "loguru"
 ]
 
@@ -92,10 +90,9 @@ skip-install = false
 
 dependencies = [
   "click>=8.0",
-  "cwl-loader>=0.2.0",
+  "cwl-loader>=0.6.0",
   "cwl-utils>=0.38",
   "cwltool>=3.1.20250110105449",
-  "Jinja2>=3.1.6",
   "loguru"
 ]
 
