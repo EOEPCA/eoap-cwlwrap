@@ -9,14 +9,14 @@ If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 """
 
 import sys
+from cwl_utils.parser import Process 
 from cwl_utils.parser.cwl_v1_2 import (
     CommandInputArraySchema,
     CommandOutputArraySchema,
     Directory,
     File,
     InputArraySchema,
-    OutputArraySchema,
-    Workflow
+    OutputArraySchema
 )
 from loguru import logger
 from typing import (
@@ -26,9 +26,6 @@ from typing import (
     Union
 )
 import sys
-
-Workflows = Union[Workflow, list[Workflow]]
-'''A single CWL Workflow or a list of Workflows union type.'''
 
 Directory_or_File = Union[Directory, File]
 '''A Directory Workflow or a File union type.'''
@@ -190,11 +187,11 @@ def replace_type_with_url(
         return None
 
     # case 0: Direct match with class name
-    if isinstance(source, str) and (isinstance(to_be_replaced, str) and source == to_be_replaced or source == to_be_replaced.__name__):
+    if isinstance(source, str) and (isinstance(to_be_replaced, str) and source == to_be_replaced or source == type(to_be_replaced).__name__):
         return URL_TYPE
 
     # Case 1: Direct match with class
-    if source == to_be_replaced or isinstance(source, to_be_replaced):
+    if source == to_be_replaced or isinstance(to_be_replaced, type) and isinstance(source, to_be_replaced):
         return URL_TYPE
 
     # Union: list of types
@@ -267,7 +264,7 @@ def _create_error_message(parameters: list[Any]) -> str:
 # Validation methods
 
 def _validate_stage_in(
-    stage_in: Workflow,
+    stage_in: Process,
     expected_output_type: Any
 ):
     logger.info(f"Validating stage-in '{stage_in.id}'...")
@@ -294,36 +291,36 @@ def _validate_stage_in(
 
     logger.info(f"stage-in '{stage_in.id}' is valid")
 
-def validate_directory_stage_in(directory_stage_in: Workflow):
+def validate_directory_stage_in(directory_stage_in: Process):
     '''
-    Checks if a CWL stage-in document is a `URI`-compatible input and `Directory`-compatible output `Workflow`.
+    Checks if a CWL stage-in document is a `URI`-compatible input and `Directory`-compatible output `Process`.
 
     Args:
-        `directory_stage_in` (`Workflow`): Any CWL `Workflow`
+        `directory_stage_in` (`Process`): Any CWL `Process`
 
     Returns:
         `None`: none.
     '''
     _validate_stage_in(stage_in=directory_stage_in, expected_output_type=Directory)
 
-def validate_file_stage_in(file_stage_in: Workflow):
+def validate_file_stage_in(file_stage_in: Process):
     '''
-    Checks if a CWL stage-in document is a `URI`-compatible input and `File`-compatible output `Workflow`.
+    Checks if a CWL stage-in document is a `URI`-compatible input and `File`-compatible output `Process`.
 
     Args:
-        `file_stage_in` (`Workflow`): Any CWL `Workflow`
+        `file_stage_in` (`Process`): Any CWL `Process`
 
     Returns:
         `None`: none.
     '''
     _validate_stage_in(stage_in=file_stage_in, expected_output_type=File)
 
-def validate_stage_out(stage_out: Workflow):
+def validate_stage_out(stage_out: Process):
     '''
-    Checks if a CWL stage-out document is a `Directory`-compatible input and `URI`-compatible output `Workflow`.
+    Checks if a CWL stage-out document is a `Directory`-compatible input and `URI`-compatible output `Process`.
 
     Args:
-        `stage_out` (`Workflow`): Any CWL `Workflow`
+        `stage_out` (`Process`): Any CWL `Process`
 
     Returns:
         `None`: none.
