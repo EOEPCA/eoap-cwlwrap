@@ -187,11 +187,11 @@ def replace_type_with_url(
         return None
 
     # case 0: Direct match with class name
-    if isinstance(source, str) and (isinstance(to_be_replaced, str) and source == to_be_replaced or source == type(to_be_replaced).__name__):
+    if isinstance(source, str) and (isinstance(to_be_replaced, str) and source == to_be_replaced or source == to_be_replaced.__name__): # type: ignore
         return URL_TYPE
 
     # Case 1: Direct match with class
-    if source == to_be_replaced or isinstance(to_be_replaced, type) and isinstance(source, to_be_replaced):
+    if source == to_be_replaced or isinstance(source, to_be_replaced): # type: ignore
         return URL_TYPE
 
     # Union: list of types

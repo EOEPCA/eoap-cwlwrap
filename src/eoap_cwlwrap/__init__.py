@@ -31,6 +31,7 @@ from cwl_loader import (
     load_cwl_from_yaml,
     load_cwl_from_location
 )
+from cwl_loader.sort import order_graph_by_dependencies
 from cwl_loader.utils import search_workflow
 from cwl_utils.parser import Process 
 from cwl_utils.parser.cwl_v1_2 import (
@@ -435,7 +436,7 @@ def wrap(
             if workflow_id not in wf.id:
                 orchestrator.append(wf)
 
-    return orchestrator
+    return order_graph_by_dependencies(processes=orchestrator)
 
 def _load_process_from_yaml(
     raw_data: Mapping[str, Any],
