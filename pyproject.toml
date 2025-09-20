@@ -29,7 +29,7 @@ classifiers = [
 
 dependencies = [
   "click>=8.0",
-  "cwl-loader>=0.6.0",
+  "cwl-loader>=0.8.0",
   "cwl-utils>=0.38",
   "cwltool>=3.1.20250110105449",
   "loguru"
