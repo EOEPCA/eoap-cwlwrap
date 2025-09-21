@@ -32,7 +32,7 @@ from cwl_loader import (
     load_cwl_from_location
 )
 from cwl_loader.sort import order_graph_by_dependencies
-from cwl_loader.utils import search_workflow
+from cwl_loader.utils import search_process
 from cwl_utils.parser import Process 
 from cwl_utils.parser.cwl_v1_2 import (
     InlineJavascriptRequirement,
@@ -415,7 +415,7 @@ def wrap(
     if file_stage_in:
         validate_file_stage_in(file_stage_in=file_stage_in)
 
-    workflow = search_workflow(
+    workflow = search_process(
         process_id=workflow_id,
         process=workflows
     )
