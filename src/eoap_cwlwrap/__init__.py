@@ -318,7 +318,7 @@ def _build_orchestrator_workflow(
                         lambda mapping_output: WorkflowOutputParameter(
                             id=output.id,
                             type_=url_type,
-                            outputSource=[f"stage_out_{stage_out_counter}/{mapping_output.id}"],
+                            outputSource=f"stage_out_{stage_out_counter}/{mapping_output.id}",
                             label=output.label,
                             secondaryFiles=output.secondaryFiles,
                             streamable=output.streamable,
@@ -347,7 +347,7 @@ def _build_orchestrator_workflow(
                     doc=f"{output.doc} - This output is derived from app/{output.id}" if output.label else f"This output is derived from: app/{output.id}",
                     id=output.id,
                     format=output.format,
-                    outputSource=[ f"app/{output.id}" ],
+                    outputSource=f"app/{output.id}",
                     linkMerge=output.linkMerge,
                     pickValue=output.pickValue,
                     extension_fields=output.extension_fields,
