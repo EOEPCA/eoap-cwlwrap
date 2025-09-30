@@ -51,7 +51,7 @@ jobs:
     - run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
     - name: build & push image
       run: |
-        version=$( cat src/eoap_cwlwrap/__about__.py | cut -d "=" -f 2 | tr -d '"' | tr -d " " )
+        version=$(grep -Eo '[0-9]+(\.[0-9]+){1,3}' src/eoap_cwlwrap/__about__.py | tail -1)
         IMAGE_ID=ghcr.io/eoepca/eoap-cwlwrap/eoap-cwlwrap
         docker build . --file Dockerfile --tag eoap-cwlwrap
         docker tag eoap-cwlwrap $IMAGE_ID:$version
