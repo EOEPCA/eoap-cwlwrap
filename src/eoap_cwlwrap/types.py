@@ -256,7 +256,14 @@ def type_to_string(typ: Any) -> str:
     if isinstance(typ, str):
         return typ
 
-    return typ.__name__
+    if hasattr(typ, '__name__'):
+        return typ.__name__
+
+    if hasattr(typ, 'type_'):
+        return typ.type_
+    
+    # last hope to follow back
+    return str(type)
 
 def _create_error_message(parameters: list[Any]) -> str:
     return 'no' if 0 == len(parameters) else str(list(map(lambda parameter: parameter.id, parameters)))
