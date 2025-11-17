@@ -1,14 +1,16 @@
-'''
-EOAP CWLWrap is a command-line utility that composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps, defined according to [Application package patterns based on data stage-in and stage-out behaviors commonly used in EO workflows](https://github.com/eoap/application-package-patterns), and **packs** it into a single self-contained CWL document.
-
-EOAP CWLWrap (c) 2025
-
-EOAP CWLWrap is licensed under
-Creative Commons Attribution-ShareAlike 4.0 International.
-
-You should have received a copy of the license along with this work.
-If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
-'''
+# Copyright 2025 Terradue
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import sys
 from .types import (
@@ -424,7 +426,7 @@ def wrap(
 
     validate_stage_out(stage_out=stage_out)
 
-    orchestrator = _build_orchestrator_workflow(
+    orchestrator: List[Process] = _build_orchestrator_workflow(
         directory_stage_in=directory_stage_in,
         file_stage_in=file_stage_in,
         workflow=workflow,
@@ -433,7 +435,7 @@ def wrap(
 
     if isinstance(workflows, list):
         for wf in workflows:
-            if workflow_id not in wf.id:
+            if workflow_id != wf.id:
                 orchestrator.append(wf)
 
     return order_graph_by_dependencies(processes=orchestrator)
