@@ -426,7 +426,7 @@ def wrap(
 
     validate_stage_out(stage_out=stage_out)
 
-    orchestrator = _build_orchestrator_workflow(
+    orchestrator: List[Process] = _build_orchestrator_workflow(
         directory_stage_in=directory_stage_in,
         file_stage_in=file_stage_in,
         workflow=workflow,
@@ -435,7 +435,7 @@ def wrap(
 
     if isinstance(workflows, list):
         for wf in workflows:
-            if workflow_id not in wf.id:
+            if workflow_id != wf.id:
                 orchestrator.append(wf)
 
     return order_graph_by_dependencies(processes=orchestrator)
