@@ -122,7 +122,9 @@ def _build_orchestrator_workflow(
         id='app',
         in_=[],
         out=[],
-        run=f"#{workflow.id}"
+        run=f"#{workflow.id}",
+        label=workflow.label,
+        doc=workflow.doc
     )
 
     # inputs
@@ -168,7 +170,9 @@ def _build_orchestrator_workflow(
                 id=stage_in_id,
                 in_=[],
                 out=list(map(lambda out: out.id, stage_in.outputs)),
-                run=f"#{stage_in.id}"
+                run=f"#{stage_in.id}",
+                label=f"Stage-in {stage_in_counters[type_to_string(assignable_type)]}",
+                doc=f"Stage-in {type_to_string(assignable_type)} {stage_in_counters[type_to_string(assignable_type)]}"
             )
 
             orchestrator.steps.append(workflow_step)
@@ -277,7 +281,9 @@ def _build_orchestrator_workflow(
                 id=f"stage_out_{stage_out_counter}",
                 in_=[],
                 out=list(map(lambda out: out.id, stage_out.outputs)),
-                run=f"#{stage_out.id}"
+                run=f"#{stage_out.id}",
+                label=f"Stage-out {stage_out_counter}",
+                doc=f"Stage-out {type_to_string(output.type_)} {stage_out_counter}"
             )
 
             orchestrator.steps.append(workflow_step)
