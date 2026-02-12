@@ -36,7 +36,7 @@ RUN VERSION="v4.45.4"                                                           
     tar xz && mv ${BINARY} /usr/bin/yq   
 
 #install oras
-ARG ORAS_VERSION=0.12.0
+ARG ORAS_VERSION=1.3.0
 RUN curl -LO "https://github.com/oras-project/oras/releases/download/v${ORAS_VERSION}/oras_${ORAS_VERSION}_linux_amd64.tar.gz" && \
     tar -xzf "oras_${ORAS_VERSION}_linux_amd64.tar.gz" && \
     mv oras /usr/local/bin/ && \
