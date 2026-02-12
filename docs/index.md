@@ -67,7 +67,8 @@ Outputs:
 
 ```bash
 eoap-cwlwrap \
---stage-in ./stage-in.cwl \
+--directory-stage-in ./stage-in-directory.cwl \
+--file-stage-in ./stage-in-file.cwl \
 --workflow ./workflow.cwl \
 --workflow-id water-bodies-detection \
 --stage-out ./stage-out.cwl \
