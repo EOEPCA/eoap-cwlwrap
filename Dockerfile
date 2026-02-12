@@ -61,7 +61,7 @@ FROM rockylinux/rockylinux:10.1-minimal AS runtime
 
 
 RUN microdnf -y update && \
-    microdnf -y install python3 python3-pip git jq && \
+    microdnf -y install python3 python3-pip nodejs git jq && \
     microdnf clean all
 
 # Set up a default user and home directory
