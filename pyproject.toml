@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "Add stage-in/stage-out steps to EOAP CWL Workflows"
 readme = "README.md"
 requires-python = ">=3.8"
-license = "MIT"
+license = "Apache-2.0"
 authors = [
   { name = "Fabrice Brito", email = "fabrice.brito@terradue.com" },
   { name = "Simone Tripodi", email = "simone.tripodi@terradue.com" }
@@ -28,11 +28,11 @@ classifiers = [
 ]
 
 dependencies = [
-    "click>=8.0",
-    "cwl-utils>=0.38",
-    "ruamel.yaml>=0.18",
-    "cwltool>=3.1.20250110105449",
-    "Jinja2>=3.1.6"
+  "click>=8.0",
+  "cwl-loader>=0.14.0",
+  "cwl-utils>=0.40",
+  "cwltool>=3.1.20250110105449",
+  "loguru"
 ]
 
 [project.urls]
@@ -69,21 +69,18 @@ exclude_lines = [
   "if TYPE_CHECKING:",
 ]
 
-
 [tool.hatch.envs.default]
 skip-install = false
 dependencies = [
-    "click>=8.0",
-    "cwl-utils>=0.38",
-    "ruamel.yaml>=0.18",
-    "cwltool>=3.1.20250110105449",
-    "Jinja2>=3.1.6"
+  "click>=8.0",
+  "cwl-loader>=0.13.0",
+  "cwl-utils>=0.40",
+  "cwltool>=3.1.20250110105449",
+  "loguru"
 ]
 
 [tool.hatch.envs.prod]
 path = "/app/envs/eoap-cwlwrap"
-
-
 
 [project.scripts]
 eoap-cwlwrap = "eoap_cwlwrap.builder:main"
@@ -92,14 +89,12 @@ eoap-cwlwrap = "eoap_cwlwrap.builder:main"
 skip-install = false
 
 dependencies = [
-    "click>=8.0",
-    "cwl-utils>=0.38",
-    "ruamel.yaml>=0.18",
-    "cwltool>=3.1.20250110105449",
-    "Jinja2>=3.1.6",
-    "nose2",
+  "click>=8.0",
+  "cwl-loader>=0.6.0",
+  "cwl-utils>=0.38",
+  "cwltool>=3.1.20250110105449",
+  "loguru"
 ]
-
 
 [tool.hatch.envs.test.scripts]
 test = "hatch run nose2"

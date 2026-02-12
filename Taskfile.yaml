@@ -1,8 +1,18 @@
-version: '3'
+# Copyright 2025 Terradue
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-vars:
-  BASE_CWL_URL: 'https://raw.githubusercontent.com/eoap/application-package-patterns/refs/heads/main'
-  PATTERNS: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ]
+version: '3'
 
 tasks:
 
@@ -10,43 +20,8 @@ tasks:
     cmds:
     - hatch -e test run nose2 --verbose
 
-  plantuml_install:
-    internal: true
-    status:
-    - command -v plantuml
-    cmds:
-    - sudo bash -c "curl -L https://raw.githubusercontent.com/riboseinc/plantuml-install/main/ubuntu.sh | bash"
-
   install:
     cmds:
     - rm -rf build
     - rm -rf eoap-cwlwrap.egg-info
     - pip install -e .
-
-  execute:
-    deps:
-    - task: plantuml_install
-    cmds:
-    - cmd: |
-             eoap-cwlwrap \
-             --directory-stage-in {{.BASE_CWL_URL}}/templates/stage-in.cwl \
-             --file-stage-in {{.BASE_CWL_URL}}/templates/stage-in-file.cwl \
-             --workflow {{.BASE_CWL_URL}}/cwl-workflow/pattern-{{.PATTERN}}.cwl \
-             --workflow-id pattern-{{.PATTERN}} \
-             --stage-out {{.BASE_CWL_URL}}/templates/stage-out.cwl \
-             --output ./tests/pattern-{{.PATTERN}}/current.cwl \
-             --puml
-    - plantuml -tsvg -o ../../docs/diagrams/pattern-{{.PATTERN}} ./tests/pattern-{{.PATTERN}}
-    - cmd: cwltool --print-dot ./tests/pattern-{{.PATTERN}}/current.cwl | dot -Tsvg -o ./docs/diagrams/pattern-{{.PATTERN}}/workflow.svg
-
-  default:
-    deps:
-    - install
-    cmds:
-    - for:
-        var: PATTERNS
-        as: PATTERN
-      task: execute
-      vars:
-        PATTERN: "{{.PATTERN}}"
-    - echo "All patterns processed"
