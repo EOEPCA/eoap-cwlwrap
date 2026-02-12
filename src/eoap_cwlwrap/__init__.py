@@ -102,9 +102,14 @@ def _build_orchestrator_workflow(
 
     imports = { URL_SCHEMA }
 
-    def _ad_import(type_string: str):
-        if '#' in type_string:
-            imports.add(type_string.split('#')[0])
+    def _add_import(type_: Any):
+        if isinstance(type_, list):
+            for typ in type_:
+                _add_import(typ)
+        else:
+            type_string: str = type_to_string(type_)
+            if '#' in type_string:
+                imports.add(type_string.split('#')[0])
 
     orchestrator = Workflow(
         id='main',
@@ -142,10 +147,9 @@ def _build_orchestrator_workflow(
     }
 
     for input in workflow.inputs:
-        type_string = type_to_string(input.type_)
-        _ad_import(type_string)
+        _add_import(input.type_)
 
-        logger.info(f"* {workflow.id}/{input.id}: {type_string}")
+        logger.info(f"* {workflow.id}/{input.id}: {type_to_string(input.type_)}")
 
         assignable_type = get_assignable_type(actual=input.type_, expected=Directory_or_File)
 
@@ -262,9 +266,9 @@ def _build_orchestrator_workflow(
 
     stage_out_counter = 0
     for output in workflow.outputs:
-        type_string = type_to_string(output.type_)
-        _ad_import(type_string)
-        logger.info(f"* {workflow.id}/{output.id}: {type_string}")
+        _add_import(output.type_)
+
+        logger.info(f"* {workflow.id}/{output.id}: {type_to_string(output.type_)}")
 
         app.out.append(output.id)
 
@@ -385,7 +389,7 @@ def _build_orchestrator_workflow(
             types=list(
                 map(
                     lambda import_: { '$import': import_ },
-                    imports
+                    set(imports)
                 )
             )
         ),
