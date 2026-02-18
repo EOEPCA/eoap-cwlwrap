@@ -9,7 +9,7 @@ on:
       - 'v*.*.*'
 
 permissions:
-  id-token: write   # required for trusted PyPI publishing
+  id-token: write
   contents: read
   packages: write
 
@@ -34,14 +34,41 @@ jobs:
       - name: Install dependencies
         run: pip install hatch nose2
 
+      # -----------------------------
+      # Strict SemVer + Hatch version gate
+      # -----------------------------
+      - name: Validate tag and hatch version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+
+          # Ensure tag starts with v
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "ERROR: Tag must follow strict SemVer format vX.Y.Z"
+            exit 1
+          fi
+
+          TAG_VERSION="${TAG#v}"
+          HATCH_VERSION=$(hatch version)
+
+          echo "Tag version:   $TAG_VERSION"
+          echo "Hatch version: $HATCH_VERSION"
+
+          if [ "$TAG_VERSION" != "$HATCH_VERSION" ]; then
+            echo "ERROR: Git tag version does not match hatch version"
+            exit 1
+          fi
+
       - name: Build package
         run: hatch build
 
       - name: Test package
         run: hatch test --verbose
 
+      # -----------------------------
+      # Determine container tag
+      # -----------------------------
       - name: Determine image tag
-        id: vars
         run: |
           if [[ "${GITHUB_REF}" == refs/heads/develop ]]; then
             echo "IMAGE_TAG=latest-dev" >> $GITHUB_ENV
@@ -65,11 +92,9 @@ jobs:
 
   publish-to-pypi:
 
-    # Only run for version tags
     if: startsWith(github.ref, 'refs/tags/v')
-
-    runs-on: ubuntu-latest
     needs: build
+    runs-on: ubuntu-latest
     environment: release
 
     steps:
@@ -86,5 +111,5 @@ jobs:
       - name: Build package
         run: hatch build
 
-      - name: Publish to PyPI (trusted publishing)
+      - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
