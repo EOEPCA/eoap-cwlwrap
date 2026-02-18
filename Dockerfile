@@ -13,13 +13,21 @@
 # limitations under the License.
 
 # Stage 1: Build stage
-FROM rockylinux:9.3-minimal AS build
+FROM rockylinux/rockylinux:10.1-minimal AS builder
 
 # Install necessary build tools
-RUN microdnf install -y curl tar wget
+RUN microdnf -y update && \
+    microdnf -y install curl tar python3 python3-pip python3-setuptools gcc wget && \
+    microdnf clean all
+
 
 # Download the hatch tar.gz file from GitHub
-RUN curl -L https://github.com/pypa/hatch/releases/latest/download/hatch-x86_64-unknown-linux-gnu.tar.gz -o /tmp/hatch-x86_64-unknown-linux-gnu.tar.gz
+RUN curl -L https://github.com/pypa/hatch/releases/download/hatch-v1.14.0/hatch-x86_64-unknown-linux-gnu.tar.gz \
+      -o /tmp/hatch.tar.gz && \
+    tar -xzf /tmp/hatch.tar.gz -C /tmp && \
+    install -m 0755 /tmp/hatch /usr/local/bin/hatch && \
+    rm -rf /tmp/hatch* /tmp/hatch.tar.gz
+
 
 # install yq
 RUN VERSION="v4.45.4"                                                                               && \
@@ -27,17 +35,34 @@ RUN VERSION="v4.45.4"                                                           
     wget --quiet https://github.com/mikefarah/yq/releases/download/${VERSION}/${BINARY}.tar.gz -O - |\
     tar xz && mv ${BINARY} /usr/bin/yq   
 
-# Extract the hatch binary
-RUN tar -xzf /tmp/hatch-x86_64-unknown-linux-gnu.tar.gz -C /tmp/
-
-# Stage 2: Final stage
-FROM rockylinux:9.3-minimal
+#install oras
+ARG ORAS_VERSION=1.3.0
+RUN curl -LO "https://github.com/oras-project/oras/releases/download/v${ORAS_VERSION}/oras_${ORAS_VERSION}_linux_amd64.tar.gz" && \
+    tar -xzf "oras_${ORAS_VERSION}_linux_amd64.tar.gz" && \
+    mv oras /usr/local/bin/ && \
+    chmod +x /usr/local/bin/oras && \
+    oras version 
 
 # Install runtime dependencies
 RUN microdnf install -y --nodocs nodejs && \
     microdnf clean all && \
     curl -L https://github.com/jqlang/jq/releases/download/jq-1.8.1/jq-linux-amd64 -o /usr/bin/jq && \
     chmod +x /usr/bin/jq
+
+WORKDIR /src
+COPY . /src
+
+# Build a wheel for your project (outputs into /src/dist)
+RUN hatch build -t wheel
+
+
+# Stage 2: Final stage
+FROM rockylinux/rockylinux:10.1-minimal AS runtime
+
+
+RUN microdnf -y update && \
+    microdnf -y install python3 python3-pip nodejs git jq && \
+    microdnf clean all
 
 # Set up a default user and home directory
 ENV HOME=/home/neo
@@ -51,11 +76,8 @@ RUN useradd -u 1001 -r -g 0 -m -d ${HOME} -s /sbin/nologin \
     chmod g+rwx ${HOME} /app
 
 # Copy the hatch binary from the build stage
-COPY --from=build /tmp/hatch /usr/bin/hatch
-COPY --from=build /usr/bin/yq /usr/bin/yq
-
-# Ensure the hatch binary is executable
-RUN chmod +x /usr/bin/hatch
+COPY --from=builder /usr/bin/yq /usr/bin/yq
+COPY --from=builder /usr/local/bin/oras /usr/bin/oras
 
 # Switch to the non-root user
 USER neo
@@ -64,19 +86,21 @@ USER neo
 COPY --chown=1001:0 . /app
 WORKDIR /app
 
-# Set up virtual environment paths
-ENV VIRTUAL_ENV=/app/envs/eoap-cwlwrap
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+USER neo
+WORKDIR /app
+
+# Create a venv and install only wheel
+ENV VIRTUAL_ENV=/app/venv
+ENV PATH="${VIRTUAL_ENV}/bin:${PATH}:/usr/bin"
+RUN python3 -m venv /app/venv && \
+    /app/venv/bin/pip install --no-cache-dir --upgrade pip
 
 
+COPY --from=builder /src/dist/*.whl /app/dist/
 
-# Prune any existing environments and create a new production environment
-RUN hatch env prune && \
-    hatch env create prod && \
-    hatch run prod:eoap-cwlwrap --help && \
-    rm -fr /app/.git /app/.pytest_cache
+RUN /app/venv/bin/pip install --no-cache-dir /app/dist/*.whl && \
+    eoap-cwlwrap --help
 
-RUN hatch run prod:eoap-cwlwrap --help
 
 WORKDIR /app
 

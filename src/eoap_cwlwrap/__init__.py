@@ -107,12 +107,12 @@ def _build_orchestrator_workflow(
 
     imports = { URL_SCHEMA }
 
-    def _add_import(type: Any):
+    def _add_import(type_: Any):
         if isinstance(type_, list):
-            for t in type_:
-                _add_import(t)
+            for typ in type_:
+                _add_import(typ)
         else:
-            type_string = type_to_string(type_)
+            type_string: str = type_to_string(type_)
             if '#' in type_string:
                 imports.add(type_string.split('#')[0])
 
@@ -155,7 +155,7 @@ def _build_orchestrator_workflow(
         type_string = type_to_string(input.type_)
         _add_import(input.type_)
 
-        logger.info(f"* {workflow.id}/{input.id}: {type_string}")
+        logger.info(f"* {workflow.id}/{input.id}: {type_to_string(input.type_)}")
 
         assignable_type = get_assignable_type(actual=input.type_, expected=Directory_or_File)
 
@@ -494,7 +494,7 @@ def _build_orchestrator_workflow(
             types=list(
                 map(
                     lambda import_: { '$import': import_ },
-                    imports
+                    set(imports)
                 )
             )
         ),
