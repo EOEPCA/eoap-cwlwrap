@@ -28,14 +28,16 @@ import time
 @click.option("--file-stage-in", required=False, help="The CWL stage-in URL or file for File derived types")
 @click.option("--workflow", required=True, help="The CWL workflow URL or file")
 @click.option("--workflow-id", required=True, help="ID of the workflow")
-@click.option("--stage-out", required=True, help="The CWL stage-out URL or file")
+@click.option("--directory-stage-out", required=True, help="The CWL stage-out URL or file for Directory derived types")
+@click.option("--file-stage-out", required=False, help="The CWL stage-out URL or file for File derived types")
 @click.option("--output", type=click.Path(path_type=Path), required=True, help="The output file path")
 def main(
     directory_stage_in: str,
     file_stage_in: str,
     workflow: str,
     workflow_id: str,
-    stage_out: str,
+    directory_stage_out: str,
+    file_stage_out: str,
     output: Path
 ):
     '''
@@ -46,7 +48,8 @@ def main(
         `file_stage_in` (`str`): The CWL stage-in URL or file for `File` derived types
         `workflow` (`str`): The CWL document URL or file
         `workflow_id` (`str`): ID of the workflow
-        `stage_out` (`Workflow`): The CWL stage-out URL or file
+        `directory_stage_out` (`str`): The CWL stage-out URL or file for `Directory` derived types
+        `file_stage_out` (`str`): The CWL stage-out URL or file for `File` derived types
         `output` (`Path`): The Output file path
 
     Returns:
@@ -59,7 +62,8 @@ def main(
         file_stage_in=file_stage_in,
         workflows=workflow,
         workflow_id=workflow_id,
-        stage_out=stage_out
+        directory_stage_out=directory_stage_out,
+        file_stage_out=file_stage_out
     )
 
     logger.info('------------------------------------------------------------------------')
