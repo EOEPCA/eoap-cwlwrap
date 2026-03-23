@@ -28,11 +28,10 @@ classifiers = [
 ]
 
 dependencies = [
-  "click>=8.0",
-  "cwl-loader>=0.14.0",
-  "cwl-utils>=0.40",
-  "cwltool>=3.1.20250110105449",
-  "loguru"
+  "click==8.1.8",
+  "cwl-loader==0.15.0",
+  "cwl-utils==0.40",
+  "loguru==0.7.3"
 ]
 
 [project.urls]
@@ -45,7 +44,7 @@ path = "src/eoap_cwlwrap/__about__.py"
 
 [tool.hatch.envs.types]
 extra-dependencies = [
-  "mypy>=1.0.0",
+  "mypy==1.19.1",
 ]
 [tool.hatch.envs.types.scripts]
 check = "mypy --install-types --non-interactive {args:src/eoap_cwlwrap tests}"
@@ -71,13 +70,6 @@ exclude_lines = [
 
 [tool.hatch.envs.default]
 skip-install = false
-dependencies = [
-  "click>=8.0",
-  "cwl-loader>=0.13.0",
-  "cwl-utils>=0.40",
-  "cwltool>=3.1.20250110105449",
-  "loguru"
-]
 
 [tool.hatch.envs.prod]
 path = "/app/envs/eoap-cwlwrap"
@@ -89,11 +81,9 @@ eoap-cwlwrap = "eoap_cwlwrap.builder:main"
 skip-install = false
 
 dependencies = [
-  "click>=8.0",
-  "cwl-loader>=0.6.0",
-  "cwl-utils>=0.38",
-  "cwltool>=3.1.20250110105449",
-  "loguru"
+  "coverage==7.11.0",
+  "cwltool==3.1.20260108082145",
+  "nose2==0.15.1"
 ]
 
 [tool.hatch.envs.test.scripts]
@@ -108,9 +98,9 @@ python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
 skip-install = false
 
 dependencies = [
-  "pdocs",
-  "mkdocs-material",
-  "mkdocs-jupyter"
+  "pdocs==1.2.0",
+  "mkdocs-material==9.7.5",
+  "mkdocs-jupyter==0.25.1"
 ]
 
 [tool.hatch.envs.docs.scripts]

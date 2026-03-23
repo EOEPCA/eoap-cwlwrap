@@ -27,7 +27,7 @@ import time
 @click.option("--directory-stage-in", required=False, help="The CWL stage-in URL or file for Directory derived types")
 @click.option("--file-stage-in", required=False, help="The CWL stage-in URL or file for File derived types")
 @click.option("--workflow", required=True, help="The CWL workflow URL or file")
-@click.option("--workflow-id", required=True, help="ID of the workflow")
+@click.option("--workflow-id", required=False, help="ID of the workflow", deprecated="Use --workflow specifying the <CWL_URL#WF_ID> instead.",)
 @click.option("--directory-stage-out", required=True, help="The CWL stage-out URL or file for Directory derived types")
 @click.option("--file-stage-out", required=False, help="The CWL stage-out URL or file for File derived types")
 @click.option("--output", type=click.Path(path_type=Path), required=True, help="The output file path")
@@ -60,8 +60,7 @@ def main(
     main_workflow = wrap_locations(
         directory_stage_in=directory_stage_in,
         file_stage_in=file_stage_in,
-        workflows=workflow,
-        workflow_id=workflow_id,
+        workflows=f"{workflow}#{workflow_id}" if "#" not in workflow and workflow_id else workflow,
         directory_stage_out=directory_stage_out,
         file_stage_out=file_stage_out
     )
