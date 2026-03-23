@@ -63,7 +63,7 @@ def main(
     with output.open("w") as f:
         dump_cwl(main_workflow, f)
 
-    logger.info(f"New Workflow successfully saved to {output}!")
+    logger.info(f"New Workflow successfully saved to {output.absolute()}!")
 
     end_time = time.time()
 
