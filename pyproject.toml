@@ -28,7 +28,7 @@ classifiers = [
 ]
 
 dependencies = [
-  "click==8.1.8",
+  "click==8.3.1",
   "cwl-loader==0.15.0",
   "cwl-utils==0.40",
   "loguru==0.7.3"
