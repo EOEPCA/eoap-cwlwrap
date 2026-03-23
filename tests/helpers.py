@@ -61,14 +61,14 @@ class TestCWL(unittest.TestCase):
         directory_stage_in = f"{self.base_url}/templates/stage-in.cwl"
         file_stage_in = f"{self.base_url}/templates/stage-in-file.cwl"
         workflows_cwl = f"{self.base_url}/cwl-workflow/{self.entrypoint}.cwl"
-        stage_out_cwl = f"{self.base_url}/templates/stage-out.cwl"
+        directory_stage_out_cwl = f"{self.base_url}/templates/stage-out.cwl"
 
         main_workflow = wrap_locations(
             directory_stage_in=directory_stage_in,
             file_stage_in=file_stage_in,
             workflows=workflows_cwl,
             workflow_id=self.entrypoint, # type: ignore
-            stage_out=stage_out_cwl
+            directory_stage_out=directory_stage_out_cwl
         )
 
         output_path = Path(self.output)

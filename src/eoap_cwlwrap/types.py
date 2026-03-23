@@ -326,6 +326,35 @@ def validate_file_stage_in(file_stage_in: Process):
     '''
     _validate_stage_in(stage_in=file_stage_in, expected_output_type=File)
 
+def _validate_stage_out(
+    stage_out: Process,    
+    expected_intput_type: Any
+):
+    logger.info(f"Validating stage-out '{stage_out.id}'...")
+
+    file_inputs = list(
+        filter(
+            lambda input: is_type_assignable_to(input.type_, expected_intput_type),
+            stage_out.inputs
+        )
+    )
+
+    if len(file_inputs) != 1:
+        sys.exit(f"stage-out '{stage_out.id}' not valid, {_create_error_message(file_inputs)} {expected_intput_type}-compatible input found, please specify one.")
+
+    url_outputs = list(
+        filter(
+            lambda output: is_uri_compatible_type(output.type_),
+            stage_out.outputs
+        )
+    )
+
+    if len(url_outputs) != 1:
+        sys.exit(f"file stage-out '{stage_out.id}' not valid, {_create_error_message(url_outputs)} URL-compatible output found, please specify one.")
+
+    logger.info(f"file stage-out '{stage_out.id}' is valid")
+
+
 def validate_directory_stage_out(directory_stage_out: Process):
     '''
     Checks if a CWL stage-out document is a `Directory`-compatible input and `URI`-compatible output `Process`.
@@ -336,29 +365,7 @@ def validate_directory_stage_out(directory_stage_out: Process):
     Returns:
         `None`: none.
     '''
-    logger.info(f"Validating directory stage-out '{directory_stage_out.id}'...")
-
-    directory_inputs = list(
-        filter(
-            lambda input: is_directory_compatible_type(input.type_),
-            directory_stage_out.inputs
-        )
-    )
-
-    if len(directory_inputs) != 1:
-        sys.exit(f"directory stage-out '{directory_stage_out.id}' not valid, {_create_error_message(directory_inputs)} Directory-compatible input found, please specify one.")
-
-    url_outputs = list(
-        filter(
-            lambda output: is_uri_compatible_type(output.type_),
-            directory_stage_out.outputs
-        )
-    )
-
-    if len(url_outputs) != 1:
-        sys.exit(f"directory stage-out '{directory_stage_out.id}' not valid, {_create_error_message(url_outputs)} URL-compatible output found, please specify one.")
-
-    logger.info(f"directory stage-out '{directory_stage_out.id}' is valid")
+    _validate_stage_out(directory_stage_out, Directory)
 
 def validate_file_stage_out(file_stage_out: Process):
     '''
@@ -370,26 +377,4 @@ def validate_file_stage_out(file_stage_out: Process):
     Returns:
         `None`: none.
     '''
-    logger.info(f"Validating file stage-out '{file_stage_out.id}'...")
-
-    file_inputs = list(
-        filter(
-            lambda input: is_type_assignable_to(input.type_, File),
-            file_stage_out.inputs
-        )
-    )
-
-    if len(file_inputs) != 1:
-        sys.exit(f"file stage-out '{file_stage_out.id}' not valid, {_create_error_message(file_inputs)} File-compatible input found, please specify one.")
-
-    url_outputs = list(
-        filter(
-            lambda output: is_uri_compatible_type(output.type_),
-            file_stage_out.outputs
-        )
-    )
-
-    if len(url_outputs) != 1:
-        sys.exit(f"file stage-out '{file_stage_out.id}' not valid, {_create_error_message(url_outputs)} URL-compatible output found, please specify one.")
-
-    logger.info(f"file stage-out '{file_stage_out.id}' is valid")
+    _validate_stage_out(file_stage_out, File)
