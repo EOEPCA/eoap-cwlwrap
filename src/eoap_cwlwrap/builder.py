@@ -42,18 +42,6 @@ def main(
 ):
     '''
     Composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps, defined according to [Application package patterns based on data stage-in and stage-out behaviors commonly used in EO workflows](https://github.com/eoap/application-package-patterns), and **packs** it into a single self-contained CWL document.
-
-    Args:
-        `directory_stage_in` (`str`): The CWL stage-in URL or file for `Directory` derived types
-        `file_stage_in` (`str`): The CWL stage-in URL or file for `File` derived types
-        `workflow` (`str`): The CWL document URL or file
-        `workflow_id` (`str`): ID of the workflow
-        `directory_stage_out` (`str`): The CWL stage-out URL or file for `Directory` derived types
-        `file_stage_out` (`str`): The CWL stage-out URL or file for `File` derived types
-        `output` (`Path`): The Output file path
-
-    Returns:
-        `None`: none.
     '''
     start_time = time.time()
 
