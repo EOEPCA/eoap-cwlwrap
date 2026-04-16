@@ -1,3 +1,5 @@
+.cache
+.codex
 .project
 .pydevproject
 .settings
@@ -11,4 +13,3 @@ site
 tests/*/current.*
 tests/*/*.puml
 /.pytest_cache/
-docs/api
