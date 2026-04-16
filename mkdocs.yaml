@@ -42,6 +42,7 @@ plugins:
       execute: true
       show_input: True
       no_input: False
+  - mkdocstrings
 
 markdown_extensions:
   - pymdownx.details

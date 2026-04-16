@@ -7,6 +7,7 @@ build
 dist
 *.egg-info
 __pycache__
+site
 tests/*/current.*
 tests/*/*.puml
 /.pytest_cache/
