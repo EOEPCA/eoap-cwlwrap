@@ -12,17 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
 from .types import (
     Directory_or_File,
     get_assignable_type,
     is_array_type,
     is_directory_compatible_type,
-    is_file_compatible_type,
+    is_file_compatible_type as is_file_compatible_type,
     is_type_assignable_to,
     is_uri_compatible_type,
     is_nullable,
-    replace_directory_with_url,
+    replace_directory_with_url as replace_directory_with_url,
     replace_type_with_url,
     type_to_string,
     URL_SCHEMA,
@@ -39,8 +38,6 @@ from cwl_loader.sort import order_graph_by_dependencies
 from cwl_loader.utils import search_process
 from cwl_utils.parser import Process 
 from cwl_utils.parser.cwl_v1_2 import (
-    Directory,
-    File,
     InlineJavascriptRequirement,
     ProcessRequirement,
     ScatterFeatureRequirement,
@@ -53,6 +50,7 @@ from cwl_utils.parser.cwl_v1_2 import (
     WorkflowStepInput
 )
 from loguru import logger
+from requests import Session
 from typing import (
     Any,
     List,
@@ -60,7 +58,6 @@ from typing import (
     Optional,
     Tuple
 )
-import sys
 import time
 
 def _to_workflow_input_parameter(
@@ -104,7 +101,7 @@ def _build_orchestrator_workflow(
     file_stage_out: Process | None
 ) -> Process:
     start_time = time.time()
-    logger.info(f"Building the CWL Orchestrator Workflow...")
+    logger.info("Building the CWL Orchestrator Workflow...")
 
     imports = { URL_SCHEMA }
 
@@ -516,7 +513,8 @@ def wrap_raw(
 
 def _load_process_from_location(
     path: str,
-    kind: str
+    kind: str,
+    session: Session
 ) -> Tuple[List[Process] | Process, Process]:
     if "#" in path:
         location, id = path.split("#")
@@ -524,7 +522,7 @@ def _load_process_from_location(
         location = path
         id = None
 
-    parsed = load_cwl_from_location(path=location)
+    parsed = load_cwl_from_location(path=location, session=session)
 
     if isinstance(parsed, list):
         if id:
@@ -546,6 +544,7 @@ def _load_process_from_location(
 
 def wrap_locations(
     workflows: str,
+    session: Session = Session(),
     directory_stage_in: Optional[str] = None,
     directory_stage_out: Optional[str] = None,
     file_stage_in: Optional[str] = None,
@@ -566,27 +565,32 @@ def wrap_locations(
     '''
     directory_stage_in_wf, directory_stage_in_process = _load_process_from_location(
         path=directory_stage_in,
-        kind='directory-stage-in'
+        kind='directory-stage-in',
+        session=session
     ) if directory_stage_in else (None, None)
 
     directory_stage_out_wf, directory_stage_out_process = _load_process_from_location(
         path=directory_stage_out,
-        kind='directory-stage-out'
+        kind='directory-stage-out',
+        session=session
     ) if directory_stage_out else (None, None)
 
     workflows_cwl, wrorkflows_process = _load_process_from_location(
         path=workflows,
-        kind='main'
+        kind='main',
+        session=session
     )
 
     file_stage_in_wf, file_stage_in_process = _load_process_from_location(
         path=file_stage_in,
-        kind='file-stage-in'
+        kind='file-stage-in',
+        session=session
     ) if file_stage_in else (None, None)
     
     file_stage_out_wf, file_stage_out_process = _load_process_from_location(
         path=file_stage_out,
-        kind='file-stage-out'
+        kind='file-stage-out',
+        session=session
     ) if file_stage_out else (None, None)
 
     main_wf = wrap(

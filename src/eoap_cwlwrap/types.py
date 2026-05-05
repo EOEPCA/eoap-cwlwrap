@@ -29,7 +29,6 @@ from typing import (
     get_origin,
     Union
 )
-import sys
 
 Directory_or_File = Union[Directory, File]
 '''A Directory Workflow or a File union type.'''

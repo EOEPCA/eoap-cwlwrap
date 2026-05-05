@@ -20,7 +20,6 @@ from cwltool.context import LoadingContext, RuntimeContext
 from cwltool.executors import NoopJobExecutor
 from cwl_loader import dump_cwl
 from io import StringIO
-from click.testing import CliRunner
 from eoap_cwlwrap import wrap_locations
 from pathlib import Path
 
