@@ -428,14 +428,14 @@ def wrap(
     Composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps, defined according to [Application package patterns based on data stage-in and stage-out behaviors commonly used in EO workflows](https://github.com/eoap/application-package-patterns), and **packs** it into a single self-contained CWL document.
 
     Args:
-        `workflows` (`Process | List[Process]`): The CWL document object model (or models, if the CWl is a `$graph`)
-        `directory_stage_out` (`Process`): The CWL stage-out document object model for `Directory` derived types
-        `directory_stage_in` (`Optional[Process]`): The CWL stage-in file for `Directory` derived types
-        `file_stage_in` (`Optional[Process]`): The CWL stage-in file for `File` derived types
-        `file_stage_out` (`Optional[Process]`): The CWL stage-out file for `File` derived types
+        workflow: The application workflow process to wrap.
+        directory_stage_in: The CWL stage-in process for `Directory` derived types.
+        directory_stage_out: The CWL stage-out process for `Directory` derived types.
+        file_stage_in: The CWL stage-in process for `File` derived types.
+        file_stage_out: The CWL stage-out process for `File` derived types.
 
     Returns:
-        `Process`: The orchestrating CWL `Workflow`.
+        The orchestrating CWL `Workflow`.
     '''
     if directory_stage_in:
         validate_directory_stage_in(directory_stage_in=directory_stage_in)
@@ -482,15 +482,14 @@ def wrap_raw(
     Composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps, defined according to [Application package patterns based on data stage-in and stage-out behaviors commonly used in EO workflows](https://github.com/eoap/application-package-patterns), and **packs** it into a single self-contained CWL document.
 
     Args:
-        `workflows` (`Mapping[str, Any]`): The CWL document object model (or models, if the CWl is a `$graph`)
-        `workflow_id` (`str`): ID of the workflow
-        `directory_stage_out` (`Mapping[str, Any]`): The CWL stage-out document object model for `Directory` derived types
-        `directory_stage_in` (`Optional[Mapping[str, Any]]`): The CWL stage-in file for `Directory` derived types
-        `file_stage_in` (`Optional[Mapping[str, Any]]`): The CWL stage-in file for `File` derived types
-        `file_stage_out` (`Optional[Mapping[str, Any]]`): The CWL stage-out file for `File` derived types
+        workflow: The application workflow document as a raw mapping.
+        directory_stage_out: The CWL stage-out document mapping for `Directory` derived types.
+        directory_stage_in: The CWL stage-in document mapping for `Directory` derived types.
+        file_stage_in: The CWL stage-in document mapping for `File` derived types.
+        file_stage_out: The CWL stage-out document mapping for `File` derived types.
 
     Returns:
-        `List[Process]`: The composed CWL `$graph`.
+        The orchestrating CWL `Workflow`.
     '''
     return wrap(
         workflow=_load_process_from_yaml(
@@ -556,15 +555,14 @@ def wrap_locations(
     Composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps, defined according to [Application package patterns based on data stage-in and stage-out behaviors commonly used in EO workflows](https://github.com/eoap/application-package-patterns), and **packs** it into a single self-contained CWL document.
 
     Args:
-        `workflows` (`str`): The CWL document object model (or models, if the CWl is a `$graph`)
-        `workflow_id` (`str`): ID of the workflow
-        `directory_stage_out` (`str`): The CWL stage-out document object model for `Directory` derived types
-        `directory_stage_in` (`Optional[str]`): The CWL stage-in file for `Directory` derived types
-        `file_stage_in` (`Optional[str]`): The CWL stage-in file for `File` derived types
-        `file_stage_out` (`Optional[str]`): The CWL stage-out file for `File` derived types
+        workflows: The application workflow location. Use `<location>#<process-id>` to select a process from a `$graph`.
+        directory_stage_in: The CWL stage-in location for `Directory` derived types.
+        directory_stage_out: The CWL stage-out location for `Directory` derived types.
+        file_stage_in: The CWL stage-in location for `File` derived types.
+        file_stage_out: The CWL stage-out location for `File` derived types.
 
     Returns:
-        `List[Process]`: The composed CWL `$graph`.
+        The composed CWL `$graph`.
     '''
     directory_stage_in_wf, directory_stage_in_process = _load_process_from_location(
         path=directory_stage_in,

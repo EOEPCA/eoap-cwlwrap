@@ -76,11 +76,26 @@ extra_javascript:
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 nav:
-  - Introduction: index.md
-  - example.ipynb
-  - API doc:
-    - api/latest/eoap_cwlwrap/index.md
-    - api/latest/eoap_cwlwrap/builder.md
-    - api/latest/eoap_cwlwrap/types.md
+  - Home: index.md
+  - Tutorials:
+    - Overview: tutorials/index.md
+    - Wrap a Pattern 1 workflow: tutorials/wrap-pattern-1.ipynb
+  - How-to guides:
+    - Overview: how-to-guides/index.md
+    - Install EOAP CWL Wrap: how-to-guides/install.md
+    - Build with the CLI: how-to-guides/build-a-wrapper.md
+    - Build with Python: how-to-guides/use-python-api.md
+  - Reference:
+    - Overview: reference/index.md
+    - CLI: reference/cli.md
+    - CWL component contracts: reference/component-contracts.md
+    - Runtime dependencies: reference/dependencies.md
+    - API:
+      - eoap_cwlwrap: api/latest/eoap_cwlwrap/index.md
+      - eoap_cwlwrap.builder: api/latest/eoap_cwlwrap/builder.md
+      - eoap_cwlwrap.types: api/latest/eoap_cwlwrap/types.md
+  - Explanation:
+    - Overview: explanation/index.md
+    - How wrapping works: explanation/wrapping-model.md
 
 copyright: <a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/license-Apache%20License%202.0-blue"" alt="Apache License, Version 2.0" /></a>
