@@ -12,17 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
 from .types import (
     Directory_or_File,
     get_assignable_type,
     is_array_type,
     is_directory_compatible_type,
-    is_file_compatible_type,
+    is_file_compatible_type as is_file_compatible_type,
     is_type_assignable_to,
     is_uri_compatible_type,
     is_nullable,
-    replace_directory_with_url,
+    replace_directory_with_url as replace_directory_with_url,
     replace_type_with_url,
     type_to_string,
     URL_SCHEMA,
@@ -39,8 +38,6 @@ from cwl_loader.sort import order_graph_by_dependencies
 from cwl_loader.utils import search_process
 from cwl_utils.parser import Process 
 from cwl_utils.parser.cwl_v1_2 import (
-    Directory,
-    File,
     InlineJavascriptRequirement,
     ProcessRequirement,
     ScatterFeatureRequirement,
@@ -53,13 +50,14 @@ from cwl_utils.parser.cwl_v1_2 import (
     WorkflowStepInput
 )
 from loguru import logger
+from requests import Session
 from typing import (
     Any,
     List,
     Mapping,
-    Optional
+    Optional,
+    Tuple
 )
-import sys
 import time
 
 def _to_workflow_input_parameter(
@@ -101,9 +99,9 @@ def _build_orchestrator_workflow(
     workflow: Process,
     directory_stage_out: Process | None,
     file_stage_out: Process | None
-) -> List[Process]:
+) -> Process:
     start_time = time.time()
-    logger.info(f"Building the CWL Orchestrator Workflow...")
+    logger.info("Building the CWL Orchestrator Workflow...")
 
     imports = { URL_SCHEMA }
 
@@ -125,8 +123,6 @@ def _build_orchestrator_workflow(
         outputs=[],
         steps=[]
     )
-
-    main_workflow: List[Process] = [ orchestrator ]
 
     app = WorkflowStep(
         id='app',
@@ -237,8 +233,6 @@ def _build_orchestrator_workflow(
             )
 
             if 0 == stage_in_counters[type_to_string(assignable_type)]:
-                main_workflow.append(stage_in)
-
                 orchestrator.inputs.extend(
                     list(
                         map(
@@ -271,8 +265,6 @@ def _build_orchestrator_workflow(
         )
 
     # once all '{type}_stage_in_{index}' are defined, we can now append the 'app' step
-
-    main_workflow.append(workflow)
 
     orchestrator.steps.append(app)
 
@@ -390,7 +382,6 @@ def _build_orchestrator_workflow(
 
         if assignable_type and stage_out_counters[type_to_string(assignable_type)] > 0:
             stage_out = stage_out_cwl[type_to_string(assignable_type)]
-            main_workflow.append(stage_out)
 
             orchestrator.inputs.extend(
                 list(
@@ -421,29 +412,27 @@ def _build_orchestrator_workflow(
     end_time = time.time()
     logger.info(f"Orchestrator Workflow built in {end_time - start_time:.4f} seconds")
 
-    return main_workflow
+    return orchestrator
 
 def wrap(
-    workflows: Process | List[Process],
-    workflow_id: str,
+    workflow: Process,
     directory_stage_in: Optional[Process] = None,
     directory_stage_out: Optional[Process] = None,
     file_stage_in: Optional[Process] = None,
     file_stage_out: Optional[Process] = None
-) -> List[Process]:
+) -> Process:
     '''
     Composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps, defined according to [Application package patterns based on data stage-in and stage-out behaviors commonly used in EO workflows](https://github.com/eoap/application-package-patterns), and **packs** it into a single self-contained CWL document.
 
     Args:
-        `workflows` (`Process | List[Process]`): The CWL document object model (or models, if the CWl is a `$graph`)
-        `workflow_id` (`str`): ID of the workflow
-        `directory_stage_out` (`Process`): The CWL stage-out document object model for `Directory` derived types
-        `directory_stage_in` (`Optional[Process]`): The CWL stage-in file for `Directory` derived types
-        `file_stage_in` (`Optional[Process]`): The CWL stage-in file for `File` derived types
-        `file_stage_out` (`Optional[Process]`): The CWL stage-out file for `File` derived types
+        workflow: The application workflow process to wrap.
+        directory_stage_in: The CWL stage-in process for `Directory` derived types.
+        directory_stage_out: The CWL stage-out process for `Directory` derived types.
+        file_stage_in: The CWL stage-in process for `File` derived types.
+        file_stage_out: The CWL stage-out process for `File` derived types.
 
     Returns:
-        `list[Process]`: The composed CWL `$graph`.
+        The orchestrating CWL `Workflow`.
     '''
     if directory_stage_in:
         validate_directory_stage_in(directory_stage_in=directory_stage_in)
@@ -457,16 +446,7 @@ def wrap(
     if file_stage_out:
         validate_file_stage_out(file_stage_out=file_stage_out)
 
-    workflow = search_process(
-        process_id=workflow_id,
-        process=workflows
-    )
-    if not workflow:
-        raise ValueError(f"Sorry, '{workflow_id}' not found in the workflow input file, only {list(map(lambda wf: wf.id, workflows)) if isinstance(workflows, list) else [workflows.id]} available.")
-
-    validate_directory_stage_out(directory_stage_out=directory_stage_out)
-
-    orchestrator: List[Process] = _build_orchestrator_workflow(
+    return _build_orchestrator_workflow(
         directory_stage_in=directory_stage_in,
         file_stage_in=file_stage_in,
         workflow=workflow,
@@ -474,12 +454,6 @@ def wrap(
         file_stage_out=file_stage_out
     )
 
-    if isinstance(workflows, list):
-        for wf in workflows:
-            if workflow_id != wf.id:
-                orchestrator.append(wf)
-
-    return order_graph_by_dependencies(processes=orchestrator)
 
 def _load_process_from_yaml(
     raw_data: Mapping[str, Any],
@@ -495,38 +469,38 @@ def _load_process_from_yaml(
     return parsed
 
 def wrap_raw(
-    workflows: Mapping[str, Any],
-    workflow_id: str,
-    directory_stage_out: Mapping[str, Any],
+    workflow: Mapping[str, Any],
+    directory_stage_out: Optional[Mapping[str, Any]] = None,
     directory_stage_in: Optional[Mapping[str, Any]] = None,
     file_stage_in: Optional[Mapping[str, Any]] = None,
     file_stage_out: Optional[Mapping[str, Any]] = None
-)-> List[Process]:
+)-> Process:
     '''
     Composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps, defined according to [Application package patterns based on data stage-in and stage-out behaviors commonly used in EO workflows](https://github.com/eoap/application-package-patterns), and **packs** it into a single self-contained CWL document.
 
     Args:
-        `workflows` (`Mapping[str, Any]`): The CWL document object model (or models, if the CWl is a `$graph`)
-        `workflow_id` (`str`): ID of the workflow
-        `directory_stage_out` (`Mapping[str, Any]`): The CWL stage-out document object model for `Directory` derived types
-        `directory_stage_in` (`Optional[Mapping[str, Any]]`): The CWL stage-in file for `Directory` derived types
-        `file_stage_in` (`Optional[Mapping[str, Any]]`): The CWL stage-in file for `File` derived types
-        `file_stage_out` (`Optional[Mapping[str, Any]]`): The CWL stage-out file for `File` derived types
+        workflow: The application workflow document as a raw mapping.
+        directory_stage_out: The CWL stage-out document mapping for `Directory` derived types.
+        directory_stage_in: The CWL stage-in document mapping for `Directory` derived types.
+        file_stage_in: The CWL stage-in document mapping for `File` derived types.
+        file_stage_out: The CWL stage-out document mapping for `File` derived types.
 
     Returns:
-        `List[Process]`: The composed CWL `$graph`.
+        The orchestrating CWL `Workflow`.
     '''
     return wrap(
-        workflows=load_cwl_from_yaml(workflows),
-        workflow_id=workflow_id,
-        directory_stage_out=_load_process_from_yaml(
-            raw_data=directory_stage_out,
-            kind='directory-stage-out'
+        workflow=_load_process_from_yaml(
+            raw_data=workflow,
+            kind='main'
         ),
         directory_stage_in=_load_process_from_yaml(
             raw_data=directory_stage_in,
             kind='directory-stage-in'
         ) if directory_stage_in else None,
+        directory_stage_out=_load_process_from_yaml(
+            raw_data=directory_stage_out,
+            kind='directory-stage-out'
+        ) if directory_stage_out else None,
         file_stage_in=_load_process_from_yaml(
             raw_data=file_stage_in,
             kind='file-stage-in'
@@ -539,20 +513,38 @@ def wrap_raw(
 
 def _load_process_from_location(
     path: str,
-    kind: str
-) -> Process:
-    parsed = load_cwl_from_location(path=path)
+    kind: str,
+    session: Session
+) -> Tuple[List[Process] | Process, Process]:
+    if "#" in path:
+        location, id = path.split("#")
+    else:
+        location = path
+        id = None
+
+    parsed = load_cwl_from_location(path=location, session=session)
 
     if isinstance(parsed, list):
-        raise ValueError(f"Expected a single Process for '{kind}' from {path}, found a list")
+        if id:
+            process = search_process(
+                process_id=id,
+                process=parsed
+            )
 
-    logger.debug(f"'{kind}' from {path} is a valid single 'Process'")
+            if not process:
+                raise ValueError(f"Process {id} does not exist in {path} CWL document, only {list(map(lambda p: p.id, parsed))} available.")
+        else:
+            raise ValueError(f"Process list found for '{kind}' from {path}, but no id via '{path}#<process-id>' provided, {list(map(lambda p: p.id, parsed))} available.")
+    else:
+        logger.debug(f"'{kind}' from {path} is a valid single 'Process'")
+        process = parsed
 
-    return parsed
+    return (parsed, process)
+
 
 def wrap_locations(
     workflows: str,
-    workflow_id: str,
+    session: Session = Session(),
     directory_stage_in: Optional[str] = None,
     directory_stage_out: Optional[str] = None,
     file_stage_in: Optional[str] = None,
@@ -562,35 +554,68 @@ def wrap_locations(
     Composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps, defined according to [Application package patterns based on data stage-in and stage-out behaviors commonly used in EO workflows](https://github.com/eoap/application-package-patterns), and **packs** it into a single self-contained CWL document.
 
     Args:
-        `workflows` (`str`): The CWL document object model (or models, if the CWl is a `$graph`)
-        `workflow_id` (`str`): ID of the workflow
-        `directory_stage_out` (`str`): The CWL stage-out document object model for `Directory` derived types
-        `directory_stage_in` (`Optional[str]`): The CWL stage-in file for `Directory` derived types
-        `file_stage_in` (`Optional[str]`): The CWL stage-in file for `File` derived types
-        `file_stage_out` (`Optional[str]`): The CWL stage-out file for `File` derived types
+        workflows: The application workflow location. Use `<location>#<process-id>` to select a process from a `$graph`.
+        directory_stage_in: The CWL stage-in location for `Directory` derived types.
+        directory_stage_out: The CWL stage-out location for `Directory` derived types.
+        file_stage_in: The CWL stage-in location for `File` derived types.
+        file_stage_out: The CWL stage-out location for `File` derived types.
 
     Returns:
-        `List[Process]`: The composed CWL `$graph`.
+        The composed CWL `$graph`.
     '''
+    directory_stage_in_wf, directory_stage_in_process = _load_process_from_location(
+        path=directory_stage_in,
+        kind='directory-stage-in',
+        session=session
+    ) if directory_stage_in else (None, None)
 
+    directory_stage_out_wf, directory_stage_out_process = _load_process_from_location(
+        path=directory_stage_out,
+        kind='directory-stage-out',
+        session=session
+    ) if directory_stage_out else (None, None)
 
-    return wrap(
-        workflows=load_cwl_from_location(workflows),
-        workflow_id=workflow_id,
-        directory_stage_in=_load_process_from_location(
-            path=directory_stage_in,
-            kind='directory-stage-in'
-        ) if directory_stage_in else None,
-        directory_stage_out=_load_process_from_location(
-            path=directory_stage_out,
-            kind='directory-stage-out'
-        ),
-        file_stage_in=_load_process_from_location(
-            path=file_stage_in,
-            kind='file-stage-in'
-        ) if file_stage_in else None,
-        file_stage_out=_load_process_from_location(
-            path=file_stage_out,
-            kind='file-stage-out'
-        ) if file_stage_out else None
+    workflows_cwl, wrorkflows_process = _load_process_from_location(
+        path=workflows,
+        kind='main',
+        session=session
     )
+
+    file_stage_in_wf, file_stage_in_process = _load_process_from_location(
+        path=file_stage_in,
+        kind='file-stage-in',
+        session=session
+    ) if file_stage_in else (None, None)
+    
+    file_stage_out_wf, file_stage_out_process = _load_process_from_location(
+        path=file_stage_out,
+        kind='file-stage-out',
+        session=session
+    ) if file_stage_out else (None, None)
+
+    main_wf = wrap(
+        workflow=wrorkflows_process,
+        directory_stage_in=directory_stage_in_process,
+        directory_stage_out=directory_stage_out_process,
+        file_stage_in=file_stage_in_process,
+        file_stage_out=file_stage_out_process
+    )
+
+    wrapper_cwl: List[Process] = []
+
+    def _append_cwl(cwl: List[Process] | Process | None):
+        if cwl:
+            if isinstance(cwl, list):
+                for wf in cwl:
+                    _append_cwl(wf)
+            else:
+                wrapper_cwl.append(cwl)
+
+    _append_cwl(directory_stage_in_wf)
+    _append_cwl(file_stage_in_wf)
+    _append_cwl(main_wf)
+    _append_cwl(workflows_cwl)
+    _append_cwl(directory_stage_out_wf)
+    _append_cwl(file_stage_out_wf)
+
+    return order_graph_by_dependencies(processes=wrapper_cwl)
