@@ -38,4 +38,5 @@ jobs:
       with:
         python-version: 3.x
     - run: pip install mkdocs-material mkdocs-mermaid2-plugin mkdocs-jupyter legacy-cgi mkdocstrings-python
+    - run: pip install .
     - run: mkdocs gh-deploy --force
