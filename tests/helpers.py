@@ -20,7 +20,6 @@ from cwltool.context import LoadingContext, RuntimeContext
 from cwltool.executors import NoopJobExecutor
 from cwl_loader import dump_cwl
 from io import StringIO
-from click.testing import CliRunner
 from eoap_cwlwrap import wrap_locations
 from pathlib import Path
 
@@ -60,15 +59,14 @@ class TestCWL(unittest.TestCase):
     def _wrapped_cwl_validation(self):
         directory_stage_in = f"{self.base_url}/templates/stage-in.cwl"
         file_stage_in = f"{self.base_url}/templates/stage-in-file.cwl"
-        workflows_cwl = f"{self.base_url}/cwl-workflow/{self.entrypoint}.cwl"
-        stage_out_cwl = f"{self.base_url}/templates/stage-out.cwl"
+        workflows_cwl = f"{self.base_url}/cwl-workflow/{self.entrypoint}.cwl#{self.entrypoint}"
+        directory_stage_out_cwl = f"{self.base_url}/templates/stage-out.cwl"
 
         main_workflow = wrap_locations(
             directory_stage_in=directory_stage_in,
             file_stage_in=file_stage_in,
             workflows=workflows_cwl,
-            workflow_id=self.entrypoint, # type: ignore
-            stage_out=stage_out_cwl
+            directory_stage_out=directory_stage_out_cwl
         )
 
         output_path = Path(self.output)

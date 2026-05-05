@@ -29,7 +29,6 @@ from typing import (
     get_origin,
     Union
 )
-import sys
 
 Directory_or_File = Union[Directory, File]
 '''A Directory Workflow or a File union type.'''
@@ -47,10 +46,10 @@ def is_nullable(typ: Any) -> bool:
     Detects if the input type can be nullable.
 
     Args:
-        `typ` (`Any`): Any CWL type
+        typ: Any CWL type.
 
     Returns:
-        `bool`: `True`, if the input type can be nullable, `False` otherwise.
+        True if the input type can be nullable, False otherwise.
     '''    
     return isinstance(typ, list) and 'null' in typ
 
@@ -62,11 +61,11 @@ def is_type_assignable_to(
     Detects if the actual type can be assignable to the expected type.
 
     Args:
-        `actual` (`Any`): Any CWL type
-        `actual` (`expected`): Any CWL type
+        actual: Any CWL type.
+        expected: Any CWL type.
 
     Returns:
-        `bool`: `True`, if the actual type can be assignable to the expected type, `False` otherwise.
+        True if the actual type can be assigned to the expected type, False otherwise.
     '''
     if get_origin(expected) is Union:
         return any(is_type_assignable_to(actual, typ) for typ in get_args(expected))
@@ -112,10 +111,10 @@ def is_directory_compatible_type(typ: Any) -> bool:
     Detects if the actual type can be assignable to `Directory` type.
 
     Args:
-        `typ` (`Any`): Any CWL type
+        typ: Any CWL type.
 
     Returns:
-        `bool`: `True`, if the input type can be assignable to the `Directory` type, `False` otherwise.
+        True if the input type can be assigned to `Directory`, False otherwise.
     '''
     return is_type_assignable_to(typ, Directory)
 
@@ -124,10 +123,10 @@ def is_file_compatible_type(typ: Any) -> bool:
     Detects if the actual type can be assignable to `File` type.
 
     Args:
-        `typ` (`Any`): Any CWL type
+        typ: Any CWL type.
 
     Returns:
-        `bool`: `True`, if the input type can be assignable to the `File` type, `False` otherwise.
+        True if the input type can be assigned to `File`, False otherwise.
     '''
     return is_type_assignable_to(typ, File)
 
@@ -136,10 +135,10 @@ def is_directory_or_file_compatible_type(typ: Any) -> bool:
     Detects if the actual type can be assignable to `Directory` or `File` types.
 
     Args:
-        `typ` (`Any`): Any CWL type
+        typ: Any CWL type.
 
     Returns:
-        `bool`: `True`, if the input type can be assignable to the `Directory` or `File` types, `False` otherwise.
+        True if the input type can be assigned to `Directory` or `File`, False otherwise.
     '''
     return is_type_assignable_to(typ, Directory_or_File)
 
@@ -148,10 +147,10 @@ def is_uri_compatible_type(typ: Any) -> bool:
     Detects if the actual type can be assignable to `https://raw.githubusercontent.com/eoap/schemas/refs/heads/main/string_format.yaml#URI` type.
 
     Args:
-        `typ` (`Any`): Any CWL type
+        typ: Any CWL type.
 
     Returns:
-        `bool`: `True`, if the input type can be assignable to `https://raw.githubusercontent.com/eoap/schemas/refs/heads/main/string_format.yaml#URI` type, `False` otherwise.
+        True if the input type can be assigned to the EOAP URI type, False otherwise.
     '''
     return is_type_assignable_to(typ, URL_TYPE)
 
@@ -160,10 +159,10 @@ def is_array_type(typ: Any) -> bool:
     Detects if the actual type can be assignable to `array` type.
 
     Args:
-        `typ` (`Any`): Any CWL type
+        typ: Any CWL type.
 
     Returns:
-        `bool`: `True`, if the input type can be assignable to the `array` type, `False` otherwise.
+        True if the input type can be assigned to an array type, False otherwise.
     '''
     if isinstance(typ, list):
         return any(is_array_type(type_item) for type_item in list(typ))
@@ -178,11 +177,11 @@ def replace_type_with_url(
     Deep replaces any CWL type in the source type with the `https://raw.githubusercontent.com/eoap/schemas/refs/heads/main/string_format.yaml#URI` type.
 
     Args:
-        `source` (`Any`): Any CWL type
-        `to_be_replaced` (`Any`): The CWL type that has to be replaced
+        source: Any CWL type.
+        to_be_replaced: The CWL type that has to be replaced.
 
     Returns:
-        `Any`: The new type.
+        The new type.
     '''
     if get_origin(to_be_replaced) is Union:
         for typ in get_args(to_be_replaced):
@@ -229,10 +228,10 @@ def replace_directory_with_url(typ: Any) -> Any:
     Deep replaces the `Directory` type in the source type with the `https://raw.githubusercontent.com/eoap/schemas/refs/heads/main/string_format.yaml#URI` type.
 
     Args:
-        `typ` (`Any`): Any CWL type
+        typ: Any CWL type.
 
     Returns:
-        `Any`: The new type.
+        The new type.
     '''
     return replace_type_with_url(source=typ, to_be_replaced=Directory)
 
@@ -243,10 +242,10 @@ def type_to_string(typ: Any) -> str:
     Serializes a CWL type to a human-readable string.
 
     Args:
-        `typ` (`Any`): Any CWL type
+        typ: Any CWL type.
 
     Returns:
-        `str`: The human-readable string representing the input CWL type.
+        The human-readable string representing the input CWL type.
     '''
     if get_origin(typ) is Union:
         return " or ".join([type_to_string(inner_type) for inner_type in get_args(typ)])
@@ -302,51 +301,45 @@ def _validate_stage_in(
 
     logger.info(f"stage-in '{stage_in.id}' is valid")
 
-def validate_directory_stage_in(directory_stage_in: Process):
+def validate_directory_stage_in(directory_stage_in: Process) -> None:
     '''
     Checks if a CWL stage-in document is a `URI`-compatible input and `Directory`-compatible output `Process`.
 
     Args:
-        `directory_stage_in` (`Process`): Any CWL `Process`
+        directory_stage_in: Any CWL `Process`.
 
     Returns:
-        `None`: none.
+        None.
     '''
     _validate_stage_in(stage_in=directory_stage_in, expected_output_type=Directory)
 
-def validate_file_stage_in(file_stage_in: Process):
+def validate_file_stage_in(file_stage_in: Process) -> None:
     '''
     Checks if a CWL stage-in document is a `URI`-compatible input and `File`-compatible output `Process`.
 
     Args:
-        `file_stage_in` (`Process`): Any CWL `Process`
+        file_stage_in: Any CWL `Process`.
 
     Returns:
-        `None`: none.
+        None.
     '''
     _validate_stage_in(stage_in=file_stage_in, expected_output_type=File)
 
-def validate_stage_out(stage_out: Process):
-    '''
-    Checks if a CWL stage-out document is a `Directory`-compatible input and `URI`-compatible output `Process`.
-
-    Args:
-        `stage_out` (`Process`): Any CWL `Process`
-
-    Returns:
-        `None`: none.
-    '''
+def _validate_stage_out(
+    stage_out: Process,    
+    expected_intput_type: Any
+):
     logger.info(f"Validating stage-out '{stage_out.id}'...")
 
-    directory_inputs = list(
+    file_inputs = list(
         filter(
-            lambda input: is_directory_compatible_type(input.type_),
+            lambda input: is_type_assignable_to(input.type_, expected_intput_type),
             stage_out.inputs
         )
     )
 
-    if len(directory_inputs) != 1:
-        sys.exit(f"stage-out '{stage_out.id}' not valid, {_create_error_message(directory_inputs)} Directory-compatible input found, please specify one.")
+    if len(file_inputs) != 1:
+        sys.exit(f"stage-out '{stage_out.id}' not valid, {_create_error_message(file_inputs)} {expected_intput_type}-compatible input found, please specify one.")
 
     url_outputs = list(
         filter(
@@ -356,6 +349,31 @@ def validate_stage_out(stage_out: Process):
     )
 
     if len(url_outputs) != 1:
-        sys.exit(f"stage-out '{stage_out.id}' not valid, {_create_error_message(url_outputs)} URL-compatible output found, please specify one.")
+        sys.exit(f"file stage-out '{stage_out.id}' not valid, {_create_error_message(url_outputs)} URL-compatible output found, please specify one.")
 
-    logger.info(f"stage-out '{stage_out.id}' is valid")
+    logger.info(f"file stage-out '{stage_out.id}' is valid")
+
+
+def validate_directory_stage_out(directory_stage_out: Process) -> None:
+    '''
+    Checks if a CWL stage-out document is a `Directory`-compatible input and `URI`-compatible output `Process`.
+
+    Args:
+        directory_stage_out: Any CWL `Process`.
+
+    Returns:
+        None.
+    '''
+    _validate_stage_out(directory_stage_out, Directory)
+
+def validate_file_stage_out(file_stage_out: Process) -> None:
+    '''
+    Checks if a CWL stage-out document is a `File`-compatible input and `URI`-compatible output `Process`.
+
+    Args:
+        file_stage_out: Any CWL `Process`.
+
+    Returns:
+        None.
+    '''
+    _validate_stage_out(file_stage_out, File)

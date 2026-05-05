@@ -18,7 +18,6 @@ classifiers = [
   "Environment :: Console",
   "Intended Audience :: Developers",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -28,11 +27,11 @@ classifiers = [
 ]
 
 dependencies = [
-  "click>=8.0",
-  "cwl-loader>=0.14.0",
-  "cwl-utils>=0.40",
-  "cwltool>=3.1.20250110105449",
-  "loguru"
+  "click==8.3.3",
+  "cwl-loader==0.17.0",
+  "cwl-utils==0.41",
+  "loguru==0.7.3",
+  "session-adapters==0.3.0"
 ]
 
 [project.urls]
@@ -45,7 +44,7 @@ path = "src/eoap_cwlwrap/__about__.py"
 
 [tool.hatch.envs.types]
 extra-dependencies = [
-  "mypy>=1.0.0",
+  "mypy==1.19.1",
 ]
 [tool.hatch.envs.types.scripts]
 check = "mypy --install-types --non-interactive {args:src/eoap_cwlwrap tests}"
@@ -71,13 +70,17 @@ exclude_lines = [
 
 [tool.hatch.envs.default]
 skip-install = false
+
+[tool.hatch.envs.dev]
+skip-install = false
 dependencies = [
-  "click>=8.0",
-  "cwl-loader>=0.13.0",
-  "cwl-utils>=0.40",
-  "cwltool>=3.1.20250110105449",
-  "loguru"
+  "mypy==1.19.1",
+  "ruff==0.9.6",
 ]
+
+[tool.hatch.envs.dev.scripts]
+check = "mypy --install-types --non-interactive {args:src/eoap_cwlwrap tests}"
+lint = "ruff check {args:.}"
 
 [tool.hatch.envs.prod]
 path = "/app/envs/eoap-cwlwrap"
@@ -89,28 +92,27 @@ eoap-cwlwrap = "eoap_cwlwrap.builder:main"
 skip-install = false
 
 dependencies = [
-  "click>=8.0",
-  "cwl-loader>=0.6.0",
-  "cwl-utils>=0.38",
-  "cwltool>=3.1.20250110105449",
-  "loguru"
+  "coverage==7.11.0",
+  "cwltool==3.1.20260315121657",
+  "nose2==0.15.1"
 ]
 
 [tool.hatch.envs.test.scripts]
 test = "hatch run nose2"
 testv = "hatch run nose2 --verbose"
 cov = ["coverage run --source=src/eoap_cwlwrap -m nose2", "coverage report"]
+test-show-setup = "python -m unittest discover -s tests -p 'test_*.py' -v"
 
 [[tool.hatch.envs.test.matrix]]
-python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
+python = ["3.10", "3.11", "3.12", "3.13"]
 
 [tool.hatch.envs.docs]
 skip-install = false
 
 dependencies = [
-  "pdocs",
-  "mkdocs-material",
-  "mkdocs-jupyter"
+  "pdocs==1.2.0",
+  "mkdocs-material==9.7.5",
+  "mkdocs-jupyter==0.25.1"
 ]
 
 [tool.hatch.envs.docs.scripts]
