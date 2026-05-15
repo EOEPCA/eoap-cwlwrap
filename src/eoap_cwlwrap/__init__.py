@@ -52,13 +52,18 @@ from cwl_utils.parser.cwl_v1_2 import (
 from loguru import logger
 from requests import Session
 from typing import (
+    cast,
     Any,
     List,
     Mapping,
     Optional,
+    Type,
+    TypeVar,
     Tuple
 )
 import time
+
+_ProcessRequirementType = TypeVar("_ProcessRequirementType", bound=ProcessRequirement)
 
 def _to_workflow_input_parameter(
     source: str,
@@ -81,16 +86,29 @@ def _to_workflow_input_parameter(
         loadingOptions=parameter.loadingOptions,
     )
 
+def _get_feature_requirement(
+    requirement_type: Type[_ProcessRequirementType],
+    workflow: Workflow
+) -> _ProcessRequirementType | None:
+    if workflow.requirements:
+        for current_requirement in workflow.requirements:
+            if requirement_type.__name__ == current_requirement.class_:
+                return cast(_ProcessRequirementType, current_requirement)
+    return None
+
+def _contains_feature_requirement(
+    requirement_type: Type[ProcessRequirement],
+    workflow: Workflow
+) -> bool:
+    return _get_feature_requirement(requirement_type, workflow) is not None
+
 def _add_feature_requirement(
     requirement: ProcessRequirement,
     workflow: Workflow
 ):
     if not workflow.requirements:
         workflow.requirements = [requirement]
-    else:
-        if any(type(requirement).__name__ == current_requirement.class_ for current_requirement in workflow.requirements):
-            return
-
+    elif not _contains_feature_requirement(type(requirement), workflow):
         workflow.requirements.append(requirement)
 
 def _build_orchestrator_workflow(
@@ -114,6 +132,7 @@ def _build_orchestrator_workflow(
             if '#' in type_string:
                 imports.add(type_string.split('#')[0])
 
+
     orchestrator = Workflow(
         id='main',
         label=f"{workflow.class_} {workflow.id} orchestrator",
@@ -123,6 +142,13 @@ def _build_orchestrator_workflow(
         outputs=[],
         steps=[]
     )
+
+    # copy all the SchemaDefRequirement required types from the original workflow 
+    if isinstance(workflow, Workflow):
+        if workflow.requirements:
+            schema_requirement = _get_feature_requirement(SchemaDefRequirement, workflow)
+            if schema_requirement:
+                _add_feature_requirement(schema_requirement, orchestrator)
 
     app = WorkflowStep(
         id='app',
