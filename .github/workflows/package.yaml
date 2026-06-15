@@ -41,7 +41,7 @@ jobs:
           cache: "pip"
 
       - name: Install tooling
-        run: pip install hatch ruff nose2
+        run: pip install hatch ruff==0.9.6 nose2
 
       # -----------------------------
       # Strict SemVer + Hatch version gate
