@@ -25,7 +25,7 @@ from pathlib import Path
 
 class TestCWL(unittest.TestCase):
 
-    def validate_cwl_file(self, cwl_file) -> int:
+    def validate_cwl_file(self, cwl_file: str) -> int:
         args = ["--enable-ext", "--validate", cwl_file]
 
         stream_err = StringIO()
@@ -44,19 +44,19 @@ class TestCWL(unittest.TestCase):
             raise RuntimeError(f"Validation failed with exit code {result}")
         return result
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.output = '.wrapped.cwl'
         self.base_url = 'https://raw.githubusercontent.com/eoap/application-package-patterns/refs/heads/main'
-        self.entrypoint = None
+        self.entrypoint = ""
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         if os.path.exists(self.output):
             os.remove(self.output)
 
-    def _cwl_validation(self, app_cwl_file):
+    def _cwl_validation(self, app_cwl_file: str) -> int:
         return self.validate_cwl_file(app_cwl_file)
 
-    def _wrapped_cwl_validation(self):
+    def _wrapped_cwl_validation(self) -> None:
         directory_stage_in = f"{self.base_url}/templates/stage-in.cwl"
         file_stage_in = f"{self.base_url}/templates/stage-in-file.cwl"
         workflows_cwl = f"{self.base_url}/cwl-workflow/{self.entrypoint}.cwl#{self.entrypoint}"

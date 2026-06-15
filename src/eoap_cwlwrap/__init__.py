@@ -175,7 +175,7 @@ def _build_orchestrator_workflow(
 
     imports = { URL_SCHEMA }
 
-    def _add_import(type_: Any):
+    def _add_import(type_: Any) -> None:
         if isinstance(type_, list):
             for typ in type_:
                 _add_import(typ)
@@ -460,17 +460,18 @@ def _build_orchestrator_workflow(
 
         if assignable_type and stage_out_counters[type_to_string(assignable_type)] > 0:
             stage_out = stage_out_cwl[type_to_string(assignable_type)]
+            if stage_out is None:
+                raise ValueError(f"  output requires a {type_to_string(assignable_type)} stage-out, that was not specified")
 
             orchestrator.inputs.extend(
                 list(
                     map(
                         lambda parameter: _to_workflow_input_parameter(stage_out.id, parameter),
-                        list(
-                            filter(
-                                lambda workflow_input: not is_directory_compatible_type(workflow_input.type_),
-                                stage_out.inputs
-                            )
-                        )
+                        [
+                            workflow_input
+                            for workflow_input in stage_out.inputs
+                            if not is_directory_compatible_type(workflow_input.type_)
+                        ]
                     )
                 )
             )
@@ -541,7 +542,7 @@ def _load_process_from_yaml(
     raw_data: Mapping[str, Any],
     kind: str
 ) -> Process:
-    parsed = load_cwl_from_yaml(raw_process=raw_data)
+    parsed = cast(List[Process] | Process, load_cwl_from_yaml(raw_process=raw_data))
 
     if isinstance(parsed, list):
         raise ValueError(f"Expected a single Process for '{kind}' from raw data, found a list")
@@ -604,13 +605,16 @@ def _load_process_from_location(
         location = path
         id = None
 
-    parsed = load_cwl_from_location(path=location, session=session)
+    parsed = cast(List[Process] | Process, load_cwl_from_location(path=location, session=session))
 
     if isinstance(parsed, list):
         if id:
-            process = search_process(
-                process_id=id,
-                process=parsed
+            process = cast(
+                Process | None,
+                search_process(
+                    process_id=id,
+                    process=parsed
+                )
             )
 
             if not process:
@@ -685,7 +689,7 @@ def wrap_locations(
 
     wrapper_cwl: List[Process] = []
 
-    def _append_cwl(cwl: List[Process] | Process | None):
+    def _append_cwl(cwl: List[Process] | Process | None) -> None:
         if cwl:
             if isinstance(cwl, list):
                 for wf in cwl:
@@ -700,4 +704,4 @@ def wrap_locations(
     _append_cwl(directory_stage_out_wf)
     _append_cwl(file_stage_out_wf)
 
-    return order_graph_by_dependencies(processes=wrapper_cwl)
+    return cast(List[Process], order_graph_by_dependencies(processes=wrapper_cwl))

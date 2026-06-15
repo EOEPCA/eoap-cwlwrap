@@ -49,7 +49,7 @@ def main(
     oci_hostname: str | None,
     oci_username: str | None,
     oci_password: str | None,
-):
+) -> None:
     '''
     Composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps, defined according to [Application package patterns based on data stage-in and stage-out behaviors commonly used in EO workflows](https://github.com/eoap/application-package-patterns), and **packs** it into a single self-contained CWL document.
     '''

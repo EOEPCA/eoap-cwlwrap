@@ -40,6 +40,19 @@ Documentation = "https://github.com/EOEPCA/eoap-cwlwrap#readme"
 Issues = "https://github.com/EOEPCA/eoap-cwlwrap/issues"
 Source = "https://github.com/EOEPCA/eoap-cwlwrap"
 
+[tool.mypy]
+python_version = "3.11"
+strict = true
+
+[[tool.mypy.overrides]]
+module = [
+    "cwl_loader",
+    "cwl_loader.*",
+    "session_adapters",
+    "session_adapters.*",
+]
+ignore_missing_imports = true
+
 [tool.hatch.version]
 path = "src/eoap_cwlwrap/__about__.py"
 

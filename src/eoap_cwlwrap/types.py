@@ -190,11 +190,11 @@ def replace_type_with_url(
         return None
 
     # case 0: Direct match with class name
-    if isinstance(source, str) and (isinstance(to_be_replaced, str) and source == to_be_replaced or source == to_be_replaced.__name__): # type: ignore
+    if isinstance(source, str) and (isinstance(to_be_replaced, str) and source == to_be_replaced or source == to_be_replaced.__name__):
         return URL_TYPE
 
     # Case 1: Direct match with class
-    if source == to_be_replaced or isinstance(source, to_be_replaced): # type: ignore
+    if source == to_be_replaced or isinstance(source, to_be_replaced):
         return URL_TYPE
 
     # Union: list of types
@@ -260,10 +260,10 @@ def type_to_string(typ: Any) -> str:
         return typ
 
     if hasattr(typ, '__name__'):
-        return typ.__name__
+        return str(typ.__name__)
 
     if hasattr(typ, 'type_'):
-        return typ.type_
+        return str(typ.type_)
     
     # last hope to follow back
     return str(type)
@@ -276,7 +276,7 @@ def _create_error_message(parameters: list[Any]) -> str:
 def _validate_stage_in(
     stage_in: Process,
     expected_output_type: Any
-):
+) -> None:
     logger.info(f"Validating stage-in '{stage_in.id}'...")
 
     url_inputs = list(
@@ -328,7 +328,7 @@ def validate_file_stage_in(file_stage_in: Process) -> None:
 def _validate_stage_out(
     stage_out: Process,    
     expected_intput_type: Any
-):
+) -> None:
     logger.info(f"Validating stage-out '{stage_out.id}'...")
 
     file_inputs = list(
