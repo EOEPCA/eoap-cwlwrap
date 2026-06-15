@@ -105,11 +105,63 @@ def _contains_feature_requirement(
 def _add_feature_requirement(
     requirement: ProcessRequirement,
     workflow: Workflow
-):
+) -> bool:
     if not workflow.requirements:
         workflow.requirements = [requirement]
+        return True
     elif not _contains_feature_requirement(type(requirement), workflow):
         workflow.requirements.append(requirement)
+        return True
+
+    return False
+
+def _get_schema_def_import(type_: Any) -> str | None:
+    name = None
+    if isinstance(type_, Mapping):
+        import_ = type_.get('$import')
+        if isinstance(import_, str):
+            return import_
+
+        name = type_.get('name')
+    else:
+        name = getattr(type_, 'name', None)
+
+    if isinstance(name, str) and '#' in name:
+        return name.split('#')[0]
+
+    return None
+
+def _copy_schema_def_requirement(
+    requirement: SchemaDefRequirement
+) -> SchemaDefRequirement:
+    return SchemaDefRequirement(
+        types=list(requirement.types) if isinstance(requirement.types, list) else requirement.types,
+        extension_fields=requirement.extension_fields,
+        loadingOptions=requirement.loadingOptions
+    )
+
+def _merge_schema_def_imports(
+    requirement: SchemaDefRequirement,
+    imports: set[str]
+) -> None:
+    if isinstance(requirement.types, list):
+        types = list(requirement.types)
+    elif requirement.types:
+        types = [requirement.types]
+    else:
+        types = []
+
+    existing_imports = set()
+    for type_ in types:
+        import_ = _get_schema_def_import(type_)
+        if import_:
+            existing_imports.add(import_)
+
+    for import_ in sorted(imports):
+        if import_ not in existing_imports:
+            types.append({ '$import': import_ })
+
+    requirement.types = types
 
 def _build_orchestrator_workflow(
     directory_stage_in: Process | None,
@@ -148,7 +200,7 @@ def _build_orchestrator_workflow(
         if workflow.requirements:
             schema_requirement = _get_feature_requirement(SchemaDefRequirement, workflow)
             if schema_requirement:
-                _add_feature_requirement(schema_requirement, orchestrator)
+                _add_feature_requirement(_copy_schema_def_requirement(schema_requirement), orchestrator)
 
     app = WorkflowStep(
         id='app',
@@ -423,7 +475,7 @@ def _build_orchestrator_workflow(
                 )
             )
 
-    _add_feature_requirement(
+    if not _add_feature_requirement(
         requirement=SchemaDefRequirement(
             types=list(
                 map(
@@ -433,7 +485,11 @@ def _build_orchestrator_workflow(
             )
         ),
         workflow=orchestrator
-    )
+    ):
+        logger.debug("Merging existing feature requirements")
+        schema_requirement = _get_feature_requirement(SchemaDefRequirement, orchestrator)
+        if schema_requirement:
+            _merge_schema_def_imports(schema_requirement, imports)
 
     end_time = time.time()
     logger.info(f"Orchestrator Workflow built in {end_time - start_time:.4f} seconds")
