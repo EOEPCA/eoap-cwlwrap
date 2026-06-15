@@ -14,14 +14,14 @@
 
 from tests.helpers import TestCWL
 
-class TestPattern12(TestCWL):
 
-    def setUp(self):
+class TestPattern12(TestCWL):
+    def setUp(self) -> None:
         super().setUp()
         self.entrypoint = "pattern-12"
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         super().tearDown()
 
-    def test_pattern_wrapped_cwl(self):
+    def test_pattern_wrapped_cwl(self) -> None:
         self._wrapped_cwl_validation()
