@@ -22,13 +22,14 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 
 dependencies = [
   "click==8.4.1",
-  "cwl-loader==0.19.0",
+  "cwl-loader==0.20.0",
   "cwl-utils==0.41",
   "loguru==0.7.3",
   "session-adapters==0.3.0"
@@ -104,7 +105,7 @@ cov = ["coverage run --source=src/eoap_cwlwrap -m nose2", "coverage report"]
 test-show-setup = "python -m unittest discover -s tests -p 'test_*.py' -v"
 
 [[tool.hatch.envs.test.matrix]]
-python = ["3.10", "3.11", "3.12", "3.13"]
+python = ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
 [tool.hatch.envs.docs]
 skip-install = false
