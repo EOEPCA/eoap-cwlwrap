@@ -14,8 +14,8 @@
 
 from tests.helpers import TestCWL
 
-class TestPattern5(TestCWL):
 
+class TestPattern5(TestCWL):
     def setUp(self) -> None:
         super().setUp()
         self.entrypoint = "pattern-5"

@@ -25,15 +25,47 @@ from session_adapters.oci_adapter import OCIAdapter
 import click
 import time
 
+
 @click.command()
-@click.option("--directory-stage-in", required=False, help="The CWL stage-in URL or file for Directory derived types")
-@click.option("--file-stage-in", required=False, help="The CWL stage-in URL or file for File derived types")
+@click.option(
+    "--directory-stage-in",
+    required=False,
+    help="The CWL stage-in URL or file for Directory derived types",
+)
+@click.option(
+    "--file-stage-in",
+    required=False,
+    help="The CWL stage-in URL or file for File derived types",
+)
 @click.option("--workflow", required=True, help="The CWL workflow URL or file")
-@click.option("--workflow-id", required=False, help="ID of the workflow", deprecated="Use --workflow specifying the <CWL_URL#WF_ID> instead.",)
-@click.option("--stage-out", required=False, deprecated="Use --directory-stage-out instead", help="The CWL stage-out URL or file")
-@click.option("--directory-stage-out", required=False, help="The CWL stage-out URL or file for Directory derived types")
-@click.option("--file-stage-out", required=False, help="The CWL stage-out URL or file for File derived types")
-@click.option("--output", type=click.Path(path_type=Path), required=True, help="The output file path")
+@click.option(
+    "--workflow-id",
+    required=False,
+    help="ID of the workflow",
+    deprecated="Use --workflow specifying the <CWL_URL#WF_ID> instead.",
+)
+@click.option(
+    "--stage-out",
+    required=False,
+    deprecated="Use --directory-stage-out instead",
+    help="The CWL stage-out URL or file",
+)
+@click.option(
+    "--directory-stage-out",
+    required=False,
+    help="The CWL stage-out URL or file for Directory derived types",
+)
+@click.option(
+    "--file-stage-out",
+    required=False,
+    help="The CWL stage-out URL or file for File derived types",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path),
+    required=True,
+    help="The output file path",
+)
 @click.option("--oci-hostname", envvar="OCI_HOSTNAME", show_envvar=True)
 @click.option("--oci-username", envvar="OCI_USERNAME", show_envvar=True)
 @click.option("--oci-password", envvar="OCI_PASSWORD", show_envvar=True)
@@ -50,9 +82,9 @@ def main(
     oci_username: str | None,
     oci_password: str | None,
 ) -> None:
-    '''
+    """
     Composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps, defined according to [Application package patterns based on data stage-in and stage-out behaviors commonly used in EO workflows](https://github.com/eoap/application-package-patterns), and **packs** it into a single self-contained CWL document.
-    '''
+    """
     start_time = time.time()
 
     session = Session()
@@ -67,14 +99,20 @@ def main(
         session=session,
         directory_stage_in=directory_stage_in,
         file_stage_in=file_stage_in,
-        workflows=f"{workflow}#{workflow_id}" if "#" not in workflow and workflow_id else workflow,
+        workflows=f"{workflow}#{workflow_id}"
+        if "#" not in workflow and workflow_id
+        else workflow,
         directory_stage_out=stage_out if stage_out else directory_stage_out,
-        file_stage_out=file_stage_out
+        file_stage_out=file_stage_out,
     )
 
-    logger.info('------------------------------------------------------------------------')
-    logger.info('BUILD SUCCESS')
-    logger.info('------------------------------------------------------------------------')
+    logger.info(
+        "------------------------------------------------------------------------"
+    )
+    logger.info("BUILD SUCCESS")
+    logger.info(
+        "------------------------------------------------------------------------"
+    )
 
     logger.info(f"Saving the new Workflow to {output}...")
 
@@ -87,7 +125,10 @@ def main(
     end_time = time.time()
 
     logger.info(f"Total time: {end_time - start_time:.4f} seconds")
-    logger.info(f"Finished at: {datetime.fromtimestamp(end_time).isoformat(timespec='milliseconds')}")
+    logger.info(
+        f"Finished at: {datetime.fromtimestamp(end_time).isoformat(timespec='milliseconds')}"
+    )
+
 
 if __name__ == "__main__":
     main()
