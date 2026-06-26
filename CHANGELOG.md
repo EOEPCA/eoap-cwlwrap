@@ -7,16 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.29.0] - 2026-06-15
-
 ### Added
 
-- Added ability to merge additional requirements when `SchemaDefRequirement` is defined already, but does not import needed auxiliary types.
-- Reconstructed the project changelog from Git release tags and commit history.
+- Add this Keep a Changelog-formatted changelog rebuilt from Git release tags
+  and project history.
+- Add Python 3.14 support to the package classifiers, Hatch test matrix, and
+  GitHub Actions package workflow.
+- Add CI matrix builds across Python 3.10 through Python 3.14 with Ruff checks
+  before packaging.
+- Add merging for auxiliary CWL schema imports when a wrapped workflow already
+  defines a `SchemaDefRequirement`.
 
 ### Changed
 
-- Depenencies version bump.
+- Bump runtime and development dependencies, including `click`, `cwl-loader`,
+  `mypy`, `ruff`, `coverage`, and documentation tooling.
+- Move package, PyPI, and container publication behind tag-gated release jobs.
+- Format source and tests with Ruff.
+
+### Fixed
+
+- Remove the Polyfill.io script from the MkDocs configuration to avoid browser
+  login prompts.
+- Fix lint and format issues reported by CI.
 
 ## [0.28.0] - 2026-05-15
 
@@ -24,10 +37,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Preserve `SchemaDefRequirement` definitions from the wrapped workflow when building
   the orchestrator workflow.
-
-### Changed
-
-- Bump the package version to `0.28.0`.
 
 ## [0.27.0] - 2026-05-05
 
@@ -119,8 +128,7 @@ the project history up to `v0.26.0`.
   `SubworkflowFeatureRequirement`.
 - Fix documentation, generated diagrams, CI configuration, and container builds.
 
-[Unreleased]: https://github.com/EOEPCA/eoap-cwlwrap/compare/v0.29.0...HEAD
-[0.29.0]: https://github.com/EOEPCA/eoap-cwlwrap/compare/v0.28.0...v0.29.0
+[Unreleased]: https://github.com/EOEPCA/eoap-cwlwrap/compare/v0.28.0...HEAD
 [0.28.0]: https://github.com/EOEPCA/eoap-cwlwrap/compare/v0.27.0...v0.28.0
 [0.27.0]: https://github.com/EOEPCA/eoap-cwlwrap/compare/v0.26.0...v0.27.0
 [0.26.0]: https://github.com/EOEPCA/eoap-cwlwrap/releases/tag/v0.26.0
