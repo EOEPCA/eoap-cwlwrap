@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.30.0] - 2026-07-06
+
+### Added
+
+- `ramMin`, `ramMax`, `coresMin` and `coresMax` are managed in `ResourceRequirement` for each declared `CommandLineTool`s in the wrapped CWL document.
+
 ## [0.29.0] - 2026-06-15
 
 ### Added

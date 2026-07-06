@@ -30,13 +30,19 @@ from .types import (
     validate_file_stage_out,
     validate_directory_stage_out,
 )
+from .requirements import (
+    add_feature_requirement,
+    copy_schema_def_requirement,
+    get_feature_requirement,
+    merge_schema_def_imports,
+    adjust_resource_requirements,
+)
 from cwl_loader import load_cwl_from_yaml, load_cwl_from_location
 from cwl_loader.sort import order_graph_by_dependencies
 from cwl_loader.utils import search_process
 from cwl_utils.parser import Process
 from cwl_utils.parser.cwl_v1_2 import (
     InlineJavascriptRequirement,
-    ProcessRequirement,
     ScatterFeatureRequirement,
     SchemaDefRequirement,
     SubworkflowFeatureRequirement,
@@ -48,10 +54,8 @@ from cwl_utils.parser.cwl_v1_2 import (
 )
 from loguru import logger
 from requests import Session
-from typing import cast, Any, List, Mapping, Optional, Type, TypeVar, Tuple
+from typing import cast, Any, List, Mapping, Optional, Tuple
 import time
-
-_ProcessRequirementType = TypeVar("_ProcessRequirementType", bound=ProcessRequirement)
 
 
 def _to_workflow_input_parameter(
@@ -76,87 +80,6 @@ def _to_workflow_input_parameter(
         extension_fields=parameter.extension_fields,
         loadingOptions=parameter.loadingOptions,
     )
-
-
-def _get_feature_requirement(
-    requirement_type: Type[_ProcessRequirementType], workflow: Workflow
-) -> _ProcessRequirementType | None:
-    if workflow.requirements:
-        for current_requirement in workflow.requirements:
-            if requirement_type.__name__ == current_requirement.class_:
-                return cast(_ProcessRequirementType, current_requirement)
-    return None
-
-
-def _contains_feature_requirement(
-    requirement_type: Type[ProcessRequirement], workflow: Workflow
-) -> bool:
-    return _get_feature_requirement(requirement_type, workflow) is not None
-
-
-def _add_feature_requirement(
-    requirement: ProcessRequirement, workflow: Workflow
-) -> bool:
-    if not workflow.requirements:
-        workflow.requirements = [requirement]
-        return True
-    elif not _contains_feature_requirement(type(requirement), workflow):
-        workflow.requirements.append(requirement)
-        return True
-
-    return False
-
-
-def _get_schema_def_import(type_: Any) -> str | None:
-    name = None
-    if isinstance(type_, Mapping):
-        import_ = type_.get("$import")
-        if isinstance(import_, str):
-            return import_
-
-        name = type_.get("name")
-    else:
-        name = getattr(type_, "name", None)
-
-    if isinstance(name, str) and "#" in name:
-        return name.split("#")[0]
-
-    return None
-
-
-def _copy_schema_def_requirement(
-    requirement: SchemaDefRequirement,
-) -> SchemaDefRequirement:
-    return SchemaDefRequirement(
-        types=list(requirement.types)
-        if isinstance(requirement.types, list)
-        else requirement.types,
-        extension_fields=requirement.extension_fields,
-        loadingOptions=requirement.loadingOptions,
-    )
-
-
-def _merge_schema_def_imports(
-    requirement: SchemaDefRequirement, imports: set[str]
-) -> None:
-    if isinstance(requirement.types, list):
-        types = list(requirement.types)
-    elif requirement.types:
-        types = [requirement.types]
-    else:
-        types = []
-
-    existing_imports = set()
-    for type_ in types:
-        import_ = _get_schema_def_import(type_)
-        if import_:
-            existing_imports.add(import_)
-
-    for import_ in sorted(imports):
-        if import_ not in existing_imports:
-            types.append({"$import": import_})
-
-    requirement.types = types
 
 
 def _build_orchestrator_workflow(
@@ -193,12 +116,12 @@ def _build_orchestrator_workflow(
     # copy all the SchemaDefRequirement required types from the original workflow
     if isinstance(workflow, Workflow):
         if workflow.requirements:
-            schema_requirement = _get_feature_requirement(
+            schema_requirement = get_feature_requirement(
                 SchemaDefRequirement, workflow
             )
             if schema_requirement:
-                _add_feature_requirement(
-                    _copy_schema_def_requirement(schema_requirement), orchestrator
+                add_feature_requirement(
+                    copy_schema_def_requirement(schema_requirement), orchestrator
                 )
 
     app = WorkflowStep(
@@ -289,7 +212,7 @@ def _build_orchestrator_workflow(
                         workflow_step.scatter = stage_in_input.id
                         workflow_step.scatterMethod = "dotproduct"
 
-                        _add_feature_requirement(
+                        add_feature_requirement(
                             requirement=ScatterFeatureRequirement(),
                             workflow=orchestrator,
                         )
@@ -301,7 +224,7 @@ def _build_orchestrator_workflow(
 
                         workflow_step.when = f"$(inputs.{stage_in_input.id} !== null)"
 
-                        _add_feature_requirement(
+                        add_feature_requirement(
                             requirement=InlineJavascriptRequirement(),
                             workflow=orchestrator,
                         )
@@ -414,7 +337,7 @@ def _build_orchestrator_workflow(
                         workflow_step.scatter = stage_out_input.id
                         workflow_step.scatterMethod = "dotproduct"
 
-                        _add_feature_requirement(
+                        add_feature_requirement(
                             requirement=ScatterFeatureRequirement(),
                             workflow=orchestrator,
                         )
@@ -426,7 +349,7 @@ def _build_orchestrator_workflow(
 
                         workflow_step.when = f"$(inputs.{stage_out_input.id} !== null)"
 
-                        _add_feature_requirement(
+                        add_feature_requirement(
                             requirement=InlineJavascriptRequirement(),
                             workflow=orchestrator,
                         )
@@ -506,21 +429,21 @@ def _build_orchestrator_workflow(
                 )
             )
 
-    if not _add_feature_requirement(
+    if not add_feature_requirement(
         requirement=SchemaDefRequirement(
             types=list(map(lambda import_: {"$import": import_}, set(imports)))
         ),
         workflow=orchestrator,
     ):
         logger.debug("Merging existing feature requirements")
-        schema_requirement = _get_feature_requirement(
+        schema_requirement = get_feature_requirement(
             SchemaDefRequirement, orchestrator
         )
         if schema_requirement:
-            _merge_schema_def_imports(schema_requirement, imports)
+            merge_schema_def_imports(schema_requirement, imports)
 
     end_time = time.time()
-    logger.info(f"Orchestrator Workflow built in {end_time - start_time:.4f} seconds")
+    logger.success(f"Orchestrator Workflow built in {end_time - start_time:.4f} seconds")
 
     return orchestrator
 
@@ -740,4 +663,10 @@ def wrap_locations(
     _append_cwl(directory_stage_out_wf)
     _append_cwl(file_stage_out_wf)
 
-    return cast(List[Process], order_graph_by_dependencies(processes=wrapper_cwl))
+    wrapping_workflow = cast(
+        List[Process], order_graph_by_dependencies(processes=wrapper_cwl)
+    )
+
+    adjust_resource_requirements(wrapping_workflow)
+
+    return wrapping_workflow
