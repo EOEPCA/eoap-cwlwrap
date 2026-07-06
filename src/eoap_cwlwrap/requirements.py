@@ -45,9 +45,7 @@ def contains_feature_requirement(
     return get_feature_requirement(requirement_type, workflow) is not None
 
 
-def add_feature_requirement(
-    requirement: ProcessRequirement, workflow: Process
-) -> bool:
+def add_feature_requirement(requirement: ProcessRequirement, workflow: Process) -> bool:
     if not workflow.requirements:
         workflow.requirements = [requirement]
         return True
@@ -122,9 +120,7 @@ def adjust_resource_requirements(workflow: List[Process]) -> None:
         logger.debug(f"- Checking ResourceRequirement in {process.id}...")
 
         if isinstance(process, CommandLineTool):
-            resource_requirement = get_feature_requirement(
-                ResourceRequirement, process
-            )
+            resource_requirement = get_feature_requirement(ResourceRequirement, process)
 
             if resource_requirement is None:
                 resource_requirement = ResourceRequirement(

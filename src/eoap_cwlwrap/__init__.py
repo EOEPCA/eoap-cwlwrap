@@ -116,9 +116,7 @@ def _build_orchestrator_workflow(
     # copy all the SchemaDefRequirement required types from the original workflow
     if isinstance(workflow, Workflow):
         if workflow.requirements:
-            schema_requirement = get_feature_requirement(
-                SchemaDefRequirement, workflow
-            )
+            schema_requirement = get_feature_requirement(SchemaDefRequirement, workflow)
             if schema_requirement:
                 add_feature_requirement(
                     copy_schema_def_requirement(schema_requirement), orchestrator
@@ -436,14 +434,14 @@ def _build_orchestrator_workflow(
         workflow=orchestrator,
     ):
         logger.debug("Merging existing feature requirements")
-        schema_requirement = get_feature_requirement(
-            SchemaDefRequirement, orchestrator
-        )
+        schema_requirement = get_feature_requirement(SchemaDefRequirement, orchestrator)
         if schema_requirement:
             merge_schema_def_imports(schema_requirement, imports)
 
     end_time = time.time()
-    logger.success(f"Orchestrator Workflow built in {end_time - start_time:.4f} seconds")
+    logger.success(
+        f"Orchestrator Workflow built in {end_time - start_time:.4f} seconds"
+    )
 
     return orchestrator
 

@@ -34,9 +34,7 @@ class TestRequirements(unittest.TestCase):
             requirements=[resource_requirement] if resource_requirement else None,
         )
 
-    def _resource_requirement(
-        self, tool: CommandLineTool
-    ) -> ResourceRequirement:
+    def _resource_requirement(self, tool: CommandLineTool) -> ResourceRequirement:
         resource_requirement = get_feature_requirement(ResourceRequirement, tool)
         self.assertIsNotNone(resource_requirement)
         assert resource_requirement is not None
