@@ -125,7 +125,8 @@ the project history up to `v0.26.0`.
   `SubworkflowFeatureRequirement`.
 - Fix documentation, generated diagrams, CI configuration, and container builds.
 
-[Unreleased]: https://github.com/EOEPCA/eoap-cwlwrap/compare/v0.29.0...HEAD
+[Unreleased]: https://github.com/EOEPCA/eoap-cwlwrap/compare/v0.30.0...HEAD
+[0.30.0]: https://github.com/EOEPCA/eoap-cwlwrap/compare/v0.29.0...v0.30.0
 [0.29.0]: https://github.com/EOEPCA/eoap-cwlwrap/compare/v0.28.0...v0.29.0
 [0.28.0]: https://github.com/EOEPCA/eoap-cwlwrap/compare/v0.27.0...v0.28.0
 [0.27.0]: https://github.com/EOEPCA/eoap-cwlwrap/compare/v0.26.0...v0.27.0
