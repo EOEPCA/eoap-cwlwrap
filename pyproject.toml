@@ -36,7 +36,7 @@ dependencies = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/EOEPCA/eoap-cwlwrap#readme"
+Documentation = "https://eoepca.github.io/eoap-cwlwrap/"
 Issues = "https://github.com/EOEPCA/eoap-cwlwrap/issues"
 Source = "https://github.com/EOEPCA/eoap-cwlwrap"
 
