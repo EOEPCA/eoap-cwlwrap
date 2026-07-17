@@ -141,9 +141,7 @@ class TestWrapLocations(unittest.TestCase):
 
     def test_rejects_file_stage_in_with_duplicate_id(self) -> None:
         self._assert_duplicate_stage_id_rejected(
-            lambda: wrap_locations(
-                workflows="workflow.cwl", file_stage_in="stage.cwl"
-            ),
+            lambda: wrap_locations(workflows="workflow.cwl", file_stage_in="stage.cwl"),
             "file-stage-in",
             "File Stage-In",
         )
