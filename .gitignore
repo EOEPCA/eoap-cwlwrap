@@ -5,6 +5,7 @@
 .settings
 .task
 .venv
+.vscode
 build
 dist
 *.egg-info

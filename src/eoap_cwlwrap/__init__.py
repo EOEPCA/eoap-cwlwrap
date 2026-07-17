@@ -39,7 +39,7 @@ from .requirements import (
 )
 from cwl_loader import load_cwl_from_yaml, load_cwl_from_location
 from cwl_loader.sort import order_graph_by_dependencies
-from cwl_loader.utils import search_process
+from cwl_loader.utils import get_ids, contains_process, search_process
 from cwl_utils.parser import Process
 from cwl_utils.parser.cwl_v1_2 import (
     InlineJavascriptRequirement,
@@ -548,35 +548,34 @@ def wrap_raw(
 def _load_process_from_location(
     path: str, kind: str, session: Session
 ) -> Tuple[List[Process] | Process, Process]:
-    if "#" in path:
-        location, id = path.split("#")
-    else:
-        location = path
-        id = None
+    location, separator, process_id = path.partition("#")
+
+    if separator and not process_id:
+        raise ValueError(f"Empty process id in location '{path}'")
 
     parsed = cast(
         List[Process] | Process, load_cwl_from_location(path=location, session=session)
     )
 
-    if isinstance(parsed, list):
-        if id:
-            process = cast(
-                Process | None, search_process(process_id=id, process=parsed)
-            )
-
-            if not process:
-                raise ValueError(
-                    f"Process {id} does not exist in {path} CWL document, only {list(map(lambda p: p.id, parsed))} available."
-                )
-        else:
+    if process_id:
+        process = search_process(process_id=process_id, process=parsed)
+        if process is None:
             raise ValueError(
-                f"Process list found for '{kind}' from {path}, but no id via '{path}#<process-id>' provided, {list(map(lambda p: p.id, parsed))} available."
+                f"Process {process_id} does not exist in {location}, "
+                f"only {get_ids(parsed)} available."
             )
+    elif isinstance(parsed, list):
+        raise ValueError(
+            f"Process list found for '{kind}' from {location}, but no process id "
+            f"was provided via '{location}#<process-id>'; "
+            f"{get_ids(parsed)} available."
+        )
     else:
-        logger.debug(f"'{kind}' from {path} is a valid single 'Process'")
         process = parsed
 
-    return (parsed, process)
+    logger.debug(f"Selected '{kind}' Process '{process.id}' from {location}")
+
+    return parsed, process
 
 
 def wrap_locations(
@@ -600,44 +599,44 @@ def wrap_locations(
     Returns:
         The composed CWL `$graph`.
     """
-    directory_stage_in_wf, directory_stage_in_process = (
-        _load_process_from_location(
-            path=directory_stage_in, kind="directory-stage-in", session=session
-        )
-        if directory_stage_in
-        else (None, None)
-    )
-
-    directory_stage_out_wf, directory_stage_out_process = (
-        _load_process_from_location(
-            path=directory_stage_out, kind="directory-stage-out", session=session
-        )
-        if directory_stage_out
-        else (None, None)
-    )
-
-    workflows_cwl, wrorkflows_process = _load_process_from_location(
+    workflows_cwl, workflows_process = _load_process_from_location(
         path=workflows, kind="main", session=session
     )
 
-    file_stage_in_wf, file_stage_in_process = (
-        _load_process_from_location(
-            path=file_stage_in, kind="file-stage-in", session=session
-        )
-        if file_stage_in
-        else (None, None)
-    )
+    def _load_stage(
+        location: Optional[str], kind: str
+    ) -> Tuple[List[Process] | Process | None, Process | None]:
+        if not location:
+            return (None, None)
 
-    file_stage_out_wf, file_stage_out_process = (
-        _load_process_from_location(
-            path=file_stage_out, kind="file-stage-out", session=session
+        stage_cwl, stage_process = _load_process_from_location(
+            path=location, kind=kind, session=session
         )
-        if file_stage_out
-        else (None, None)
+        if stage_process and contains_process(stage_process.id, workflows_cwl):
+            stage_name = kind.replace("-", " ", 1).title()
+            raise ValueError(
+                f"Cannot import {stage_process.class_} {stage_process.id} "
+                f"{stage_name} declared in {location}, 'id' already present in "
+                "wrapped CWL document"
+            )
+
+        return (stage_cwl, stage_process)
+
+    directory_stage_in_wf, directory_stage_in_process = _load_stage(
+        directory_stage_in, "directory-stage-in"
+    )
+    directory_stage_out_wf, directory_stage_out_process = _load_stage(
+        directory_stage_out, "directory-stage-out"
+    )
+    file_stage_in_wf, file_stage_in_process = _load_stage(
+        file_stage_in, "file-stage-in"
+    )
+    file_stage_out_wf, file_stage_out_process = _load_stage(
+        file_stage_out, "file-stage-out"
     )
 
     main_wf = wrap(
-        workflow=wrorkflows_process,
+        workflow=workflows_process,
         directory_stage_in=directory_stage_in_process,
         directory_stage_out=directory_stage_out_process,
         file_stage_in=file_stage_in_process,
