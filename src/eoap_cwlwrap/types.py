@@ -13,7 +13,8 @@
 # limitations under the License.
 
 import sys
-from typing import Any, Union, get_args, get_origin
+from types import UnionType
+from typing import Any, get_args, get_origin
 
 from cwl_utils.parser import Process
 from cwl_utils.parser.cwl_v1_2 import (
@@ -26,7 +27,7 @@ from cwl_utils.parser.cwl_v1_2 import (
 )
 from loguru import logger
 
-Directory_or_File = Union[Directory, File]
+Directory_or_File = Directory | File
 """A Directory Workflow or a File union type."""
 
 URL_SCHEMA = "https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml"
@@ -62,7 +63,7 @@ def is_type_assignable_to(actual: Any, expected: Any) -> bool:
     Returns:
         True if the actual type can be assigned to the expected type, False otherwise.
     """
-    if get_origin(expected) is Union:
+    if get_origin(expected) is UnionType:
         return any(is_type_assignable_to(actual, typ) for typ in get_args(expected))
 
     # Case 0: Direct string reference
@@ -93,7 +94,7 @@ def is_type_assignable_to(actual: Any, expected: Any) -> bool:
 
 
 def get_assignable_type(actual: Any, expected: Any) -> Any:
-    if get_origin(expected) is Union:
+    if get_origin(expected) is UnionType:
         for typ in get_args(expected):
             if is_type_assignable_to(actual=actual, expected=typ):
                 return typ
@@ -183,7 +184,7 @@ def replace_type_with_url(source: Any, to_be_replaced: Any) -> Any:
     Returns:
         The new type.
     """
-    if get_origin(to_be_replaced) is Union:
+    if get_origin(to_be_replaced) is UnionType:
         for typ in get_args(to_be_replaced):
             if is_type_assignable_to(source, typ):
                 return replace_type_with_url(source=source, to_be_replaced=typ)
@@ -209,9 +210,7 @@ def replace_type_with_url(source: Any, to_be_replaced: Any) -> Any:
         ]
 
     # Array types
-    if isinstance(source, InputArraySchema) or isinstance(
-        source, CommandInputArraySchema
-    ):
+    if isinstance(source, (InputArraySchema, CommandInputArraySchema)):
         return InputArraySchema(
             extension_fields=source.extension_fields,
             items=replace_type_with_url(
@@ -222,9 +221,7 @@ def replace_type_with_url(source: Any, to_be_replaced: Any) -> Any:
             doc=source.doc,
         )
 
-    if isinstance(source, OutputArraySchema) or isinstance(
-        source, CommandOutputArraySchema
-    ):
+    if isinstance(source, (OutputArraySchema, CommandOutputArraySchema)):
         return OutputArraySchema(
             extension_fields=source.extension_fields,
             items=replace_type_with_url(
@@ -265,7 +262,7 @@ def type_to_string(typ: Any) -> str:
     Returns:
         The human-readable string representing the input CWL type.
     """
-    if get_origin(typ) is Union:
+    if get_origin(typ) is UnionType:
         return " or ".join([type_to_string(inner_type) for inner_type in get_args(typ)])
 
     if isinstance(typ, list):
@@ -291,7 +288,7 @@ def _create_error_message(parameters: list[Any]) -> str:
     return (
         "no"
         if len(parameters) == 0
-        else str(list(map(lambda parameter: parameter.id, parameters)))
+        else str([parameter.id for parameter in parameters])
     )
 
 

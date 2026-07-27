@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import sys
 import unittest
 from io import StringIO
@@ -52,8 +51,9 @@ class TestCWL(unittest.TestCase):
         self.entrypoint = ""
 
     def tearDown(self) -> None:
-        if os.path.exists(self.output):
-            os.remove(self.output)
+        output_path = Path(self.output)
+        if output_path.exists():
+            output_path.unlink()
 
     def _cwl_validation(self, app_cwl_file: str) -> int:
         return self.validate_cwl_file(app_cwl_file)

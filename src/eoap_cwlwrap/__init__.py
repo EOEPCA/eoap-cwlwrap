@@ -14,7 +14,7 @@
 
 import time
 from collections.abc import Mapping
-from typing import Any, List, Optional, Tuple, cast
+from typing import Any, cast
 
 from cwl_loader import load_cwl_from_location, load_cwl_from_yaml
 from cwl_loader.sort import order_graph_by_dependencies
@@ -89,13 +89,13 @@ def _to_workflow_input_parameter(
     )
 
 
-def _build_orchestrator_workflow(
+def _build_orchestrator_workflow(  # noqa: C901
     directory_stage_in: Process | None,
     file_stage_in: Process | None,
     workflow: Process,
     directory_stage_out: Process | None,
     file_stage_out: Process | None,
-) -> Process:  # noqa: C901
+) -> Process:
     start_time = time.time()
     logger.info("Building the CWL Orchestrator Workflow...")
 
@@ -121,13 +121,12 @@ def _build_orchestrator_workflow(
     )
 
     # copy all the SchemaDefRequirement required types from the original workflow
-    if isinstance(workflow, Workflow):
-        if workflow.requirements:
-            schema_requirement = get_feature_requirement(SchemaDefRequirement, workflow)
-            if schema_requirement:
-                add_feature_requirement(
-                    copy_schema_def_requirement(schema_requirement), orchestrator
-                )
+    if isinstance(workflow, Workflow) and workflow.requirements:
+        schema_requirement = get_feature_requirement(SchemaDefRequirement, workflow)
+        if schema_requirement:
+            add_feature_requirement(
+                copy_schema_def_requirement(schema_requirement), orchestrator
+            )
 
     app = WorkflowStep(
         id="app",
@@ -190,7 +189,7 @@ def _build_orchestrator_workflow(
             workflow_step = WorkflowStep(
                 id=stage_in_id,
                 in_=[],
-                out=list(map(lambda out: out.id, stage_in.outputs)),
+                out=[output.id for output in stage_in.outputs],
                 run=f"#{stage_in.id}",
                 label=f"Stage-in {stage_in_counters[type_to_string(assignable_type)]}",
                 doc=f"Stage-in {type_to_string(assignable_type)} {stage_in_counters[type_to_string(assignable_type)]}",
@@ -259,21 +258,11 @@ def _build_orchestrator_workflow(
 
             if stage_in_counters[type_to_string(assignable_type)] == 0:
                 orchestrator.inputs.extend(
-                    list(
-                        map(
-                            lambda parameter: _to_workflow_input_parameter(
-                                stage_in.id, parameter
-                            ),
-                            list(
-                                filter(
-                                    lambda workflow_input: (
-                                        not is_uri_compatible_type(workflow_input.type_)
-                                    ),
-                                    stage_in.inputs,
-                                )
-                            ),
-                        )
-                    )
+                    [
+                        _to_workflow_input_parameter(stage_in.id, parameter)
+                        for parameter in stage_in.inputs
+                        if not is_uri_compatible_type(parameter.type_)
+                    ]
                 )
 
             stage_in_counters[type_to_string(assignable_type)] += 1
@@ -329,7 +318,7 @@ def _build_orchestrator_workflow(
             workflow_step = WorkflowStep(
                 id=f"stage_out_{stage_out_counters[type_to_string(assignable_type)]}",
                 in_=[],
-                out=list(map(lambda out: out.id, stage_out.outputs)),
+                out=[output.id for output in stage_out.outputs],
                 run=f"#{stage_out.id}",
                 label=f"Stage-out {stage_out_counters[type_to_string(assignable_type)]}",
                 doc=f"Stage-out {type_to_string(output.type_)} {stage_out_counters[type_to_string(assignable_type)]}",
@@ -379,8 +368,8 @@ def _build_orchestrator_workflow(
 
             orchestrator.outputs.append(
                 next(
-                    map(
-                        lambda mapping_output: WorkflowOutputParameter(
+                    (
+                        WorkflowOutputParameter(
                             id=output.id,
                             type_=url_type,
                             outputSource=f"stage_out_{stage_out_counters[type_to_string(assignable_type)]}/{mapping_output.id}",
@@ -391,13 +380,9 @@ def _build_orchestrator_workflow(
                             format=output.format,
                             extension_fields=output.extension_fields,
                             loadingOptions=output.loadingOptions,
-                        ),
-                        filter(
-                            lambda stage_out_cwl_output: is_uri_compatible_type(
-                                stage_out_cwl_output.type_
-                            ),
-                            stage_out.outputs,
-                        ),
+                        )
+                        for mapping_output in stage_out.outputs
+                        if is_uri_compatible_type(mapping_output.type_)
                     ),
                     None,
                 )
@@ -434,23 +419,16 @@ def _build_orchestrator_workflow(
                 )
 
             orchestrator.inputs.extend(
-                list(
-                    map(
-                        lambda parameter: _to_workflow_input_parameter(
-                            stage_out.id, parameter
-                        ),
-                        [
-                            workflow_input
-                            for workflow_input in stage_out.inputs
-                            if not is_directory_compatible_type(workflow_input.type_)
-                        ],
-                    )
-                )
+                [
+                    _to_workflow_input_parameter(stage_out.id, parameter)
+                    for parameter in stage_out.inputs
+                    if not is_directory_compatible_type(parameter.type_)
+                ]
             )
 
     if not add_feature_requirement(
         requirement=SchemaDefRequirement(
-            types=list(map(lambda import_: {"$import": import_}, set(imports)))
+            types=[{"$import": import_} for import_ in set(imports)]
         ),
         workflow=orchestrator,
     ):
@@ -602,7 +580,7 @@ def _load_process_from_location(
 
 def wrap_locations(
     workflows: str,
-    session: Session = Session(),
+    session: Session | None = None,
     directory_stage_in: str | None = None,
     directory_stage_out: str | None = None,
     file_stage_in: str | None = None,
@@ -621,6 +599,9 @@ def wrap_locations(
     Returns:
         The composed CWL `$graph`.
     """
+    if session is None:
+        session = Session()
+
     workflows_cwl, workflows_process = _load_process_from_location(
         path=workflows, kind="main", session=session
     )

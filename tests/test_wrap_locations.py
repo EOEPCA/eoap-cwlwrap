@@ -40,26 +40,30 @@ class TestLoadProcessFromLocation(unittest.TestCase):
     def test_rejects_graph_without_process_id(self) -> None:
         graph = [Workflow(id="available", inputs=[], outputs=[], steps=[])]
 
-        with patch("eoap_cwlwrap.load_cwl_from_location", return_value=graph):
-            with self.assertRaisesRegex(
+        with (
+            patch("eoap_cwlwrap.load_cwl_from_location", return_value=graph),
+            self.assertRaisesRegex(
                 ValueError,
                 r"no process id was provided.*available",
-            ):
-                _load_process_from_location(
-                    path="workflow.cwl", kind="main", session=Session()
-                )
+            ),
+        ):
+            _load_process_from_location(
+                path="workflow.cwl", kind="main", session=Session()
+            )
 
     def test_rejects_unknown_process_id(self) -> None:
         graph = [Workflow(id="available", inputs=[], outputs=[], steps=[])]
 
-        with patch("eoap_cwlwrap.load_cwl_from_location", return_value=graph):
-            with self.assertRaisesRegex(
+        with (
+            patch("eoap_cwlwrap.load_cwl_from_location", return_value=graph),
+            self.assertRaisesRegex(
                 ValueError,
                 r"Process missing does not exist.*available",
-            ):
-                _load_process_from_location(
-                    path="workflow.cwl#missing", kind="main", session=Session()
-                )
+            ),
+        ):
+            _load_process_from_location(
+                path="workflow.cwl#missing", kind="main", session=Session()
+            )
 
     def test_selects_matching_id_from_single_process_document(self) -> None:
         workflow = Workflow(id="selected", inputs=[], outputs=[], steps=[])
@@ -75,21 +79,25 @@ class TestLoadProcessFromLocation(unittest.TestCase):
     def test_rejects_unknown_id_for_single_process_document(self) -> None:
         workflow = Workflow(id="available", inputs=[], outputs=[], steps=[])
 
-        with patch("eoap_cwlwrap.load_cwl_from_location", return_value=workflow):
-            with self.assertRaisesRegex(
+        with (
+            patch("eoap_cwlwrap.load_cwl_from_location", return_value=workflow),
+            self.assertRaisesRegex(
                 ValueError,
                 r"Process missing does not exist.*available",
-            ):
-                _load_process_from_location(
-                    path="workflow.cwl#missing", kind="main", session=Session()
-                )
+            ),
+        ):
+            _load_process_from_location(
+                path="workflow.cwl#missing", kind="main", session=Session()
+            )
 
     def test_rejects_empty_process_id_without_loading_document(self) -> None:
-        with patch("eoap_cwlwrap.load_cwl_from_location") as load_cwl:
-            with self.assertRaisesRegex(ValueError, r"Empty process id"):
-                _load_process_from_location(
-                    path="workflow.cwl#", kind="main", session=Session()
-                )
+        with (
+            patch("eoap_cwlwrap.load_cwl_from_location") as load_cwl,
+            self.assertRaisesRegex(ValueError, r"Empty process id"),
+        ):
+            _load_process_from_location(
+                path="workflow.cwl#", kind="main", session=Session()
+            )
 
         load_cwl.assert_not_called()
 
@@ -110,12 +118,14 @@ class TestWrapLocations(unittest.TestCase):
             f"{stage_location}, 'id' already present in wrapped CWL document"
         )
 
-        with patch(
-            "eoap_cwlwrap._load_process_from_location",
-            side_effect=[([workflow], workflow), (stage, stage)],
-        ) as load_process:
-            with self.assertRaisesRegex(ValueError, re.escape(expected_message)):
-                invoke_wrap_locations()
+        with (
+            patch(
+                "eoap_cwlwrap._load_process_from_location",
+                side_effect=[([workflow], workflow), (stage, stage)],
+            ) as load_process,
+            self.assertRaisesRegex(ValueError, re.escape(expected_message)),
+        ):
+            invoke_wrap_locations()
 
         self.assertEqual(load_process.call_count, 2)
         self.assertEqual(load_process.call_args_list[0].kwargs["kind"], "main")
