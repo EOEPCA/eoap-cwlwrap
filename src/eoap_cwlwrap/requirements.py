@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from collections.abc import Mapping
+from typing import Any, TypeVar, cast
+
 from cwl_utils.parser import Process
 from cwl_utils.parser.cwl_v1_2 import (
     CommandLineTool,
@@ -20,7 +23,6 @@ from cwl_utils.parser.cwl_v1_2 import (
     SchemaDefRequirement,
 )
 from loguru import logger
-from typing import Any, cast, List, Mapping, Type, TypeVar
 
 DEFAULT_CORES_MAX: int = 2
 
@@ -30,17 +32,17 @@ _ProcessRequirementType = TypeVar("_ProcessRequirementType", bound=ProcessRequir
 
 
 def get_feature_requirement(
-    requirement_type: Type[_ProcessRequirementType], workflow: Process
+    requirement_type: type[_ProcessRequirementType], workflow: Process
 ) -> _ProcessRequirementType | None:
     if workflow.requirements:
         for current_requirement in workflow.requirements:
             if requirement_type.__name__ == current_requirement.class_:
-                return cast(_ProcessRequirementType, current_requirement)
+                return cast("_ProcessRequirementType", current_requirement)
     return None
 
 
 def contains_feature_requirement(
-    requirement_type: Type[ProcessRequirement], workflow: Process
+    requirement_type: type[ProcessRequirement], workflow: Process
 ) -> bool:
     return get_feature_requirement(requirement_type, workflow) is not None
 
@@ -49,7 +51,7 @@ def add_feature_requirement(requirement: ProcessRequirement, workflow: Process) 
     if not workflow.requirements:
         workflow.requirements = [requirement]
         return True
-    elif not contains_feature_requirement(type(requirement), workflow):
+    if not contains_feature_requirement(type(requirement), workflow):
         workflow.requirements.append(requirement)
         return True
 
@@ -115,7 +117,7 @@ def _get_minimum_requirement(default_min: int, current_max: Any) -> Any:
     return current_max
 
 
-def adjust_resource_requirements(workflow: List[Process]) -> None:
+def adjust_resource_requirements(workflow: list[Process]) -> None:
     for process in workflow:
         logger.debug(f"- Checking ResourceRequirement in {process.id}...")
 

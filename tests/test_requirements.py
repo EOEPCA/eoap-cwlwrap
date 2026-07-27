@@ -15,6 +15,7 @@
 import unittest
 
 from cwl_utils.parser.cwl_v1_2 import CommandLineTool, ResourceRequirement
+
 from eoap_cwlwrap.requirements import (
     DEFAULT_CORES_MAX,
     DEFAULT_RAM_MAX,

@@ -12,34 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .types import (
-    Directory_or_File,
-    get_assignable_type,
-    is_array_type,
-    is_directory_compatible_type,
-    is_file_compatible_type as is_file_compatible_type,
-    is_type_assignable_to,
-    is_uri_compatible_type,
-    is_nullable,
-    replace_directory_with_url as replace_directory_with_url,
-    replace_type_with_url,
-    type_to_string,
-    URL_SCHEMA,
-    validate_directory_stage_in,
-    validate_file_stage_in,
-    validate_file_stage_out,
-    validate_directory_stage_out,
-)
-from .requirements import (
-    add_feature_requirement,
-    copy_schema_def_requirement,
-    get_feature_requirement,
-    merge_schema_def_imports,
-    adjust_resource_requirements,
-)
-from cwl_loader import load_cwl_from_yaml, load_cwl_from_location
+import time
+from collections.abc import Mapping
+from typing import Any, List, Optional, Tuple, cast
+
+from cwl_loader import load_cwl_from_location, load_cwl_from_yaml
 from cwl_loader.sort import order_graph_by_dependencies
-from cwl_loader.utils import get_ids, contains_process, search_process
+from cwl_loader.utils import contains_process, get_ids, search_process
 from cwl_utils.parser import Process
 from cwl_utils.parser.cwl_v1_2 import (
     InlineJavascriptRequirement,
@@ -54,12 +33,40 @@ from cwl_utils.parser.cwl_v1_2 import (
 )
 from loguru import logger
 from requests import Session
-from typing import cast, Any, List, Mapping, Optional, Tuple
-import time
+
+from .requirements import (
+    add_feature_requirement,
+    adjust_resource_requirements,
+    copy_schema_def_requirement,
+    get_feature_requirement,
+    merge_schema_def_imports,
+)
+from .types import (
+    URL_SCHEMA,
+    Directory_or_File,
+    get_assignable_type,
+    is_array_type,
+    is_directory_compatible_type,
+    is_nullable,
+    is_type_assignable_to,
+    is_uri_compatible_type,
+    replace_type_with_url,
+    type_to_string,
+    validate_directory_stage_in,
+    validate_directory_stage_out,
+    validate_file_stage_in,
+    validate_file_stage_out,
+)
+from .types import (
+    is_file_compatible_type as is_file_compatible_type,
+)
+from .types import (
+    replace_directory_with_url as replace_directory_with_url,
+)
 
 
 def _to_workflow_input_parameter(
-    source: str, parameter: Any, target_type: Optional[Any] = None
+    source: str, parameter: Any, target_type: Any | None = None
 ) -> WorkflowInputParameter:
     return WorkflowInputParameter(
         type_=target_type if target_type else parameter.type_,
@@ -88,7 +95,7 @@ def _build_orchestrator_workflow(
     workflow: Process,
     directory_stage_out: Process | None,
     file_stage_out: Process | None,
-) -> Process:
+) -> Process:  # noqa: C901
     start_time = time.time()
     logger.info("Building the CWL Orchestrator Workflow...")
 
@@ -232,16 +239,16 @@ def _build_orchestrator_workflow(
             app.in_.append(
                 WorkflowStepInput(
                     id=input.id,
-                    source=f"{stage_in_id}/{getattr(next(filter(lambda out: is_type_assignable_to(out.type_, Directory_or_File), stage_in.outputs), None), 'id')}",
+                    source=f"{stage_in_id}/{next(filter(lambda out: is_type_assignable_to(out.type_, Directory_or_File), stage_in.outputs), None).id}",
                 )
             )
 
-            if 0 == stage_in_counters[type_to_string(assignable_type)]:
+            if stage_in_counters[type_to_string(assignable_type)] == 0:
                 orchestrator.inputs.extend(
                     list(
                         map(
                             lambda parameter: _to_workflow_input_parameter(
-                                getattr(stage_in, "id"), parameter
+                                stage_in.id, parameter
                             ),
                             list(
                                 filter(
@@ -448,10 +455,10 @@ def _build_orchestrator_workflow(
 
 def wrap(
     workflow: Process,
-    directory_stage_in: Optional[Process] = None,
-    directory_stage_out: Optional[Process] = None,
-    file_stage_in: Optional[Process] = None,
-    file_stage_out: Optional[Process] = None,
+    directory_stage_in: Process | None = None,
+    directory_stage_out: Process | None = None,
+    file_stage_in: Process | None = None,
+    file_stage_out: Process | None = None,
 ) -> Process:
     """
     Composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps, defined according to [Application package patterns based on data stage-in and stage-out behaviors commonly used in EO workflows](https://github.com/eoap/application-package-patterns), and **packs** it into a single self-contained CWL document.
@@ -488,7 +495,7 @@ def wrap(
 
 
 def _load_process_from_yaml(raw_data: Mapping[str, Any], kind: str) -> Process:
-    parsed = cast(List[Process] | Process, load_cwl_from_yaml(raw_process=raw_data))
+    parsed = cast("list[Process] | Process", load_cwl_from_yaml(raw_process=raw_data))
 
     if isinstance(parsed, list):
         raise ValueError(
@@ -502,10 +509,10 @@ def _load_process_from_yaml(raw_data: Mapping[str, Any], kind: str) -> Process:
 
 def wrap_raw(
     workflow: Mapping[str, Any],
-    directory_stage_out: Optional[Mapping[str, Any]] = None,
-    directory_stage_in: Optional[Mapping[str, Any]] = None,
-    file_stage_in: Optional[Mapping[str, Any]] = None,
-    file_stage_out: Optional[Mapping[str, Any]] = None,
+    directory_stage_out: Mapping[str, Any] | None = None,
+    directory_stage_in: Mapping[str, Any] | None = None,
+    file_stage_in: Mapping[str, Any] | None = None,
+    file_stage_out: Mapping[str, Any] | None = None,
 ) -> Process:
     """
     Composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps, defined according to [Application package patterns based on data stage-in and stage-out behaviors commonly used in EO workflows](https://github.com/eoap/application-package-patterns), and **packs** it into a single self-contained CWL document.
@@ -547,14 +554,15 @@ def wrap_raw(
 
 def _load_process_from_location(
     path: str, kind: str, session: Session
-) -> Tuple[List[Process] | Process, Process]:
+) -> tuple[list[Process] | Process, Process]:
     location, separator, process_id = path.partition("#")
 
     if separator and not process_id:
         raise ValueError(f"Empty process id in location '{path}'")
 
     parsed = cast(
-        List[Process] | Process, load_cwl_from_location(path=location, session=session)
+        "list[Process] | Process",
+        load_cwl_from_location(path=location, session=session),
     )
 
     if process_id:
@@ -581,11 +589,11 @@ def _load_process_from_location(
 def wrap_locations(
     workflows: str,
     session: Session = Session(),
-    directory_stage_in: Optional[str] = None,
-    directory_stage_out: Optional[str] = None,
-    file_stage_in: Optional[str] = None,
-    file_stage_out: Optional[str] = None,
-) -> List[Process]:
+    directory_stage_in: str | None = None,
+    directory_stage_out: str | None = None,
+    file_stage_in: str | None = None,
+    file_stage_out: str | None = None,
+) -> list[Process]:
     """
     Composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps, defined according to [Application package patterns based on data stage-in and stage-out behaviors commonly used in EO workflows](https://github.com/eoap/application-package-patterns), and **packs** it into a single self-contained CWL document.
 
@@ -604,8 +612,8 @@ def wrap_locations(
     )
 
     def _load_stage(
-        location: Optional[str], kind: str
-    ) -> Tuple[List[Process] | Process | None, Process | None]:
+        location: str | None, kind: str
+    ) -> tuple[list[Process] | Process | None, Process | None]:
         if not location:
             return (None, None)
 
@@ -643,9 +651,9 @@ def wrap_locations(
         file_stage_out=file_stage_out_process,
     )
 
-    wrapper_cwl: List[Process] = []
+    wrapper_cwl: list[Process] = []
 
-    def _append_cwl(cwl: List[Process] | Process | None) -> None:
+    def _append_cwl(cwl: list[Process] | Process | None) -> None:
         if cwl:
             if isinstance(cwl, list):
                 for wf in cwl:
@@ -661,7 +669,7 @@ def wrap_locations(
     _append_cwl(file_stage_out_wf)
 
     wrapping_workflow = cast(
-        List[Process], order_graph_by_dependencies(processes=wrapper_cwl)
+        "list[Process]", order_graph_by_dependencies(processes=wrapper_cwl)
     )
 
     adjust_resource_requirements(wrapping_workflow)

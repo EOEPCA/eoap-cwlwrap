@@ -15,13 +15,15 @@
 import os
 import sys
 import unittest
-from cwltool.main import main as cwlmain
+from io import StringIO
+from pathlib import Path
+
+from cwl_loader import dump_cwl
 from cwltool.context import LoadingContext, RuntimeContext
 from cwltool.executors import NoopJobExecutor
-from cwl_loader import dump_cwl
-from io import StringIO
+from cwltool.main import main as cwlmain
+
 from eoap_cwlwrap import wrap_locations
-from pathlib import Path
 
 
 class TestCWL(unittest.TestCase):

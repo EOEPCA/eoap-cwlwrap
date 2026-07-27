@@ -14,7 +14,7 @@
 
 import re
 import unittest
-from typing import Callable
+from collections.abc import Callable
 from unittest.mock import patch
 
 from cwl_utils.parser.cwl_v1_2 import Workflow

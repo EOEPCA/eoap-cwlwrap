@@ -12,18 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from . import wrap_locations
-from cwl_loader import dump_cwl
+import time
 from datetime import datetime
-from loguru import logger
 from pathlib import Path
-from requests import Session
-from session_adapters.file_adapter import FileAdapter
-from session_adapters.s3_adapter import S3Adapter
-from session_adapters.oci_adapter import OCIAdapter
 
 import click
-import time
+from cwl_loader import dump_cwl
+from loguru import logger
+from requests import Session
+from session_adapters.file_adapter import FileAdapter
+from session_adapters.oci_adapter import OCIAdapter
+from session_adapters.s3_adapter import S3Adapter
+
+from . import wrap_locations
 
 
 @click.command()

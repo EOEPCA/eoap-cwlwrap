@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import sys
+from typing import Any, Union, get_args, get_origin
+
 from cwl_utils.parser import Process
 from cwl_utils.parser.cwl_v1_2 import (
     CommandInputArraySchema,
@@ -23,7 +25,6 @@ from cwl_utils.parser.cwl_v1_2 import (
     OutputArraySchema,
 )
 from loguru import logger
-from typing import Any, get_args, get_origin, Union
 
 Directory_or_File = Union[Directory, File]
 """A Directory Workflow or a File union type."""
@@ -289,7 +290,7 @@ def type_to_string(typ: Any) -> str:
 def _create_error_message(parameters: list[Any]) -> str:
     return (
         "no"
-        if 0 == len(parameters)
+        if len(parameters) == 0
         else str(list(map(lambda parameter: parameter.id, parameters)))
     )
 
