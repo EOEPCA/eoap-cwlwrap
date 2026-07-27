@@ -7,7 +7,7 @@ name = "eoap_cwlwrap"
 dynamic = ["version"]
 description = "Add stage-in/stage-out steps to EOAP CWL Workflows"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 license = "Apache-2.0"
 authors = [
   { name = "Fabrice Brito", email = "fabrice.brito@terradue.com" },
@@ -56,13 +56,6 @@ ignore_missing_imports = true
 [tool.hatch.version]
 path = "src/eoap_cwlwrap/__about__.py"
 
-[tool.hatch.envs.types]
-extra-dependencies = [
-  "mypy==1.19.1",
-]
-[tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:src/eoap_cwlwrap tests}"
-
 [tool.coverage.run]
 source_pkgs = ["eoap_cwlwrap", "tests"]
 branch = true
@@ -88,13 +81,20 @@ skip-install = false
 [tool.hatch.envs.dev]
 skip-install = false
 dependencies = [
-  "mypy==1.19.1",
-  "ruff==0.9.6",
+  "mypy>=2.3.0",
+  "ruff>=0.16.0",
 ]
 
+[tool.ruff.lint]
+select = ["E", "F", "C90"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
 [tool.hatch.envs.dev.scripts]
-check = "mypy --install-types --non-interactive {args:src/eoap_cwlwrap tests}"
-lint = "ruff check {args:.}"
+typecheck = "mypy --install-types --non-interactive {args:src tests}"
+lint = "ruff format {args:src tests}"
+check = "ruff check --fix {args:src tests}"
 
 [tool.hatch.envs.prod]
 path = "/app/envs/eoap-cwlwrap"
@@ -104,18 +104,24 @@ eoap-cwlwrap = "eoap_cwlwrap.builder:main"
 
 [tool.hatch.envs.test]
 skip-install = false
-
 dependencies = [
-  "coverage==7.11.0",
   "cwltool==3.1.20260315121657",
-  "nose2==0.15.1"
+  "pytest>=8.4,<10",
+  "pytest-cov>=6.2,<8",
 ]
 
 [tool.hatch.envs.test.scripts]
-test = "hatch run nose2"
-testv = "hatch run nose2 --verbose"
-cov = ["coverage run --source=src/eoap_cwlwrap -m nose2", "coverage report"]
-test-show-setup = "python -m unittest discover -s tests -p 'test_*.py' -v"
+test = "pytest {args:tests}"
+testv = "pytest --verbose {args:tests}"
+test-cov = "pytest --cov=eoap_cwlwrap --cov-report=term-missing {args:tests}"
+test-show-setup = "pytest --setup-show"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = [
+  "--strict-config",
+  "--strict-markers",
+]
 
 [[tool.hatch.envs.test.matrix]]
 python = ["3.10", "3.11", "3.12", "3.13", "3.14"]

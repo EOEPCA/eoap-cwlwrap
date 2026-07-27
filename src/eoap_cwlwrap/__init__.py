@@ -245,8 +245,8 @@ def _build_orchestrator_workflow(
                             ),
                             list(
                                 filter(
-                                    lambda workflow_input: not is_uri_compatible_type(
-                                        workflow_input.type_
+                                    lambda workflow_input: (
+                                        not is_uri_compatible_type(workflow_input.type_)
                                     ),
                                     stage_in.inputs,
                                 )
