@@ -236,10 +236,24 @@ def _build_orchestrator_workflow(
 
             logger.info(f"  Connecting 'app/{input.id}' to '{stage_in_id}' output...")
 
+            stage_in_output = next(
+                filter(
+                    lambda output: is_type_assignable_to(
+                        output.type_, Directory_or_File
+                    ),
+                    stage_in.outputs,
+                ),
+                None,
+            )
+            if stage_in_output is None:
+                raise Exception(
+                    f"  {stage_in.id} does not define a File or Directory output"
+                )
+
             app.in_.append(
                 WorkflowStepInput(
                     id=input.id,
-                    source=f"{stage_in_id}/{next(filter(lambda out: is_type_assignable_to(out.type_, Directory_or_File), stage_in.outputs), None).id}",
+                    source=f"{stage_in_id}/{stage_in_output.id}",
                 )
             )
 
