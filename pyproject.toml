@@ -106,6 +106,7 @@ eoap-cwlwrap = "eoap_cwlwrap.builder:main"
 skip-install = false
 dependencies = [
   "cwltool==3.1.20260315121657",
+  "bandit>=1.9.4",
   "pytest>=8.4,<10",
   "pytest-cov>=6.2,<8",
 ]
@@ -115,6 +116,7 @@ test = "pytest {args:tests}"
 testv = "pytest --verbose {args:tests}"
 test-cov = "pytest --cov=eoap_cwlwrap --cov-report=term-missing {args:tests}"
 test-show-setup = "pytest --setup-show"
+security = "bandit -r {args:src}"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
