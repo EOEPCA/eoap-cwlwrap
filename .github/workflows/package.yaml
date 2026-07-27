@@ -78,7 +78,7 @@ jobs:
         run: hatch run dev:check
 
       - name: Security scan
-        run: hatch run test:security
+        run: hatch run dev:security
 
       - name: Test package
         run: hatch run test:test-cov
