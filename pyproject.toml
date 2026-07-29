@@ -82,6 +82,7 @@ skip-install = false
 [tool.hatch.envs.dev]
 skip-install = false
 dependencies = [
+  "cwltool==3.2.20260720092025",
   "mypy>=2.3.0",
   "ruff>=0.16.0",
   "bandit>=1.9.4",
@@ -133,7 +134,7 @@ eoap-cwlwrap = "eoap_cwlwrap.builder:main"
 [tool.hatch.envs.test]
 skip-install = false
 dependencies = [
-  "cwltool==3.1.20260315121657",
+  "cwltool==3.2.20260720092025",
   "pytest>=8.4,<10",
   "pytest-cov>=6.2,<8",
 ]
