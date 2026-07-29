@@ -12,20 +12,56 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+minimum_pre_commit_version: "3.5.0"
+
+# Hatch owns the tool versions and project dependencies. The hooks only invoke
+# the corresponding project scripts, avoiding duplicated dependency lists.
 repos:
-- repo: https://github.com/astral-sh/ruff-pre-commit
-  # Ruff version.
-  rev: v0.9.6
+- repo: local
   hooks:
-  # Run the linter.
-  - id: ruff
+  - id: mypy
+    name: mypy (strict type checking)
+    entry: hatch run dev:typecheck
+    language: system
     types_or:
     - python
     - pyi
-    args:
-    - --fix
-  # Run the formatter.
+    pass_filenames: false
+    always_run: true
+
   - id: ruff-format
+    name: ruff (format)
+    entry: hatch run dev:lint
+    language: system
     types_or:
     - python
     - pyi
+    pass_filenames: false
+    always_run: true
+
+  - id: ruff
+    name: ruff (check and McCabe complexity)
+    entry: hatch run dev:check
+    language: system
+    types_or:
+    - python
+    - pyi
+    pass_filenames: false
+    always_run: true
+
+  - id: bandit
+    name: bandit (find common security issues)
+    entry: hatch run dev:security
+    language: system
+    types_or:
+    - python
+    - pyi
+    pass_filenames: false
+    always_run: true
+
+  - id: pytest
+    name: pytest
+    entry: hatch run test:test
+    language: system
+    pass_filenames: false
+    always_run: true

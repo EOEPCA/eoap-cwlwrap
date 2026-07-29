@@ -19,6 +19,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [0.32.0] - 2026-07-28
+
+### Added
+
+- Stronger code chekers with Ruff+McCabe & Bandit.
+
+### Changed
+
+- Bump `click` dependency to `8.4.2`.
+- Bump `cwl-loader` dependency to `0.24.0`.
+- Bump `cwl-utils` dependency to `0.42`.
+- Bump `session-adapters` dependency to `0.4.0`.
+
 ## [0.31.0] - 2026-07-17
 
 ### Fixed
