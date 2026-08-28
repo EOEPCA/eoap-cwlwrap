@@ -76,7 +76,7 @@ class CwlWrapOptions(BaseModel):
 
     output: Annotated[
         Path,
-        Field(default=Path("codemeta.json"), description="The output file path"),
+        Field(default=Path("wrapped.cwl"), description="The output file path"),
     ]
 
 
