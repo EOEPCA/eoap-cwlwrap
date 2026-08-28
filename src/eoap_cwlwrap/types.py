@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
 from types import UnionType
 from typing import Any, get_args, get_origin
 
@@ -26,6 +25,7 @@ from cwl_utils.parser.cwl_v1_2 import (
     OutputArraySchema,
 )
 from loguru import logger
+from transpiler_mate.api import PluginFailureError
 
 Directory_or_File = Directory | File
 """A Directory Workflow or a File union type."""
@@ -303,7 +303,7 @@ def _validate_stage_in(stage_in: Process, expected_output_type: Any) -> None:
     )
 
     if len(url_inputs) != 1:
-        sys.exit(
+        raise PluginFailureError(
             f"stage-in '{stage_in.id}' not valid, {_create_error_message(url_inputs)} URL-compatible input found, please specify one."
         )
 
@@ -315,7 +315,7 @@ def _validate_stage_in(stage_in: Process, expected_output_type: Any) -> None:
     )
 
     if len(directory_outputs) != 1:
-        sys.exit(
+        raise PluginFailureError(
             f"stage-in '{stage_in.id}' not valid, {_create_error_message(directory_outputs)} Directory-compatible output found, please specify one."
         )
 
@@ -359,7 +359,7 @@ def _validate_stage_out(stage_out: Process, expected_intput_type: Any) -> None:
     )
 
     if len(file_inputs) != 1:
-        sys.exit(
+        raise PluginFailureError(
             f"stage-out '{stage_out.id}' not valid, {_create_error_message(file_inputs)} {expected_intput_type}-compatible input found, please specify one."
         )
 
@@ -368,7 +368,7 @@ def _validate_stage_out(stage_out: Process, expected_intput_type: Any) -> None:
     )
 
     if len(url_outputs) != 1:
-        sys.exit(
+        raise PluginFailureError(
             f"file stage-out '{stage_out.id}' not valid, {_create_error_message(url_outputs)} URL-compatible output found, please specify one."
         )
 

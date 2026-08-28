@@ -117,41 +117,40 @@ def _get_minimum_requirement(default_min: int, current_max: Any) -> Any:
     return current_max
 
 
-def adjust_resource_requirements(workflow: list[Process]) -> None:
-    for process in workflow:
-        logger.debug(f"- Checking ResourceRequirement in {process.id}...")
+def adjust_resource_requirements(process: Process) -> None:
+    logger.debug(f"- Checking ResourceRequirement in {process.id}...")
 
-        if isinstance(process, CommandLineTool):
-            resource_requirement = get_feature_requirement(ResourceRequirement, process)
+    if isinstance(process, CommandLineTool):
+        resource_requirement = get_feature_requirement(ResourceRequirement, process)
 
-            if resource_requirement is None:
-                resource_requirement = ResourceRequirement(
-                    coresMax=DEFAULT_CORES_MAX,
-                    ramMax=DEFAULT_RAM_MAX,
-                )
-                add_feature_requirement(
-                    resource_requirement,
-                    process,
-                )
-
-            for min_requirement, max_requirement, default_min in (
-                ("ramMin", "ramMax", DEFAULT_RAM_MAX),
-                ("coresMin", "coresMax", DEFAULT_CORES_MAX),
-            ):
-                current_min = getattr(resource_requirement, min_requirement)
-                current_max = getattr(resource_requirement, max_requirement)
-
-                if current_min is None and current_max is not None:
-                    setattr(
-                        resource_requirement,
-                        min_requirement,
-                        _get_minimum_requirement(default_min, current_max),
-                    )
-                elif current_max is None and current_min is not None:
-                    setattr(resource_requirement, max_requirement, current_min)
-
-            logger.debug(
-                f"  ResourceRequirement in {process.id} adjusted to {resource_requirement.__dict__}"
+        if resource_requirement is None:
+            resource_requirement = ResourceRequirement(
+                coresMax=DEFAULT_CORES_MAX,
+                ramMax=DEFAULT_RAM_MAX,
             )
-        else:
-            logger.debug(f"  {process.id} is not a CommandLineTool instance, skipping.")
+            add_feature_requirement(
+                resource_requirement,
+                process,
+            )
+
+        for min_requirement, max_requirement, default_min in (
+            ("ramMin", "ramMax", DEFAULT_RAM_MAX),
+            ("coresMin", "coresMax", DEFAULT_CORES_MAX),
+        ):
+            current_min = getattr(resource_requirement, min_requirement)
+            current_max = getattr(resource_requirement, max_requirement)
+
+            if current_min is None and current_max is not None:
+                setattr(
+                    resource_requirement,
+                    min_requirement,
+                    _get_minimum_requirement(default_min, current_max),
+                )
+            elif current_max is None and current_min is not None:
+                setattr(resource_requirement, max_requirement, current_min)
+
+        logger.debug(
+            f"  ResourceRequirement in {process.id} adjusted to {resource_requirement.__dict__}"
+        )
+    else:
+        logger.debug(f"  {process.id} is not a CommandLineTool instance, skipping.")

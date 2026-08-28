@@ -16,13 +16,17 @@ import sys
 import unittest
 from io import StringIO
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-from cwl_loader import dump_cwl
 from cwltool.context import LoadingContext, RuntimeContext
 from cwltool.executors import NoopJobExecutor
 from cwltool.main import main as cwlmain
+from transpiler_mate.runtime.context_resolver import DefaultTranspilerContextResolver
 
-from eoap_cwlwrap import wrap_locations
+from eoap_cwlwrap.plugin import CwlWrapOptions, cwlwrap
+
+if TYPE_CHECKING:
+    from transpiler_mate.api import TranspilerContext
 
 
 class TestCWL(unittest.TestCase):
@@ -47,7 +51,7 @@ class TestCWL(unittest.TestCase):
 
     def setUp(self) -> None:
         self.output = ".wrapped.cwl"
-        self.base_url = "https://raw.githubusercontent.com/eoap/application-package-patterns/refs/heads/main"
+        self.base_url = "https://raw.githubusercontent.com/eoap/application-package-patterns/refs/heads/develop"
         self.entrypoint = ""
 
     def tearDown(self) -> None:
@@ -59,22 +63,17 @@ class TestCWL(unittest.TestCase):
         return self.validate_cwl_file(app_cwl_file)
 
     def _wrapped_cwl_validation(self) -> None:
-        directory_stage_in = f"{self.base_url}/templates/stage-in.cwl"
-        file_stage_in = f"{self.base_url}/templates/stage-in-file.cwl"
-        workflows_cwl = (
+        context: TranspilerContext = DefaultTranspilerContextResolver().resolve(
             f"{self.base_url}/cwl-workflow/{self.entrypoint}.cwl#{self.entrypoint}"
         )
-        directory_stage_out_cwl = f"{self.base_url}/templates/stage-out.cwl"
 
-        main_workflow = wrap_locations(
-            directory_stage_in=directory_stage_in,
-            file_stage_in=file_stage_in,
-            workflows=workflows_cwl,
-            directory_stage_out=directory_stage_out_cwl,
+        options: CwlWrapOptions = CwlWrapOptions(
+            directory_stage_in=f"{self.base_url}/templates/stage-in.cwl",
+            file_stage_in=f"{self.base_url}/templates/stage-in-file.cwl",
+            directory_stage_out=f"{self.base_url}/templates/stage-out.cwl",
+            output=Path(self.output),
         )
 
-        output_path = Path(self.output)
-        with output_path.open("w") as f:
-            dump_cwl(main_workflow, f)
+        cwlwrap.execute(context, options)
 
         self.assertEqual(self._cwl_validation(self.output), 0)

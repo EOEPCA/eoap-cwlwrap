@@ -46,7 +46,7 @@ class TestRequirements(unittest.TestCase):
     ) -> None:
         tool = self._command_line_tool()
 
-        adjust_resource_requirements([tool])
+        adjust_resource_requirements(tool)
 
         resource_requirement = self._resource_requirement(tool)
         self.assertEqual(resource_requirement.ramMax, DEFAULT_RAM_MAX)
@@ -63,7 +63,7 @@ class TestRequirements(unittest.TestCase):
             ResourceRequirement(ramMax=ram_max, coresMax=cores_max)
         )
 
-        adjust_resource_requirements([tool])
+        adjust_resource_requirements(tool)
 
         resource_requirement = self._resource_requirement(tool)
         self.assertEqual(resource_requirement.ramMax, ram_max)
@@ -80,7 +80,7 @@ class TestRequirements(unittest.TestCase):
             ResourceRequirement(ramMax=ram_max, coresMax=cores_max)
         )
 
-        adjust_resource_requirements([tool])
+        adjust_resource_requirements(tool)
 
         resource_requirement = self._resource_requirement(tool)
         self.assertEqual(resource_requirement.ramMax, ram_max)
@@ -98,7 +98,7 @@ class TestRequirements(unittest.TestCase):
             )
         )
 
-        adjust_resource_requirements([tool])
+        adjust_resource_requirements(tool)
 
         resource_requirement = self._resource_requirement(tool)
         self.assertEqual(resource_requirement.ramMax, DEFAULT_RAM_MAX)

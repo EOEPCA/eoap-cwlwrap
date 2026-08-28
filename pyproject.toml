@@ -28,13 +28,16 @@ classifiers = [
 ]
 
 dependencies = [
-  "click==8.4.2",
-  "cwl-loader==0.24.0",
-  "cwl-utils==0.42",
   "loguru==0.7.3",
-  "ruamel-yaml==0.19.1",
-  "session-adapters==0.4.0"
+  "transpiler-mate-api @ git+https://github.com/sim13pods/transpiler-mate-api.git@main",
 ]
+
+# TODO remove me as soon as transpiler-mate-api is on PyPI
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[project.entry-points."transpiler_mate.plugins"]
+cwlwrap = "eoap_cwlwrap.plugin:cwlwrap"
 
 [project.urls]
 Documentation = "https://eoepca.github.io/eoap-cwlwrap/"
@@ -42,15 +45,14 @@ Issues = "https://github.com/EOEPCA/eoap-cwlwrap/issues"
 Source = "https://github.com/EOEPCA/eoap-cwlwrap"
 
 [tool.mypy]
-python_version = "3.11"
 strict = true
 
 [[tool.mypy.overrides]]
 module = [
     "cwl_loader",
     "cwl_loader.*",
-    "session_adapters",
-    "session_adapters.*",
+    "transpiler_mate.runtime",
+    "transpiler_mate.runtime.*"
 ]
 ignore_missing_imports = true
 
@@ -128,13 +130,11 @@ security = "bandit -r {args:src}"
 [tool.hatch.envs.prod]
 path = "/app/envs/eoap-cwlwrap"
 
-[project.scripts]
-eoap-cwlwrap = "eoap_cwlwrap.builder:main"
-
 [tool.hatch.envs.test]
 skip-install = false
 dependencies = [
   "cwltool==3.2.20260720092025",
+  "transpiler-mate-runtime @ git+https://github.com/sim13pods/transpiler-mate-runtime.git",
   "pytest>=8.4,<10",
   "pytest-cov>=6.2,<8",
 ]
