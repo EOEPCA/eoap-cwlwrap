@@ -79,17 +79,13 @@ def copy_schema_def_requirement(
     requirement: SchemaDefRequirement,
 ) -> SchemaDefRequirement:
     return SchemaDefRequirement(
-        types=list(requirement.types)
-        if isinstance(requirement.types, list)
-        else requirement.types,
+        types=list(requirement.types) if isinstance(requirement.types, list) else requirement.types,
         extension_fields=requirement.extension_fields,
         loadingOptions=requirement.loadingOptions,
     )
 
 
-def merge_schema_def_imports(
-    requirement: SchemaDefRequirement, imports: set[str]
-) -> None:
+def merge_schema_def_imports(requirement: SchemaDefRequirement, imports: set[str]) -> None:
     if isinstance(requirement.types, list):
         types = list(requirement.types)
     elif requirement.types:

@@ -13,6 +13,8 @@
 # limitations under the License.
 
 name: docs
+permissions:
+  contents: write
 
 on:
   push:
@@ -32,11 +34,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout master
-      uses: actions/checkout@v2
+      uses: actions/checkout@v7.0.1
     - name: Set up Python 3.x
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v7.0.0
       with:
         python-version: 3.x
-    - run: pip install mkdocs-material mkdocs-mermaid2-plugin mkdocs-jupyter legacy-cgi mkdocstrings-python
-    - run: pip install .
+    - run: pip install "mkdocs<=2.0.0" mkdocs-material mkdocs-mermaid2-plugin mkdocs-jupyter legacy-cgi mkdocstrings[python] mkdocs-build-plantuml-plugin
     - run: mkdocs gh-deploy --force

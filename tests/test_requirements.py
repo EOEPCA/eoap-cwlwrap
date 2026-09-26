@@ -59,9 +59,7 @@ class TestRequirements(unittest.TestCase):
     ) -> None:
         ram_max = DEFAULT_RAM_MAX + 1024
         cores_max = DEFAULT_CORES_MAX + 2
-        tool = self._command_line_tool(
-            ResourceRequirement(ramMax=ram_max, coresMax=cores_max)
-        )
+        tool = self._command_line_tool(ResourceRequirement(ramMax=ram_max, coresMax=cores_max))
 
         adjust_resource_requirements(tool)
 
@@ -76,9 +74,7 @@ class TestRequirements(unittest.TestCase):
     ) -> None:
         ram_max = DEFAULT_RAM_MAX - 512
         cores_max = DEFAULT_CORES_MAX - 1
-        tool = self._command_line_tool(
-            ResourceRequirement(ramMax=ram_max, coresMax=cores_max)
-        )
+        tool = self._command_line_tool(ResourceRequirement(ramMax=ram_max, coresMax=cores_max))
 
         adjust_resource_requirements(tool)
 

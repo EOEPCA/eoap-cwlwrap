@@ -12,7 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Compose application workflows with EOAP staging steps."""
+
 import time
+from collections.abc import Callable, Mapping
 from typing import Any
 
 from cwl_utils.parser import Process
@@ -84,83 +87,75 @@ def _to_workflow_input_parameter(
     )
 
 
-def _build_orchestrator_workflow(  # noqa: C901
-    directory_stage_in: Process | None,
-    file_stage_in: Process | None,
-    workflow: Process,
-    directory_stage_out: Process | None,
-    file_stage_out: Process | None,
-) -> Process:
-    start_time = time.time()
-    logger.info("Building the CWL Orchestrator Workflow...")
+def _configure_staging_step(
+    orchestrator: Workflow, workflow_step: WorkflowStep, parameter_id: str, parameter_type: object
+) -> None:
+    """Add scattering and null guards required by a staged parameter."""
+    if is_array_type(parameter_type):
+        workflow_step.scatter = parameter_id
+        workflow_step.scatterMethod = "dotproduct"
+        add_feature_requirement(ScatterFeatureRequirement(), orchestrator)
+    if is_nullable(parameter_type):
+        workflow_step.when = f"$(inputs.{parameter_id} !== null)"
+        add_feature_requirement(InlineJavascriptRequirement(), orchestrator)
 
-    imports = {URL_SCHEMA}
 
-    def _add_import(type_: Any) -> None:
-        if isinstance(type_, list):
-            for typ in type_:
-                _add_import(typ)
-        else:
-            type_string: str = type_to_string(type_)
-            if "#" in type_string:
-                imports.add(type_string.split("#")[0])
+def _add_type_imports(parameter_type: object, imports: set[str]) -> None:
+    """Collect schema imports referenced by a parameter type."""
+    if isinstance(parameter_type, list):
+        for member_type in parameter_type:
+            _add_type_imports(member_type, imports)
+    else:
+        type_string = type_to_string(parameter_type)
+        if "#" in type_string:
+            imports.add(type_string.split("#")[0])
 
-    orchestrator = Workflow(
-        id="main",
-        label=f"{workflow.class_} {workflow.id} orchestrator",
-        doc=f"This Workflow is used to orchestrate the {workflow.class_} {workflow.id}",
-        requirements=[SubworkflowFeatureRequirement()],
-        inputs=[],
-        outputs=[],
-        steps=[],
-    )
 
-    # copy all the SchemaDefRequirement required types from the original workflow
-    if isinstance(workflow, Workflow) and workflow.requirements:
-        schema_requirement = get_feature_requirement(SchemaDefRequirement, workflow)
-        if schema_requirement:
-            add_feature_requirement(
-                copy_schema_def_requirement(schema_requirement), orchestrator
-            )
-
-    app = WorkflowStep(
-        id="app",
-        in_=[],
-        out=[],
-        run=f"#{workflow.id}",
-        label=workflow.label,
-        doc=workflow.doc,
-    )
-
-    # inputs
-
-    logger.info(f"Analyzing {workflow.id} inputs...")
-
-    stage_in_counters = {"Directory": 0, "File": 0}
-
-    stage_in_cwl = {"Directory": directory_stage_in, "File": file_stage_in}
-
-    stage_out_counters = {"Directory": 0, "File": 0}
-
-    stage_out_cwl = {"Directory": directory_stage_out, "File": file_stage_out}
-
-    for input in workflow.inputs:
-        type_string = type_to_string(input.type_)
-        _add_import(input.type_)
-
-        logger.info(f"* {workflow.id}/{input.id}: {type_to_string(input.type_)}")
-
-        assignable_type = get_assignable_type(
-            actual=input.type_, expected=Directory_or_File
+def _connect_staging_inputs(
+    orchestrator: Workflow,
+    workflow_step: WorkflowStep,
+    stage: Process,
+    source: str,
+    parameter_type: object,
+    accepts_data: Callable[[object], bool],
+) -> None:
+    """Wire staging inputs and apply array and null handling to data inputs."""
+    for parameter in stage.inputs:
+        is_data = accepts_data(parameter.type_)
+        workflow_step.in_.append(
+            WorkflowStepInput(id=parameter.id, source=source if is_data else parameter.id)
         )
+        if is_data:
+            _configure_staging_step(orchestrator, workflow_step, parameter.id, parameter_type)
 
-        target_type = input.type_
+
+def _connect_inputs(
+    workflow: Process,
+    orchestrator: Workflow,
+    app: WorkflowStep,
+    stage_in_cwl: Mapping[str, Process | None],
+    imports: set[str],
+) -> None:
+    """Connect application inputs through staging steps when needed.
+
+    Raises:
+        PluginFailureError: If a required staging process or output is missing.
+    """
+    stage_in_counters = {"Directory": 0, "File": 0}
+    for parameter in workflow.inputs:
+        _add_type_imports(parameter.type_, imports)
+
+        logger.info(f"* {workflow.id}/{parameter.id}: {type_to_string(parameter.type_)}")
+
+        assignable_type = get_assignable_type(actual=parameter.type_, expected=Directory_or_File)
+
+        target_type = parameter.type_
 
         if assignable_type:
             stage_in = stage_in_cwl[type_to_string(assignable_type)]
             if not stage_in:
                 raise PluginFailureError(
-                    f"  input requires a {type_to_string(assignable_type)} stage-in, that was not specified"
+                    f"  parameter requires a {type_to_string(assignable_type)} stage-in, that was not specified"
                 )
 
             stage_in_id = f"{type_to_string(assignable_type).lower()}_stage_in_{stage_in_counters[type_to_string(assignable_type)]}"
@@ -169,16 +164,14 @@ def _build_orchestrator_workflow(  # noqa: C901
                 f"  {type_to_string(assignable_type)} type detected, creating a related '{stage_in_id}'..."
             )
 
-            logger.info(
-                f"  Converting {type_to_string(input.type_)} to URL-compatible type..."
-            )
+            logger.info(f"  Converting {type_to_string(parameter.type_)} to URL-compatible type...")
 
             target_type = replace_type_with_url(
-                source=input.type_, to_be_replaced=Directory_or_File
+                source=parameter.type_, to_be_replaced=Directory_or_File
             )
 
             logger.info(
-                f"  {type_to_string(input.type_)} converted to {type_to_string(target_type)}"
+                f"  {type_to_string(parameter.type_)} converted to {type_to_string(target_type)}"
             )
 
             workflow_step = WorkflowStep(
@@ -192,49 +185,20 @@ def _build_orchestrator_workflow(  # noqa: C901
 
             orchestrator.steps.append(workflow_step)
 
-            for stage_in_input in stage_in.inputs:
-                workflow_step.in_.append(
-                    WorkflowStepInput(
-                        id=stage_in_input.id,
-                        source=input.id
-                        if is_uri_compatible_type(stage_in_input.type_)
-                        else stage_in_input.id,
-                    )
-                )
+            _connect_staging_inputs(
+                orchestrator,
+                workflow_step,
+                stage_in,
+                parameter.id,
+                parameter.type_,
+                is_uri_compatible_type,
+            )
 
-                if is_uri_compatible_type(stage_in_input.type_):
-                    if is_array_type(input.type_):
-                        logger.info(
-                            f"  Array detected, 'scatter' required for {stage_in_input.id}:{input.id}"
-                        )
-
-                        workflow_step.scatter = stage_in_input.id
-                        workflow_step.scatterMethod = "dotproduct"
-
-                        add_feature_requirement(
-                            requirement=ScatterFeatureRequirement(),
-                            workflow=orchestrator,
-                        )
-
-                    if is_nullable(input.type_):
-                        logger.info(
-                            f"  Nullable detected, 'when' required for {stage_in_input.id}:{input.id}"
-                        )
-
-                        workflow_step.when = f"$(inputs.{stage_in_input.id} !== null)"
-
-                        add_feature_requirement(
-                            requirement=InlineJavascriptRequirement(),
-                            workflow=orchestrator,
-                        )
-
-            logger.info(f"  Connecting 'app/{input.id}' to '{stage_in_id}' output...")
+            logger.info(f"  Connecting 'app/{parameter.id}' to '{stage_in_id}' output...")
 
             stage_in_output = next(
                 filter(
-                    lambda output: is_type_assignable_to(
-                        output.type_, Directory_or_File
-                    ),
+                    lambda output: is_type_assignable_to(output.type_, Directory_or_File),
                     stage_in.outputs,
                 ),
                 None,
@@ -246,7 +210,7 @@ def _build_orchestrator_workflow(  # noqa: C901
 
             app.in_.append(
                 WorkflowStepInput(
-                    id=input.id,
+                    id=parameter.id,
                     source=f"{stage_in_id}/{stage_in_output.id}",
                 )
             )
@@ -262,30 +226,30 @@ def _build_orchestrator_workflow(  # noqa: C901
 
             stage_in_counters[type_to_string(assignable_type)] += 1
         else:
-            app.in_.append(WorkflowStepInput(id=input.id, source=input.id))
+            app.in_.append(WorkflowStepInput(id=parameter.id, source=parameter.id))
 
         orchestrator.inputs.append(
             _to_workflow_input_parameter(
-                source=workflow.id, parameter=input, target_type=target_type
+                source=workflow.id, parameter=parameter, target_type=target_type
             )
         )
 
-    # once all '{type}_stage_in_{index}' are defined, we can now append the 'app' step
 
-    orchestrator.steps.append(app)
-
-    # outputs
-
-    logger.info(f"Analyzing {workflow.id} outputs...")
-
+def _connect_outputs(
+    workflow: Process,
+    orchestrator: Workflow,
+    app: WorkflowStep,
+    stage_out_cwl: Mapping[str, Process | None],
+    imports: set[str],
+) -> None:
+    """Connect application outputs through staging steps when configured."""
+    stage_out_counters = {"Directory": 0, "File": 0}
     for output in workflow.outputs:
         type_string = type_to_string(output.type_)
-        _add_import(output.type_)
+        _add_type_imports(output.type_, imports)
         logger.info(f"* {workflow.id}/{output.id}: {type_string}")
 
-        assignable_type = get_assignable_type(
-            actual=output.type_, expected=Directory_or_File
-        )
+        assignable_type = get_assignable_type(actual=output.type_, expected=Directory_or_File)
 
         app.out.append(output.id)
 
@@ -302,13 +266,9 @@ def _build_orchestrator_workflow(  # noqa: C901
                 f"  {type_to_string(assignable_type)} type detected, creating a related '{stage_out_id}'..."
             )
 
-            url_type = replace_type_with_url(
-                source=output.type_, to_be_replaced=assignable_type
-            )
+            url_type = replace_type_with_url(source=output.type_, to_be_replaced=assignable_type)
 
-            logger.info(
-                f"  {type_to_string(output.type_)} converted to {type_to_string(url_type)}"
-            )
+            logger.info(f"  {type_to_string(output.type_)} converted to {type_to_string(url_type)}")
 
             workflow_step = WorkflowStep(
                 id=f"stage_out_{stage_out_counters[type_to_string(assignable_type)]}",
@@ -321,41 +281,14 @@ def _build_orchestrator_workflow(  # noqa: C901
 
             orchestrator.steps.append(workflow_step)
 
-            for stage_out_input in stage_out.inputs:
-                workflow_step.in_.append(
-                    WorkflowStepInput(
-                        id=stage_out_input.id,
-                        source=f"app/{output.id}"
-                        if is_directory_compatible_type(stage_out_input.type_)
-                        else stage_out_input.id,
-                    )
-                )
-
-                if is_directory_compatible_type(stage_out_input.type_):
-                    if is_array_type(url_type):
-                        logger.info(
-                            f"  Array detected, scatter required for {stage_out_input.id}:app/{output.id}"
-                        )
-
-                        workflow_step.scatter = stage_out_input.id
-                        workflow_step.scatterMethod = "dotproduct"
-
-                        add_feature_requirement(
-                            requirement=ScatterFeatureRequirement(),
-                            workflow=orchestrator,
-                        )
-
-                    if is_nullable(url_type):
-                        logger.info(
-                            f"  Nullable detected, 'when' required for {stage_out_input.id}:app/{output.id}"
-                        )
-
-                        workflow_step.when = f"$(inputs.{stage_out_input.id} !== null)"
-
-                        add_feature_requirement(
-                            requirement=InlineJavascriptRequirement(),
-                            workflow=orchestrator,
-                        )
+            _connect_staging_inputs(
+                orchestrator,
+                workflow_step,
+                stage_out,
+                f"app/{output.id}",
+                url_type,
+                is_directory_compatible_type,
+            )
 
             logger.info(
                 f"  Connecting 'app/{output.id}' to 'stage_out_{stage_out_counters[type_to_string(assignable_type)]}' output..."
@@ -421,10 +354,67 @@ def _build_orchestrator_workflow(  # noqa: C901
                 ]
             )
 
+
+def _build_orchestrator_workflow(
+    directory_stage_in: Process | None,
+    file_stage_in: Process | None,
+    workflow: Process,
+    directory_stage_out: Process | None,
+    file_stage_out: Process | None,
+) -> Process:
+    """Build a workflow connecting the application and its staging processes."""
+    start_time = time.time()
+    logger.info("Building the CWL Orchestrator Workflow...")
+
+    imports = {URL_SCHEMA}
+
+    orchestrator = Workflow(
+        id="main",
+        label=f"{workflow.class_} {workflow.id} orchestrator",
+        doc=f"This Workflow is used to orchestrate the {workflow.class_} {workflow.id}",
+        requirements=[SubworkflowFeatureRequirement()],
+        inputs=[],
+        outputs=[],
+        steps=[],
+    )
+
+    # copy all the SchemaDefRequirement required types from the original workflow
+    if isinstance(workflow, Workflow) and workflow.requirements:
+        schema_requirement = get_feature_requirement(SchemaDefRequirement, workflow)
+        if schema_requirement:
+            add_feature_requirement(copy_schema_def_requirement(schema_requirement), orchestrator)
+
+    app = WorkflowStep(
+        id="app",
+        in_=[],
+        out=[],
+        run=f"#{workflow.id}",
+        label=workflow.label,
+        doc=workflow.doc,
+    )
+
+    # inputs
+
+    logger.info(f"Analyzing {workflow.id} inputs...")
+
+    stage_in_cwl = {"Directory": directory_stage_in, "File": file_stage_in}
+
+    stage_out_cwl = {"Directory": directory_stage_out, "File": file_stage_out}
+
+    _connect_inputs(workflow, orchestrator, app, stage_in_cwl, imports)
+
+    # once all '{type}_stage_in_{index}' are defined, we can now append the 'app' step
+
+    orchestrator.steps.append(app)
+
+    # outputs
+
+    logger.info(f"Analyzing {workflow.id} outputs...")
+
+    _connect_outputs(workflow, orchestrator, app, stage_out_cwl, imports)
+
     if not add_feature_requirement(
-        requirement=SchemaDefRequirement(
-            types=[{"$import": import_} for import_ in set(imports)]
-        ),
+        requirement=SchemaDefRequirement(types=[{"$import": import_} for import_ in set(imports)]),
         workflow=orchestrator,
     ):
         logger.debug("Merging existing feature requirements")
@@ -433,9 +423,7 @@ def _build_orchestrator_workflow(  # noqa: C901
             merge_schema_def_imports(schema_requirement, imports)
 
     end_time = time.time()
-    logger.success(
-        f"Orchestrator Workflow built in {end_time - start_time:.4f} seconds"
-    )
+    logger.success(f"Orchestrator Workflow built in {end_time - start_time:.4f} seconds")
 
     return orchestrator
 

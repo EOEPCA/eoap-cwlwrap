@@ -111,9 +111,7 @@ def cwlwrap(context: TranspilerContext, options: CwlWrapOptions) -> None:
     directory_stage_in: TranspilerContext | None = _resolve_stage_context(
         context, options.directory_stage_in
     )
-    file_stage_in: TranspilerContext | None = _resolve_stage_context(
-        context, options.file_stage_in
-    )
+    file_stage_in: TranspilerContext | None = _resolve_stage_context(context, options.file_stage_in)
     directory_stage_out: TranspilerContext | None = _resolve_stage_context(
         context, options.directory_stage_out
     )

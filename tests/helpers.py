@@ -51,7 +51,9 @@ class TestCWL(unittest.TestCase):
 
     def setUp(self) -> None:
         self.output = ".wrapped.cwl"
-        self.base_url = "https://raw.githubusercontent.com/eoap/application-package-patterns/refs/heads/develop"
+        self.base_url = (
+            "https://raw.githubusercontent.com/eoap/application-package-patterns/refs/heads/develop"
+        )
         self.entrypoint = ""
 
     def tearDown(self) -> None:
