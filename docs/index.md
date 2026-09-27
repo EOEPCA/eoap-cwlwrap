@@ -1,5 +1,14 @@
 # EOAP CWL Wrap
 
+!!! warning "CLI migration since version 0.32.0"
+
+    Since version **0.32.0**, EOAP CWL Wrap is a **Transpiler Mate plugin**.
+    Install `transpiler-mate-runtime` alongside `eoap-cwlwrap` and invoke
+    `transpiler-mate cwlwrap` instead of `eoap-cwlwrap`. Pass the application
+    workflow as the positional `SOURCE` argument instead of `--workflow`.
+    The legacy `--workflow-id` and `--stage-out` options are no longer supported;
+    use a `#<process-id>` fragment and `--directory-stage-out`, respectively.
+
 `eoap-cwlwrap` composes an EO Application Package CWL `Workflow` with stage-in and stage-out processes, then packs the result into a single self-contained CWL document.
 
 Use these docs by intent:
@@ -20,15 +29,15 @@ The documentation is organized with the [Diataxis](https://diataxis.fr/) approac
 Install the package:
 
 ```bash
-pip install eoap-cwlwrap
+pip install transpiler-mate-runtime eoap-cwlwrap
 ```
 
 Build a wrapped workflow:
 
 ```bash
-eoap-cwlwrap \
+transpiler-mate cwlwrap \
   --directory-stage-in ./stage-in.cwl \
-  --workflow ./workflow.cwl#water-bodies-detection \
+  ./workflow.cwl#water-bodies-detection \
   --directory-stage-out ./stage-out.cwl \
   --output ./wrapped.cwl
 ```
