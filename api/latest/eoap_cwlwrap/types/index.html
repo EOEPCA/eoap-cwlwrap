@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Fabrice Brito, Simone Tripodi" /><link rel="canonical" href="https://eoepca.github.io/eoap-cwlwrap/api/latest/eoap_cwlwrap/types/" />
+      <link rel="shortcut icon" href="../../../../img/favicon.ico" />
+    <title>eoap_cwlwrap.types - EOAP CWL Wrap</title>
+    <link rel="stylesheet" href="../../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../../../../styles/css/app.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "eoap_cwlwrap.types";
+        var mkdocs_page_input_path = "api/latest/eoap_cwlwrap/types.md";
+        var mkdocs_page_url = "/eoap-cwlwrap/api/latest/eoap_cwlwrap/types/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../../..">
+          <img src="../../../../imgs/icon-eoap.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/wrap-pattern-1/">Wrap a Pattern 1 workflow</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">How-to guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../how-to-guides/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../how-to-guides/install/">Install EOAP CWL Wrap</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../how-to-guides/build-a-wrapper/">Build with the CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../how-to-guides/use-python-api/">Build with Python</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../reference/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../reference/cli/">CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../reference/component-contracts/">CWL component contracts</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../reference/dependencies/">Runtime dependencies</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" >API</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../">eoap_cwlwrap</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../plugin/">eoap_cwlwrap.plugin</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../requirements/">eoap_cwlwrap.requirements</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">eoap_cwlwrap.types</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#eoap_cwlwrap.types.Directory_or_File">Directory_or_File</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#eoap_cwlwrap.types.URL_SCHEMA">URL_SCHEMA</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#eoap_cwlwrap.types.URL_TYPE">URL_TYPE</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#eoap_cwlwrap.types.is_nullable">is_nullable</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#eoap_cwlwrap.types.is_type_assignable_to">is_type_assignable_to</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#eoap_cwlwrap.types.get_assignable_type">get_assignable_type</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#eoap_cwlwrap.types.is_directory_compatible_type">is_directory_compatible_type</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#eoap_cwlwrap.types.is_file_compatible_type">is_file_compatible_type</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#eoap_cwlwrap.types.is_directory_or_file_compatible_type">is_directory_or_file_compatible_type</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#eoap_cwlwrap.types.is_uri_compatible_type">is_uri_compatible_type</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#eoap_cwlwrap.types.is_array_type">is_array_type</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#eoap_cwlwrap.types.replace_type_with_url">replace_type_with_url</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#eoap_cwlwrap.types.replace_directory_with_url">replace_directory_with_url</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#eoap_cwlwrap.types.type_to_string">type_to_string</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#eoap_cwlwrap.types.validate_directory_stage_in">validate_directory_stage_in</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#eoap_cwlwrap.types.validate_file_stage_in">validate_file_stage_in</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#eoap_cwlwrap.types.validate_directory_stage_out">validate_directory_stage_out</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#eoap_cwlwrap.types.validate_file_stage_out">validate_file_stage_out</a>
+    </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Explanation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../explanation/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../explanation/wrapping-model/">How wrapping works</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../..">EOAP CWL Wrap</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Reference</li>
+          <li class="breadcrumb-item">API</li>
+      <li class="breadcrumb-item active">eoap_cwlwrap.types</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/EOEPCA/eoap-cwlwrap/edit/master/docs/api/latest/eoap_cwlwrap/types.md">Edit on EOEPCA/eoap-cwlwrap</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="eoap_cwlwraptypes"><code>eoap_cwlwrap.types</code></h1>
+<p>Type utilities and validators used by the workflow wrapper.</p>
+<p>Compatibility helpers inspect CWL type names, unions, and array item types.
+Conversion helpers replace matching types with the EOAP URI type identified by
+<code>URL_TYPE</code>, preserving union members and array structure.</p>
+<p>Stage-in validators require exactly one URI-compatible input and exactly one
+output compatible with the requested <code>Directory</code> or <code>File</code> type. Stage-out
+validators require exactly one compatible <code>Directory</code> or <code>File</code> input and
+exactly one URI-compatible output. Invalid staging contracts raise
+<code>transpiler_mate.api.PluginFailureError</code>.</p>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+        <p>Inspect, convert, and validate CWL parameter types for staging.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="eoap_cwlwrap.types.Directory_or_File" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">Directory_or_File</span> <span class="o">=</span> <span class="n">Directory</span> <span class="o">|</span> <span class="n">File</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>A Directory Workflow or a File union type.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="eoap_cwlwrap.types.URL_SCHEMA" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">URL_SCHEMA</span> <span class="o">=</span> <span class="s1">'https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml'</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>The URL of the string-format schema</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="eoap_cwlwrap.types.URL_TYPE" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">URL_TYPE</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">URL_SCHEMA</span><span class="si">}</span><span class="s1">#URI'</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>The fully qualified name URI CWL type</p>
+
+    </div>
+
+</div>
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="eoap_cwlwrap.types.is_nullable" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">is_nullable</span><span class="p">(</span><span class="n">typ</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Detects if the input type can be nullable.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>typ</code></b>
+                  (<code><span title="typing.Any">Any</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Any CWL type.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="bool">bool</span></code>
+              –
+              <div class="doc-md-description">
+                <p>True if the input type can be nullable, False otherwise.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="eoap_cwlwrap.types.is_type_assignable_to" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">is_type_assignable_to</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Detects if the actual type can be assignable to the expected type.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>actual</code></b>
+                  (<code><span title="typing.Any">Any</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Any CWL type.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>expected</code></b>
+                  (<code><span title="typing.Any">Any</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Any CWL type.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="bool">bool</span></code>
+              –
+              <div class="doc-md-description">
+                <p>True if the actual type can be assigned to the expected type, False otherwise.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="eoap_cwlwrap.types.get_assignable_type" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_assignable_type</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="eoap_cwlwrap.types.is_directory_compatible_type" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">is_directory_compatible_type</span><span class="p">(</span><span class="n">typ</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Detects if the actual type can be assignable to <code>Directory</code> type.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>typ</code></b>
+                  (<code><span title="typing.Any">Any</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Any CWL type.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="bool">bool</span></code>
+              –
+              <div class="doc-md-description">
+                <p>True if the input type can be assigned to <code>Directory</code>, False otherwise.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="eoap_cwlwrap.types.is_file_compatible_type" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">is_file_compatible_type</span><span class="p">(</span><span class="n">typ</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Detects if the actual type can be assignable to <code>File</code> type.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>typ</code></b>
+                  (<code><span title="typing.Any">Any</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Any CWL type.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="bool">bool</span></code>
+              –
+              <div class="doc-md-description">
+                <p>True if the input type can be assigned to <code>File</code>, False otherwise.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="eoap_cwlwrap.types.is_directory_or_file_compatible_type" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">is_directory_or_file_compatible_type</span><span class="p">(</span><span class="n">typ</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Detects if the actual type can be assignable to <code>Directory</code> or <code>File</code> types.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>typ</code></b>
+                  (<code><span title="typing.Any">Any</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Any CWL type.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="bool">bool</span></code>
+              –
+              <div class="doc-md-description">
+                <p>True if the input type can be assigned to <code>Directory</code> or <code>File</code>, False otherwise.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="eoap_cwlwrap.types.is_uri_compatible_type" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">is_uri_compatible_type</span><span class="p">(</span><span class="n">typ</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Detects if the actual type can be assignable to <code>https://raw.githubusercontent.com/eoap/schemas/refs/heads/main/string_format.yaml#URI</code> type.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>typ</code></b>
+                  (<code><span title="typing.Any">Any</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Any CWL type.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="bool">bool</span></code>
+              –
+              <div class="doc-md-description">
+                <p>True if the input type can be assigned to the EOAP URI type, False otherwise.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="eoap_cwlwrap.types.is_array_type" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">is_array_type</span><span class="p">(</span><span class="n">typ</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Detects if the actual type can be assignable to <code>array</code> type.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>typ</code></b>
+                  (<code><span title="typing.Any">Any</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Any CWL type.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="bool">bool</span></code>
+              –
+              <div class="doc-md-description">
+                <p>True if the input type can be assigned to an array type, False otherwise.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="eoap_cwlwrap.types.replace_type_with_url" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">replace_type_with_url</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">to_be_replaced</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Replace matching CWL types recursively with the EOAP URI type.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>source</code></b>
+                  (<code><span title="typing.Any">Any</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Any CWL type.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>to_be_replaced</code></b>
+                  (<code><span title="typing.Any">Any</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>The CWL type that has to be replaced.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="typing.Any">Any</span></code>
+              –
+              <div class="doc-md-description">
+                <p>The new type.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="eoap_cwlwrap.types.replace_directory_with_url" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">replace_directory_with_url</span><span class="p">(</span><span class="n">typ</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Deep replaces the <code>Directory</code> type in the source type with the <code>https://raw.githubusercontent.com/eoap/schemas/refs/heads/main/string_format.yaml#URI</code> type.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>typ</code></b>
+                  (<code><span title="typing.Any">Any</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Any CWL type.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="typing.Any">Any</span></code>
+              –
+              <div class="doc-md-description">
+                <p>The new type.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="eoap_cwlwrap.types.type_to_string" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">type_to_string</span><span class="p">(</span><span class="n">typ</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Serializes a CWL type to a human-readable string.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>typ</code></b>
+                  (<code><span title="typing.Any">Any</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Any CWL type.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="str">str</span></code>
+              –
+              <div class="doc-md-description">
+                <p>The human-readable string representing the input CWL type.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="eoap_cwlwrap.types.validate_directory_stage_in" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">validate_directory_stage_in</span><span class="p">(</span><span class="n">directory_stage_in</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Checks if a CWL stage-in document is a <code>URI</code>-compatible input and <code>Directory</code>-compatible output <code>Process</code>.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>directory_stage_in</code></b>
+                  (<code><span title="cwl_utils.parser.Process">Process</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Any CWL <code>Process</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code>None</code>
+              –
+              <div class="doc-md-description">
+                <p>None.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="eoap_cwlwrap.types.validate_file_stage_in" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">validate_file_stage_in</span><span class="p">(</span><span class="n">file_stage_in</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Checks if a CWL stage-in document is a <code>URI</code>-compatible input and <code>File</code>-compatible output <code>Process</code>.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>file_stage_in</code></b>
+                  (<code><span title="cwl_utils.parser.Process">Process</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Any CWL <code>Process</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code>None</code>
+              –
+              <div class="doc-md-description">
+                <p>None.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="eoap_cwlwrap.types.validate_directory_stage_out" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">validate_directory_stage_out</span><span class="p">(</span><span class="n">directory_stage_out</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Checks if a CWL stage-out document is a <code>Directory</code>-compatible input and <code>URI</code>-compatible output <code>Process</code>.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>directory_stage_out</code></b>
+                  (<code><span title="cwl_utils.parser.Process">Process</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Any CWL <code>Process</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code>None</code>
+              –
+              <div class="doc-md-description">
+                <p>None.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="eoap_cwlwrap.types.validate_file_stage_out" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">validate_file_stage_out</span><span class="p">(</span><span class="n">file_stage_out</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Checks if a CWL stage-out document is a <code>File</code>-compatible input and <code>URI</code>-compatible output <code>Process</code>.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>file_stage_out</code></b>
+                  (<code><span title="cwl_utils.parser.Process">Process</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Any CWL <code>Process</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code>None</code>
+              –
+              <div class="doc-md-description">
+                <p>None.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../requirements/" class="btn btn-neutral float-left" title="eoap_cwlwrap.requirements"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../../../explanation/" class="btn btn-neutral float-right" title="Overview">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p><a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/license-Apache%20License%202.0-blue"" alt="Apache License, Version 2.0" /></a></p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/EOEPCA/eoap-cwlwrap/" class="fa fa-code-fork" style="color: #fcfcfc"> EOEPCA/eoap-cwlwrap</a>
+        </span>
+    
+    
+      <span><a href="../requirements/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../../../explanation/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../../..";</script>
+    <script src="../../../../js/theme_extra.js"></script>
+    <script src="../../../../js/theme.js"></script>
+      <script src="../../../../javascripts/config.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
