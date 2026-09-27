@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
+"""Inspect, convert, and validate CWL parameter types for staging."""
+
 from types import UnionType
 from typing import Any, get_args, get_origin
 
@@ -26,6 +27,7 @@ from cwl_utils.parser.cwl_v1_2 import (
     OutputArraySchema,
 )
 from loguru import logger
+from transpiler_mate.api import PluginFailureError
 
 Directory_or_File = Directory | File
 """A Directory Workflow or a File union type."""
@@ -68,11 +70,7 @@ def is_type_assignable_to(actual: Any, expected: Any) -> bool:
 
     # Case 0: Direct string reference
     if isinstance(actual, str):
-        return (
-            expected == actual
-            if isinstance(expected, str)
-            else actual == expected.__name__
-        )
+        return expected == actual if isinstance(expected, str) else actual == expected.__name__
 
     # Case 1: Direct match with Directory class
     if actual == expected or isinstance(actual, expected):
@@ -85,10 +83,6 @@ def is_type_assignable_to(actual: Any, expected: Any) -> bool:
     # Case 3: Array type (recursive item type check)
     if hasattr(actual, "items"):
         return is_type_assignable_to(actual=actual.items, expected=expected)
-
-    # Case 4: Possibly a CWLType or raw class — extract and test
-    if isinstance(actual, expected):
-        return issubclass(actual, expected)
 
     return False
 
@@ -173,9 +167,30 @@ def is_array_type(typ: Any) -> bool:
     return hasattr(typ, "items")
 
 
+def _replace_array_items(
+    source: InputArraySchema
+    | CommandInputArraySchema
+    | OutputArraySchema
+    | CommandOutputArraySchema,
+    to_be_replaced: object,
+) -> InputArraySchema | OutputArraySchema:
+    """Copy an array with converted items while preserving its schema direction."""
+    array_schema = (
+        InputArraySchema
+        if isinstance(source, (InputArraySchema, CommandInputArraySchema))
+        else OutputArraySchema
+    )
+    return array_schema(
+        extension_fields=source.extension_fields,
+        items=replace_type_with_url(source=source.items, to_be_replaced=to_be_replaced),
+        type_=source.type_,
+        label=source.label,
+        doc=source.doc,
+    )
+
+
 def replace_type_with_url(source: Any, to_be_replaced: Any) -> Any:
-    """
-    Deep replaces any CWL type in the source type with the `https://raw.githubusercontent.com/eoap/schemas/refs/heads/main/string_format.yaml#URI` type.
+    """Replace matching CWL types recursively with the EOAP URI type.
 
     Args:
         source: Any CWL type.
@@ -185,52 +200,31 @@ def replace_type_with_url(source: Any, to_be_replaced: Any) -> Any:
         The new type.
     """
     if get_origin(to_be_replaced) is UnionType:
-        for typ in get_args(to_be_replaced):
-            if is_type_assignable_to(source, typ):
-                return replace_type_with_url(source=source, to_be_replaced=typ)
-        return None
+        matched_type = get_assignable_type(source, to_be_replaced)
+        return (
+            None
+            if matched_type is None
+            else replace_type_with_url(source=source, to_be_replaced=matched_type)
+        )
 
-    # case 0: Direct match with class name
-    if isinstance(source, str) and (
-        isinstance(to_be_replaced, str)
-        and source == to_be_replaced
-        or source == to_be_replaced.__name__
-    ):
+    expected_name = to_be_replaced if isinstance(to_be_replaced, str) else to_be_replaced.__name__
+    if source in (expected_name, to_be_replaced):
         return URL_TYPE
-
-    # Case 1: Direct match with class
-    if source == to_be_replaced or isinstance(source, to_be_replaced):
+    if isinstance(to_be_replaced, type) and isinstance(source, to_be_replaced):
         return URL_TYPE
 
     # Union: list of types
     if isinstance(source, list):
         return [
-            replace_type_with_url(source=t, to_be_replaced=to_be_replaced)
-            for t in source
+            replace_type_with_url(source=member_type, to_be_replaced=to_be_replaced)
+            for member_type in source
         ]
 
-    # Array types
-    if isinstance(source, (InputArraySchema, CommandInputArraySchema)):
-        return InputArraySchema(
-            extension_fields=source.extension_fields,
-            items=replace_type_with_url(
-                source=source.items, to_be_replaced=to_be_replaced
-            ),
-            type_=source.type_,
-            label=source.label,
-            doc=source.doc,
-        )
-
-    if isinstance(source, (OutputArraySchema, CommandOutputArraySchema)):
-        return OutputArraySchema(
-            extension_fields=source.extension_fields,
-            items=replace_type_with_url(
-                source=source.items, to_be_replaced=to_be_replaced
-            ),
-            type_=source.type_,
-            label=source.label,
-            doc=source.doc,
-        )
+    if isinstance(
+        source,
+        (InputArraySchema, CommandInputArraySchema, OutputArraySchema, CommandOutputArraySchema),
+    ):
+        return _replace_array_items(source, to_be_replaced)
 
     # Return original type if no match
     return source
@@ -274,22 +268,11 @@ def type_to_string(typ: Any) -> str:
     if isinstance(typ, str):
         return typ
 
-    if hasattr(typ, "__name__"):
-        return str(typ.__name__)
-
-    if hasattr(typ, "type_"):
-        return str(typ.type_)
-
-    # last hope to follow back
-    return str(type)
+    return str(getattr(typ, "__name__", getattr(typ, "type_", type)))
 
 
 def _create_error_message(parameters: list[Any]) -> str:
-    return (
-        "no"
-        if len(parameters) == 0
-        else str([parameter.id for parameter in parameters])
-    )
+    return "no" if len(parameters) == 0 else str([parameter.id for parameter in parameters])
 
 
 # Validation methods
@@ -298,12 +281,10 @@ def _create_error_message(parameters: list[Any]) -> str:
 def _validate_stage_in(stage_in: Process, expected_output_type: Any) -> None:
     logger.info(f"Validating stage-in '{stage_in.id}'...")
 
-    url_inputs = list(
-        filter(lambda input: is_uri_compatible_type(input.type_), stage_in.inputs)
-    )
+    url_inputs = list(filter(lambda input: is_uri_compatible_type(input.type_), stage_in.inputs))
 
     if len(url_inputs) != 1:
-        sys.exit(
+        raise PluginFailureError(
             f"stage-in '{stage_in.id}' not valid, {_create_error_message(url_inputs)} URL-compatible input found, please specify one."
         )
 
@@ -315,7 +296,7 @@ def _validate_stage_in(stage_in: Process, expected_output_type: Any) -> None:
     )
 
     if len(directory_outputs) != 1:
-        sys.exit(
+        raise PluginFailureError(
             f"stage-in '{stage_in.id}' not valid, {_create_error_message(directory_outputs)} Directory-compatible output found, please specify one."
         )
 
@@ -359,7 +340,7 @@ def _validate_stage_out(stage_out: Process, expected_intput_type: Any) -> None:
     )
 
     if len(file_inputs) != 1:
-        sys.exit(
+        raise PluginFailureError(
             f"stage-out '{stage_out.id}' not valid, {_create_error_message(file_inputs)} {expected_intput_type}-compatible input found, please specify one."
         )
 
@@ -368,7 +349,7 @@ def _validate_stage_out(stage_out: Process, expected_intput_type: Any) -> None:
     )
 
     if len(url_outputs) != 1:
-        sys.exit(
+        raise PluginFailureError(
             f"file stage-out '{stage_out.id}' not valid, {_create_error_message(url_outputs)} URL-compatible output found, please specify one."
         )
 

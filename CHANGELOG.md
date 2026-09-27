@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
-## [0.32.0] - 2026-07-28
+## [0.32.0] - 2026-09-27
 
 ### Added
 
@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Improve type annotations and internal code quality by addressing mypy, Ruff, and Bandit findings, without changing public APIs or runtime behavior.
 - Bump `click` dependency to `8.4.2`.
 - Bump `cwl-loader` dependency to `0.24.0`.
 - Bump `cwl-utils` dependency to `0.42`.
@@ -167,7 +168,8 @@ the project history up to `v0.26.0`.
   `SubworkflowFeatureRequirement`.
 - Fix documentation, generated diagrams, CI configuration, and container builds.
 
-[Unreleased]: https://github.com/EOEPCA/eoap-cwlwrap/compare/v0.31.0...HEAD
+[Unreleased]: https://github.com/EOEPCA/eoap-cwlwrap/compare/v0.32.0...HEAD
+[0.32.0]: https://github.com/EOEPCA/eoap-cwlwrap/compare/v0.31.0...v0.32.0
 [0.31.0]: https://github.com/EOEPCA/eoap-cwlwrap/compare/v0.30.0...v0.31.0
 [0.30.0]: https://github.com/EOEPCA/eoap-cwlwrap/compare/v0.29.0...v0.30.0
 [0.29.0]: https://github.com/EOEPCA/eoap-cwlwrap/compare/v0.28.0...v0.29.0

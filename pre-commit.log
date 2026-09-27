@@ -1,0 +1,293 @@
+mypy (strict type checking)..............................................[41mFailed[m
+[2m- hook id: mypy[m
+[2m- exit code: 1[m
+
+tests/helpers.py:21: [1m[31merror:(B[m Cannot find implementation or library stub for
+module named (B[m[1m"cwltool.context"(B[m  (B[m[33m[import-not-found](B[m
+[2;10m    from cwltool.context import LoadingContext, RuntimeContext(B[m
+[31m    ^(B[m
+tests/helpers.py:22: [1m[31merror:(B[m Cannot find implementation or library stub for
+module named (B[m[1m"cwltool.executors"(B[m  (B[m[33m[import-not-found](B[m
+[2;10m    from cwltool.executors import NoopJobExecutor(B[m
+[31m    ^(B[m
+tests/helpers.py:23: [1m[31merror:(B[m Cannot find implementation or library stub for
+module named (B[m[1m"cwltool.main"(B[m  (B[m[33m[import-not-found](B[m
+[2;10m    from cwltool.main import main as cwlmain(B[m
+[31m    ^(B[m
+tests/helpers.py:24: [1m[31merror:(B[m Skipping analyzing
+(B[m[1m"transpiler_mate.runtime.context_resolver"(B[m: module is installed, but missing
+library stubs or py.typed marker  (B[m[33m[import-untyped](B[m
+[2;10m    from transpiler_mate.runtime.context_resolver import DefaultTranspiler...(B[m
+[31m    ^(B[m
+tests/helpers.py:24: [34mnote:(B[m See [4mhttps://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports(B[m(B[m
+tests/helpers.py: [34mnote:(B[m In member (B[m[1m"validate_cwl_file"(B[m of class (B[m[1m"TestCWL"(B[m:(B[m
+tests/helpers.py:50: [1m[31merror:(B[m Returning Any from function declared to return
+(B[m[1m"int"(B[m  (B[m[33m[no-any-return](B[m
+[2;10m            return result(B[m
+[31m            ^~~~~~~~~~~~~(B[m
+[1m[31mFound 5 errors in 1 file (checked 20 source files)(B[m
+
+ruff (format)............................................................[41mFailed[m
+[2m- hook id: ruff-format[m
+[2m- exit code: 1[m
+
+[1m[91munformatted:[0m[1m File would be reformatted[0m
+   [1m[94m--> [0msrc/eoap_cwlwrap/__init__.py:122:37
+[1m[94m   [0m [1m[94m|[0m
+[1m[94m121[0m [1m[94m|[0m         if schema_requirement:
+[1m[94m   [0m [1m[31m-[0m [31m            add_feature_requirement(
+[0m[1m[94m   [0m [1m[31m-[0m [31m                copy_schema_def_requirement(schema_requirement), orchestrator
+[0m[1m[94m   [0m [1m[31m-[0m [31m            )
+[0m[1m[94m122[0m [1m[32m+[0m [32m            add_feature_requirement(copy_schema_def_requirement(schema_requirement), orchestrator)
+[0m[1m[94m123[0m [1m[94m|[0m
+--------------------------------------------------------------------------------
+[1m[94m150[0m [1m[94m|[0m
+[1m[94m   [0m [1m[31m-[0m [31m        assignable_type = [0m[1m[31mget_assignable_type([0m[0m[31m
+[0m[1m[94m   [0m [1m[31m-[0m [1m[31m            actual=input.type_,[0m[0m[31m [0m[1m[31mexpected=Directory_or_File[0m[0m[31m
+[0m[1m[94m   [0m [1m[31m-[0m [1m[31m        )[0m[0m[31m
+[0m[1m[94m151[0m [1m[32m+[0m [32m        assignable_type = [0m[1m[32mget_assignable_type(actual=input.type_,[0m[0m[32m [0m[1m[32mexpected=Directory_or_File)[0m[0m[32m
+[0m[1m[94m152[0m [1m[94m|[0m
+--------------------------------------------------------------------------------
+[1m[94m167[0m [1m[94m|[0m
+[1m[94m   [0m [1m[31m-[0m [31m            [0m[1m[31mlogger.info([0m[0m[31m
+[0m[1m[94m   [0m [1m[31m-[0m [1m[31m                f"[0m[0m[31m  Converting {type_to_string(input.type_)} to URL-compatible [0m[1m[31mtype..."[0m[0m[31m
+[0m[1m[94m   [0m [1m[31m-[0m [1m[31m            )[0m[0m[31m
+[0m[1m[94m168[0m [1m[32m+[0m [32m            [0m[1m[32mlogger.info(f"[0m[0m[32m  Converting {type_to_string(input.type_)} to URL-compatible [0m[1m[32mtype...")[0m[0m[32m
+[0m[1m[94m169[0m [1m[94m|[0m
+--------------------------------------------------------------------------------
+[1m[94m228[0m [1m[94m|[0m                 filter(
+[1m[94m   [0m [1m[31m-[0m [31m                    lambda output: [0m[1m[31mis_type_assignable_to([0m[0m[31m
+[0m[1m[94m   [0m [1m[31m-[0m [1m[31m                        output.type_,[0m[0m[31m [0m[1m[31mDirectory_or_File[0m[0m[31m
+[0m[1m[94m   [0m [1m[31m-[0m [1m[31m                    ),[0m[0m[31m
+[0m[1m[94m229[0m [1m[32m+[0m [32m                    lambda output: [0m[1m[32mis_type_assignable_to(output.type_,[0m[0m[32m [0m[1m[32mDirectory_or_File),[0m[0m[32m
+[0m[1m[94m230[0m [1m[94m|[0m                     stage_in.outputs,
+--------------------------------------------------------------------------------
+[1m[94m277[0m [1m[94m|[0m
+[1m[94m   [0m [1m[31m-[0m [31m        assignable_type = [0m[1m[31mget_assignable_type([0m[0m[31m
+[0m[1m[94m   [0m [1m[31m-[0m [1m[31m            actual=output.type_,[0m[0m[31m [0m[1m[31mexpected=Directory_or_File[0m[0m[31m
+[0m[1m[94m   [0m [1m[31m-[0m [1m[31m        )[0m[0m[31m
+[0m[1m[94m278[0m [1m[32m+[0m [32m        assignable_type = [0m[1m[32mget_assignable_type(actual=output.type_,[0m[0m[32m [0m[1m[32mexpected=Directory_or_File)[0m[0m[32m
+[0m[1m[94m279[0m [1m[94m|[0m
+--------------------------------------------------------------------------------
+[1m[94m294[0m [1m[94m|[0m
+[1m[94m   [0m [1m[31m-[0m [31m            url_type = [0m[1m[31mreplace_type_with_url([0m[0m[31m
+[0m[1m[94m   [0m [1m[31m-[0m [1m[31m                source=output.type_,[0m[0m[31m [0m[1m[31mto_be_replaced=assignable_type[0m[0m[31m
+[0m[1m[94m   [0m [1m[31m-[0m [1m[31m            )[0m[0m[31m
+[0m[1m[94m295[0m [1m[32m+[0m [32m            url_type = [0m[1m[32mreplace_type_with_url(source=output.type_,[0m[0m[32m [0m[1m[32mto_be_replaced=assignable_type)[0m[0m[32m
+[0m[1m[94m296[0m [1m[94m|[0m
+[1m[94m   [0m [1m[31m-[0m [31m            [0m[1m[31mlogger.info([0m[0m[31m
+[0m[1m[94m   [0m [1m[31m-[0m [1m[31m                f"[0m[0m[31m  {type_to_string(output.type_)} converted to [0m[1m[31m{type_to_string(url_type)}"[0m[0m[31m
+[0m[1m[94m   [0m [1m[31m-[0m [1m[31m            )[0m[0m[31m
+[0m[1m[94m297[0m [1m[32m+[0m [32m            [0m[1m[32mlogger.info(f"[0m[0m[32m  {type_to_string(output.type_)} converted to [0m[1m[32m{type_to_string(url_type)}")[0m[0m[32m
+[0m[1m[94m298[0m [1m[94m|[0m
+--------------------------------------------------------------------------------
+[1m[94m410[0m [1m[94m|[0m     if not add_feature_requirement(
+[1m[94m   [0m [1m[31m-[0m [31m        [0m[1m[31mrequirement=SchemaDefRequirement([0m[0m[31m
+[0m[1m[94m   [0m [1m[31m-[0m [1m[31m            types=[{"$import":[0m[0m[31m import_} for import_ in [0m[1m[31mset(imports)][0m[0m[31m
+[0m[1m[94m   [0m [1m[31m-[0m [1m[31m        ),[0m[0m[31m
+[0m[1m[94m411[0m [1m[32m+[0m [32m        [0m[1m[32mrequirement=SchemaDefRequirement(types=[{"$import":[0m[0m[32m import_} for import_ in [0m[1m[32mset(imports)]),[0m[0m[32m
+[0m[1m[94m412[0m [1m[94m|[0m         workflow=orchestrator,
+--------------------------------------------------------------------------------
+[1m[94m419[0m [1m[94m|[0m     end_time = time.time()
+[1m[94m   [0m [1m[31m-[0m [31m    [0m[1m[31mlogger.success([0m[0m[31m
+[0m[1m[94m   [0m [1m[31m-[0m [1m[31m        f"Orchestrator[0m[0m[31m Workflow built in {end_time - start_time:.4f} [0m[1m[31mseconds"[0m[0m[31m
+[0m[1m[94m   [0m [1m[31m-[0m [1m[31m    )[0m[0m[31m
+[0m[1m[94m420[0m [1m[32m+[0m [32m    [0m[1m[32mlogger.success(f"Orchestrator[0m[0m[32m Workflow built in {end_time - start_time:.4f} [0m[1m[32mseconds")[0m[0m[32m
+[0m[1m[94m421[0m [1m[94m|[0m
+[1m[94m   [0m [1m[94m|[0m
+
+[1m[91munformatted:[0m[1m File would be reformatted[0m
+   [1m[94m--> [0msrc/eoap_cwlwrap/plugin.py:114:70
+[1m[94m   [0m [1m[94m|[0m
+[1m[94m113[0m [1m[94m|[0m     )
+[1m[94m   [0m [1m[31m-[0m [31m    file_stage_in: TranspilerContext | None = [0m[1m[31m_resolve_stage_context([0m[0m[31m
+[0m[1m[94m   [0m [1m[31m-[0m [1m[31m        context,[0m[0m[31m [0m[1m[31moptions.file_stage_in[0m[0m[31m
+[0m[1m[94m   [0m [1m[31m-[0m [1m[31m    )[0m[0m[31m
+[0m[1m[94m114[0m [1m[32m+[0m [32m    file_stage_in: TranspilerContext | None = [0m[1m[32m_resolve_stage_context(context,[0m[0m[32m [0m[1m[32moptions.file_stage_in)[0m[0m[32m
+[0m[1m[94m115[0m [1m[94m|[0m     directory_stage_out: TranspilerContext | None = _resolve_stage_context(
+[1m[94m   [0m [1m[94m|[0m
+
+[1m[91munformatted:[0m[1m File would be reformatted[0m
+  [1m[94m--> [0msrc/eoap_cwlwrap/requirements.py:82:38
+[1m[94m  [0m [1m[94m|[0m
+[1m[94m81[0m [1m[94m|[0m     return SchemaDefRequirement(
+[1m[94m  [0m [1m[31m-[0m [31m        types=list(requirement.types)[0m[31m
+[0m[1m[94m  [0m [1m[31m-[0m [1m[31m        [0m[0m[31mif isinstance(requirement.types, list)[0m[31m
+[0m[1m[94m  [0m [1m[31m-[0m [1m[31m        [0m[0m[31melse requirement.types,
+[0m[1m[94m82[0m [1m[32m+[0m [32m        types=list(requirement.types)[0m[1m[32m [0m[0m[32mif isinstance(requirement.types, list)[0m[1m[32m [0m[0m[32melse requirement.types,
+[0m[1m[94m83[0m [1m[94m|[0m         extension_fields=requirement.extension_fields,
+--------------------------------------------------------------------------------
+[1m[94m87[0m [1m[94m|[0m
+[1m[94m  [0m [1m[31m-[0m [31mdef [0m[1m[31mmerge_schema_def_imports([0m[0m[31m
+[0m[1m[94m  [0m [1m[31m-[0m [1m[31m    requirement:[0m[0m[31m SchemaDefRequirement, imports: [0m[1m[31mset[str][0m[0m[31m
+[0m[1m[94m  [0m [1m[31m-[0m [1m[31m)[0m[0m[31m -> None:
+[0m[1m[94m88[0m [1m[32m+[0m [32mdef [0m[1m[32mmerge_schema_def_imports(requirement:[0m[0m[32m SchemaDefRequirement, imports: [0m[1m[32mset[str])[0m[0m[32m -> None:
+[0m[1m[94m89[0m [1m[94m|[0m     if isinstance(requirement.types, list):
+[1m[94m  [0m [1m[94m|[0m
+
+[1m[91munformatted:[0m[1m File would be reformatted[0m
+   [1m[94m--> [0msrc/eoap_cwlwrap/types.py:71:16
+[1m[94m   [0m [1m[94m|[0m
+[1m[94m70 [0m [1m[94m|[0m     if isinstance(actual, str):
+[1m[94m   [0m [1m[31m-[0m [31m        return (
+[0m[1m[94m   [0m [1m[31m-[0m [31m            expected == actual
+[0m[1m[94m   [0m [1m[31m-[0m [31m            if isinstance(expected, str)
+[0m[1m[94m   [0m [1m[31m-[0m [31m            else actual == expected.__name__
+[0m[1m[94m   [0m [1m[31m-[0m [31m        )
+[0m[1m[94m71 [0m [1m[32m+[0m [32m        return expected == actual if isinstance(expected, str) else actual == expected.__name__
+[0m[1m[94m72 [0m [1m[94m|[0m
+--------------------------------------------------------------------------------
+[1m[94m202[0m [1m[94m|[0m     if isinstance(source, list):
+[1m[94m   [0m [1m[31m-[0m [31m        return [
+[0m[1m[94m   [0m [1m[31m-[0m [31m            replace_type_with_url(source=t, to_be_replaced=to_be_replaced)
+[0m[1m[94m   [0m [1m[31m-[0m [31m            for t in source
+[0m[1m[94m   [0m [1m[31m-[0m [31m        ]
+[0m[1m[94m203[0m [1m[32m+[0m [32m        return [replace_type_with_url(source=t, to_be_replaced=to_be_replaced) for t in source]
+[0m[1m[94m204[0m [1m[94m|[0m
+--------------------------------------------------------------------------------
+[1m[94m208[0m [1m[94m|[0m             extension_fields=source.extension_fields,
+[1m[94m   [0m [1m[31m-[0m [31m            items=replace_type_with_url(
+[0m[1m[94m   [0m [1m[31m-[0m [31m                source=source.items, to_be_replaced=to_be_replaced
+[0m[1m[94m   [0m [1m[31m-[0m [31m            ),
+[0m[1m[94m209[0m [1m[32m+[0m [32m            items=replace_type_with_url(source=source.items, to_be_replaced=to_be_replaced),
+[0m[1m[94m210[0m [1m[94m|[0m             type_=source.type_,
+--------------------------------------------------------------------------------
+[1m[94m217[0m [1m[94m|[0m             extension_fields=source.extension_fields,
+[1m[94m   [0m [1m[31m-[0m [31m            items=replace_type_with_url(
+[0m[1m[94m   [0m [1m[31m-[0m [31m                source=source.items, to_be_replaced=to_be_replaced
+[0m[1m[94m   [0m [1m[31m-[0m [31m            ),
+[0m[1m[94m218[0m [1m[32m+[0m [32m            items=replace_type_with_url(source=source.items, to_be_replaced=to_be_replaced),
+[0m[1m[94m219[0m [1m[94m|[0m             type_=source.type_,
+--------------------------------------------------------------------------------
+[1m[94m276[0m [1m[94m|[0m def _create_error_message(parameters: list[Any]) -> str:
+[1m[94m   [0m [1m[31m-[0m [31m    return (
+[0m[1m[94m   [0m [1m[31m-[0m [31m        "no"
+[0m[1m[94m   [0m [1m[31m-[0m [31m        if len(parameters) == 0
+[0m[1m[94m   [0m [1m[31m-[0m [31m        else str([parameter.id for parameter in parameters])
+[0m[1m[94m   [0m [1m[31m-[0m [31m    )
+[0m[1m[94m277[0m [1m[32m+[0m [32m    return "no" if len(parameters) == 0 else str([parameter.id for parameter in parameters])
+[0m[1m[94m278[0m [1m[94m|[0m
+--------------------------------------------------------------------------------
+[1m[94m285[0m [1m[94m|[0m
+[1m[94m   [0m [1m[31m-[0m [31m    url_inputs = [0m[1m[31mlist([0m[0m[31m
+[0m[1m[94m   [0m [1m[31m-[0m [1m[31m        filter(lambda[0m[0m[31m input: is_uri_compatible_type(input.type_), [0m[1m[31mstage_in.inputs)[0m[0m[31m
+[0m[1m[94m   [0m [1m[31m-[0m [1m[31m    )[0m[0m[31m
+[0m[1m[94m286[0m [1m[32m+[0m [32m    url_inputs = [0m[1m[32mlist(filter(lambda[0m[0m[32m input: is_uri_compatible_type(input.type_), [0m[1m[32mstage_in.inputs))[0m[0m[32m
+[0m[1m[94m287[0m [1m[94m|[0m
+[1m[94m   [0m [1m[94m|[0m
+
+[1m[91munformatted:[0m[1m File would be reformatted[0m
+  [1m[94m--> [0mtests/helpers.py:54:25
+[1m[94m  [0m [1m[94m|[0m
+[1m[94m53[0m [1m[94m|[0m         self.output = ".wrapped.cwl"
+[1m[94m  [0m [1m[31m-[0m [31m        self.base_url = [0m[31m"https://raw.githubusercontent.com/eoap/application-package-patterns/refs/heads/develop"
+[0m[1m[94m54[0m [1m[32m+[0m [32m        self.base_url = [0m[1m[32m([0m[0m[32m
+[0m[1m[94m55[0m [1m[32m+[0m [1m[32m            [0m[0m[32m"https://raw.githubusercontent.com/eoap/application-package-patterns/refs/heads/develop"
+[0m[1m[94m56[0m [1m[32m+[0m [1m[32m        )[0m[0m[32m
+[0m[1m[94m57[0m [1m[94m|[0m         self.entrypoint = ""
+[1m[94m  [0m [1m[94m|[0m
+
+[1m[91munformatted:[0m[1m File would be reformatted[0m
+  [1m[94m--> [0mtests/test_requirements.py:62:40
+[1m[94m  [0m [1m[94m|[0m
+[1m[94m61[0m [1m[94m|[0m         cores_max = DEFAULT_CORES_MAX + 2
+[1m[94m  [0m [1m[31m-[0m [31m        tool = [0m[1m[31mself._command_line_tool([0m[0m[31m
+[0m[1m[94m  [0m [1m[31m-[0m [1m[31m            ResourceRequirement(ramMax=ram_max,[0m[0m[31m [0m[1m[31mcoresMax=cores_max)[0m[0m[31m
+[0m[1m[94m  [0m [1m[31m-[0m [1m[31m        )[0m[0m[31m
+[0m[1m[94m62[0m [1m[32m+[0m [32m        tool = [0m[1m[32mself._command_line_tool(ResourceRequirement(ramMax=ram_max,[0m[0m[32m [0m[1m[32mcoresMax=cores_max))[0m[0m[32m
+[0m[1m[94m63[0m [1m[94m|[0m
+--------------------------------------------------------------------------------
+[1m[94m76[0m [1m[94m|[0m         cores_max = DEFAULT_CORES_MAX - 1
+[1m[94m  [0m [1m[31m-[0m [31m        tool = [0m[1m[31mself._command_line_tool([0m[0m[31m
+[0m[1m[94m  [0m [1m[31m-[0m [1m[31m            ResourceRequirement(ramMax=ram_max,[0m[0m[31m [0m[1m[31mcoresMax=cores_max)[0m[0m[31m
+[0m[1m[94m  [0m [1m[31m-[0m [1m[31m        )[0m[0m[31m
+[0m[1m[94m77[0m [1m[32m+[0m [32m        tool = [0m[1m[32mself._command_line_tool(ResourceRequirement(ramMax=ram_max,[0m[0m[32m [0m[1m[32mcoresMax=cores_max))[0m[0m[32m
+[0m[1m[94m78[0m [1m[94m|[0m
+[1m[94m  [0m [1m[94m|[0m
+
+6 files would be reformatted, 14 files already formatted
+
+ruff (check and McCabe complexity).......................................[41mFailed[m
+[2m- hook id: ruff[m
+[2m- exit code: 1[m
+
+[1m[91m]8;;https://docs.astral.sh/ruff/rules/too-many-statements\PLR0915]8;;\[0m[1m Too many statements (104 > 40)[0m
+  [1m[94m--> [0msrc/eoap_cwlwrap/__init__.py:87:5
+   [1m[94m|[0m
+[1m[94m87[0m [1m[94m|[0m def _build_orchestrator_workflow(  # noqa: C901
+   [1m[94m|[0m     [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1m[94m88[0m [1m[94m|[0m     directory_stage_in: Process | None,
+[1m[94m89[0m [1m[94m|[0m     file_stage_in: Process | None,
+   [1m[94m|[0m
+
+[1m[91m]8;;https://docs.astral.sh/ruff/rules/too-many-branches\PLR0912]8;;\[0m[1m Too many branches (24 > 10)[0m
+  [1m[94m--> [0msrc/eoap_cwlwrap/__init__.py:87:5
+   [1m[94m|[0m
+[1m[94m87[0m [1m[94m|[0m def _build_orchestrator_workflow(  # noqa: C901
+   [1m[94m|[0m     [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1m[94m88[0m [1m[94m|[0m     directory_stage_in: Process | None,
+[1m[94m89[0m [1m[94m|[0m     file_stage_in: Process | None,
+   [1m[94m|[0m
+
+[1m[91m]8;;https://docs.astral.sh/ruff/rules/too-many-return-statements\PLR0911]8;;\[0m[1m Too many return statements (7 > 6)[0m
+  [1m[94m--> [0msrc/eoap_cwlwrap/types.py:55:5
+   [1m[94m|[0m
+[1m[94m55[0m [1m[94m|[0m def is_type_assignable_to(actual: Any, expected: Any) -> bool:
+   [1m[94m|[0m     [1m[91m^^^^^^^^^^^^^^^^^^^^^[0m
+[1m[94m56[0m [1m[94m|[0m     """
+[1m[94m57[0m [1m[94m|[0m     Detects if the actual type can be assignable to the expected type.
+   [1m[94m|[0m
+
+[1m[91m]8;;https://docs.astral.sh/ruff/rules/complex-structure\C901]8;;\[0m[1m `replace_type_with_url` is too complex (9 > 7)[0m
+   [1m[94m--> [0msrc/eoap_cwlwrap/types.py:176:5
+    [1m[94m|[0m
+[1m[94m176[0m [1m[94m|[0m def replace_type_with_url(source: Any, to_be_replaced: Any) -> Any:
+    [1m[94m|[0m     [1m[91m^^^^^^^^^^^^^^^^^^^^^[0m
+[1m[94m177[0m [1m[94m|[0m     """
+[1m[94m178[0m [1m[94m|[0m     Deep replaces any CWL type in the source type with the `https://raw.githubusercontent.com/eoap/schemas/refs/heads/main/string_for[1m[94m…[0m
+    [1m[94m|[0m
+
+[1m[91m]8;;https://docs.astral.sh/ruff/rules/too-many-return-statements\PLR0911]8;;\[0m[1m Too many return statements (8 > 6)[0m
+   [1m[94m--> [0msrc/eoap_cwlwrap/types.py:176:5
+    [1m[94m|[0m
+[1m[94m176[0m [1m[94m|[0m def replace_type_with_url(source: Any, to_be_replaced: Any) -> Any:
+    [1m[94m|[0m     [1m[91m^^^^^^^^^^^^^^^^^^^^^[0m
+[1m[94m177[0m [1m[94m|[0m     """
+[1m[94m178[0m [1m[94m|[0m     Deep replaces any CWL type in the source type with the `https://raw.githubusercontent.com/eoap/schemas/refs/heads/main/string_for[1m[94m…[0m
+    [1m[94m|[0m
+
+[1m[91m]8;;https://docs.astral.sh/ruff/rules/parenthesize-chained-operators\RUF021]8;;\[0m [[1m[96m*[0m][1m Parenthesize `a and b` expressions when chaining `and` and `or` together, to make the precedence clear[0m
+   [1m[94m--> [0msrc/eoap_cwlwrap/types.py:195:9
+    [1m[94m|[0m
+[1m[94m193[0m [1m[94m|[0m       # case 0: Direct match with class name
+[1m[94m194[0m [1m[94m|[0m       if isinstance(source, str) and (
+[1m[94m195[0m [1m[94m|[0m [1m[91m/[0m         isinstance(to_be_replaced, str)
+[1m[94m196[0m [1m[94m|[0m [1m[91m|[0m         and source == to_be_replaced
+    [1m[94m|[0m [1m[91m|____________________________________^[0m
+[1m[94m197[0m [1m[94m|[0m           or source == to_be_replaced.__name__
+[1m[94m198[0m [1m[94m|[0m       ):
+    [1m[94m|[0m
+[1m[96mhelp[0m[1m: Parenthesize the `and` subexpression[0m
+[1m[94m   [0m [1m[94m|[0m
+[1m[94m194[0m [1m[94m|[0m     if isinstance(source, str) and (
+[1m[94m   [0m [1m[31m-[0m [31m        [0m[1m[31misinstance(to_be_replaced,[0m[0m[31m str)
+[0m[1m[94m   [0m [1m[31m-[0m [31m        and source == [0m[1m[31mto_be_replaced[0m[0m[31m
+[0m[1m[94m195[0m [1m[32m+[0m [32m        [0m[1m[32m(isinstance(to_be_replaced,[0m[0m[32m str)
+[0m[1m[94m196[0m [1m[32m+[0m [32m        and source == [0m[1m[32mto_be_replaced)[0m[0m[32m
+[0m[1m[94m197[0m [1m[94m|[0m         or source == to_be_replaced.__name__
+[1m[94m   [0m [1m[94m|[0m
+
+[1m[91m]8;;https://docs.astral.sh/ruff/rules/too-many-return-statements\PLR0911]8;;\[0m[1m Too many return statements (7 > 6)[0m
+   [1m[94m--> [0msrc/eoap_cwlwrap/types.py:255:5
+    [1m[94m|[0m
+[1m[94m255[0m [1m[94m|[0m def type_to_string(typ: Any) -> str:
+    [1m[94m|[0m     [1m[91m^^^^^^^^^^^^^^[0m
+[1m[94m256[0m [1m[94m|[0m     """
+[1m[94m257[0m [1m[94m|[0m     Serializes a CWL type to a human-readable string.
+    [1m[94m|[0m
+
+Found 7 errors.
+[[36m*[0m] 1 fixable with the `--fix` option.
+
+bandit (find common security issues).....................................[42mPassed[m
+pytest...................................................................[42mPassed[m

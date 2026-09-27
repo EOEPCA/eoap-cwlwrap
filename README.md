@@ -2,6 +2,8 @@
 
 [![PyPI - Version](https://img.shields.io/pypi/v/eoap-cwlwrap.svg)](https://pypi.org/project/eoap-cwlwrap)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/eoap-cwlwrap.svg)](https://pypi.org/project/eoap-cwlwrap)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/EOEPCA/eoap-cwlwrap/package.yaml?branch=develop&event=push&label=build&logo=githubactions)](https://github.com/EOEPCA/eoap-cwlwrap/actions/workflows/package.yaml?query=branch%3Adevelop)
+[![Code coverage](https://img.shields.io/codecov/c/github/EOEPCA/eoap-cwlwrap/develop?logo=codecov)](https://app.codecov.io/gh/EOEPCA/eoap-cwlwrap/tree/develop)
 
 `eoap-cwlwrap` is a command-line utility that composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps, defined according to [Application package patterns based on data stage-in and stage-out behaviors commonly used in EO workflows](https://eoap.github.io/application-package-patterns), and **packs** it into a single self-contained CWL document.
 
