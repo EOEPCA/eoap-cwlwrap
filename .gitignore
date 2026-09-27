@@ -8,9 +8,11 @@
 .vscode
 build
 dist
+uv.lock
 *.egg-info
 __pycache__
 site
 tests/*/current.*
 tests/*/*.puml
 /.pytest_cache/
+dist/

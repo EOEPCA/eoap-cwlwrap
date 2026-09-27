@@ -2,8 +2,17 @@
 
 [![PyPI - Version](https://img.shields.io/pypi/v/eoap-cwlwrap.svg)](https://pypi.org/project/eoap-cwlwrap)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/eoap-cwlwrap.svg)](https://pypi.org/project/eoap-cwlwrap)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/EOEPCA/eoap-cwlwrap/package.yaml?branch=develop&event=push&label=build&logo=githubactions)](https://github.com/EOEPCA/eoap-cwlwrap/actions/workflows/package.yaml?query=branch%3Adevelop)
+[![Code coverage](https://img.shields.io/codecov/c/github/EOEPCA/eoap-cwlwrap/develop?logo=codecov)](https://app.codecov.io/gh/EOEPCA/eoap-cwlwrap/tree/develop)
 
-`eoap-cwlwrap` is a command-line utility that composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps, defined according to [Application package patterns based on data stage-in and stage-out behaviors commonly used in EO workflows](https://eoap.github.io/application-package-patterns), and **packs** it into a single self-contained CWL document.
+`eoap-cwlwrap` is a Transpiler Mate plugin that composes a CWL `Workflow` from a series of `Workflow`/`CommandLineTool` steps, defined according to [Application package patterns based on data stage-in and stage-out behaviors commonly used in EO workflows](https://eoap.github.io/application-package-patterns), and **packs** it into a single self-contained CWL document.
+
+> [!WARNING]
+> Since version **0.32.0**, EOAP CWL Wrap is a **Transpiler Mate plugin**.
+> Install `transpiler-mate-runtime` alongside `eoap-cwlwrap` and run
+> `transpiler-mate cwlwrap SOURCE [OPTIONS]`. Replace the old `--workflow` option
+> with the positional source. See the [CLI reference](docs/reference/cli.md)
+> for migration details.
 
 It ensures:
 - **Type-safe chaining** of step outputs to the next step's inputs.
@@ -14,6 +23,22 @@ It ensures:
 
 Submit a [Github issue](https://github.com/EOEPCA/eoap-cwlwrap/issues) if you have comments or suggestions.
 
+### Local quality checks
+
+Install [Hatch](https://hatch.pypa.io/) and [Taskfiles](https://taskfile.dev/docs/guide) then install the Git hook:
+
+```console
+task quality:pre-commit:install
+```
+
+Every commit runs Ruff (including the configured McCabe complexity limit),
+Ruff formatting, strict mypy checks, and the pytest suite.
+Run the complete hook explicitly with:
+
+```console
+task quality:pre-commit:run
+```
+
 ## Documentation
 
 See the documentation at https://eoepca.github.io/eoap-cwlwrap/
@@ -21,4 +46,3 @@ See the documentation at https://eoepca.github.io/eoap-cwlwrap/
 ## License
 
 [![Apache License, Version 2.0](https://img.shields.io/badge/license-Apache%20License%202.0-blue)](https://www.apache.org/licenses/LICENSE-2.0)
-

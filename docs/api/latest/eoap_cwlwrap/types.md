@@ -2,6 +2,16 @@
 
 Type utilities and validators used by the workflow wrapper.
 
+Compatibility helpers inspect CWL type names, unions, and array item types.
+Conversion helpers replace matching types with the EOAP URI type identified by
+`URL_TYPE`, preserving union members and array structure.
+
+Stage-in validators require exactly one URI-compatible input and exactly one
+output compatible with the requested `Directory` or `File` type. Stage-out
+validators require exactly one compatible `Directory` or `File` input and
+exactly one URI-compatible output. Invalid staging contracts raise
+`transpiler_mate.api.PluginFailureError`.
+
 ::: eoap_cwlwrap.types
     options:
       members:
